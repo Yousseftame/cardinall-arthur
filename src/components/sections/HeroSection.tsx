@@ -1,0 +1,145 @@
+import { useState, useEffect, useRef } from 'react';
+import heroBg from '../../assets/hero-bg.avif';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
+export default function HeroSection() {
+  const containerRef = useRef<HTMLElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    AOS.init({ once: true });
+    
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    // Initial center position
+    if (containerRef.current) {
+      setMousePos({
+        x: containerRef.current.clientWidth / 2,
+        y: containerRef.current.clientHeight / 2,
+      });
+    }
+
+    // Trigger the entrance animation after a short delay
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 400);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      clearTimeout(timer);
+    };
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (!containerRef.current || !isLoaded) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+    if (!isHovered) setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isLoaded) return;
+    setIsHovered(false);
+    if (containerRef.current) {
+      setMousePos({
+        x: containerRef.current.clientWidth / 2,
+        y: containerRef.current.clientHeight / 2,
+      });
+    }
+  };
+
+  const baseSquareSize = isMobile ? 220 : 280;
+  // Start massive (4000px) then shrink down to the base size
+  const currentSquareSize = isLoaded ? baseSquareSize : 4000;
+  const halfSize = currentSquareSize / 2;
+
+  const left = mousePos.x - halfSize;
+  const right = mousePos.x + halfSize;
+  const top = mousePos.y - halfSize;
+  const bottom = mousePos.y + halfSize;
+
+  const clipPolygon = `polygon(${left}px ${top}px, ${right}px ${top}px, ${right}px ${bottom}px, ${left}px ${bottom}px)`;
+  
+  // Dynamic smooth transition: snappier when tracking, smoother/longer when returning to center or during initial load
+  const transitionStyle = { 
+    transition: isHovered 
+      ? 'clip-path 0.15s ease-out, transform 0.15s ease-out, width 0.15s ease-out, height 0.15s ease-out' 
+      : 'clip-path 1.5s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1), width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1), height 1.5s cubic-bezier(0.2, 0.8, 0.2, 1)'
+  };
+
+  return (
+    <section 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative h-screen w-full overflow-hidden bg-[#111] flex items-center justify-center cursor-default"
+    >
+      {/* Blurred Background Image */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center pointer-events-none">
+        <img 
+          src={heroBg} 
+          alt="Hero Background" 
+          className={`absolute w-[100vw] h-[100vh] max-w-none object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-90 scale-[1.05] pointer-events-none transition-all duration-[1500ms] ease-out ${isLoaded ? 'blur-[8px]' : 'blur-0'}`} 
+        />
+        {/* Dark overlay */}
+        <div className={`absolute inset-0 bg-black/30 transition-opacity duration-[1500ms] ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`} />
+      </div>
+
+      {/* Sharp Image Layer Clipped to Square */}
+      <div 
+        className="absolute inset-0 w-full h-full z-20 pointer-events-none"
+        style={{ clipPath: clipPolygon, ...transitionStyle }}
+      >
+        <img 
+          src={heroBg} 
+          alt="Sharp Hero" 
+          className="absolute w-[100vw] h-[100vh] max-w-none object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 filter brightness-110 contrast-110 grayscale-[20%] pointer-events-none" 
+        />
+      </div>
+
+      {/* Frame and Crosshair (Tracks mouse precisely) */}
+      <div 
+        className={`absolute left-0 top-0 z-30 pointer-events-none border-[0.5px] border-white/50 flex items-center justify-center transition-opacity duration-[1500ms] ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        style={{ 
+          width: currentSquareSize, 
+          height: currentSquareSize,
+          transform: `translate(${left}px, ${top}px)`,
+          ...transitionStyle
+        }}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white/80 mix-blend-overlay">
+          <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+
+      {/* Floating Text Labels */}
+      <div className={`hidden lg:flex absolute w-full px-12 top-[35%] -translate-y-1/2 left-0 z-40 pointer-events-none text-white text-[10px] md:text-xs tracking-[0.2em] font-semibold uppercase justify-between items-center transition-opacity duration-[1500ms] delay-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+         <div>UI/UX DESIGNER</div>
+         <div>BRAND DESIGNER</div>
+         <div>ILLUSTRATOR</div>
+         <div>LA, CALIFORNIA</div>
+      </div>
+
+      {/* Large Bottom Text */}
+      <div className="absolute bottom-0 left-0 w-full text-center z-50 pointer-events-none translate-y-[28%] md:translate-y-[22%] flex justify-center">
+        <h1 
+          data-aos="fade-up" 
+          data-aos-duration="1500" 
+          data-aos-delay="600"
+          className="text-white font-heading text-[12vw] leading-none tracking-tighter font-light uppercase whitespace-nowrap opacity-95 select-none w-full text-center scale-y-[1.35] origin-bottom pt-4"
+        >
+          Cardinal Arthur
+        </h1>
+      </div>
+    </section>
+  );
+}
