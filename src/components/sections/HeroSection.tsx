@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import heroBg from '../../assets/hero-bg.avif';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { DiaTextReveal } from '../ui/dia-text-reveal';
 
 export default function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
@@ -132,12 +133,16 @@ export default function HeroSection() {
       {/* Large Bottom Text */}
       <div className="absolute bottom-0 left-0 w-full text-center z-50 pointer-events-none translate-y-[28%] md:translate-y-[22%] flex justify-center">
         <h1 
-          data-aos="fade-up" 
-          data-aos-duration="1500" 
-          data-aos-delay="600"
-          className="text-white font-heading text-[12vw] leading-none tracking-tighter font-light uppercase whitespace-nowrap opacity-95 select-none w-full text-center scale-y-[1.35] origin-bottom pt-4"
+          className="font-heading text-[12vw] leading-none tracking-tighter font-light uppercase whitespace-nowrap opacity-95 select-none w-full text-center scale-y-[1.35] origin-bottom pt-4"
         >
-          Cardinal Arthur
+          <DiaTextReveal 
+            text="Cardinal Arthur" 
+            textColor="#ffffff" 
+            colors={["#ffffff", "#ffffff", "transparent"]}
+            duration={1.8}
+            delay={1.2}
+            once={true}
+          />
         </h1>
       </div>
     </section>

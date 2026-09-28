@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { ShoppingBag } from 'lucide-react';
 import SpecularButton from '../SpecularButton';
+import { useCartStore } from '../../store/cartStore';
 
 export default function Navbar() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const { openCart, items } = useCartStore();
 
   useEffect(() => {
     // Sync with the HeroSection animation delay
@@ -46,8 +49,27 @@ export default function Navbar() {
         </Link>
       </nav>
 
-      {/* Right side: Contact button */}
-      <div className="flex items-center">
+      {/* Right side: Actions */}
+      <div className="flex items-center gap-4">
+        <div className="relative">
+          <div onClick={openCart}>
+            <SpecularButton 
+              size="md"
+              radius={14}
+              tintOpacity={0}
+              blur={12}
+              baseColor="#52525b"
+              className="!p-[14px] text-xs tracking-wide font-medium uppercase !bg-gradient-to-br !from-white/10 !via-transparent !to-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),inset_0_-1px_1px_rgba(255,255,255,0.1),0_4px_24px_-8px_rgba(0,0,0,0.5)] hover:!from-white/15 hover:!via-white/5 hover:!to-white/10 transition-all duration-300 pointer-events-auto"
+            >
+              <div className="flex items-center justify-center pointer-events-none">
+                <ShoppingBag className="w-5 h-5" />
+              </div>
+            </SpecularButton>
+          </div>
+          <span className="absolute -top-2 -right-2 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-white text-[11px] font-heading font-medium text-black shadow-md pointer-events-none z-10">
+            {items.length}
+          </span>
+        </div>
         <Link to="#contact">
           <SpecularButton 
             size="md"

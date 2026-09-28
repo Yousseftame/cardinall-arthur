@@ -4,6 +4,9 @@ import Lenis from 'lenis';
 import 'lenis/dist/lenis.css'; // Modern lenis provides default styles
 
 import Navbar from '../components/layout/Navbar';
+import CartSidebar from '../components/layout/CartSidebar';
+import MenuSidebar from '../components/layout/MenuSidebar';
+import ScrolledNavbar from '../components/layout/ScrolledNavbar';
 
 export default function MasterLayout() {
   useEffect(() => {
@@ -34,6 +37,10 @@ export default function MasterLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-background font-sans text-foreground">
       <Navbar />
+      <ScrolledNavbar />
+      <CartSidebar />
+      <MenuSidebar />
+      
       
       <main className="flex-grow">
         {/* Outlet renders the matched child route component */}

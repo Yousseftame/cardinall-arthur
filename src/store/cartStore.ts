@@ -7,10 +7,13 @@ interface CartItem extends Product {
 
 interface CartState {
   items: CartItem[];
+  isOpen: boolean;
   addItem: (product: Product) => void;
   removeItem: (productId: string) => void;
   clearCart: () => void;
   getCartTotal: () => number;
+  openCart: () => void;
+  closeCart: () => void;
 }
 
 // We use Zustand for the Cart because cart interactions happen very frequently.
@@ -18,6 +21,9 @@ interface CartState {
 // We only sync with Firebase when the user actually goes to Checkout!
 export const useCartStore = create<CartState>((set, get) => ({
   items: [],
+  isOpen: false,
+  openCart: () => set({ isOpen: true }),
+  closeCart: () => set({ isOpen: false }),
   addItem: (product) => set((state) => {
     const existing = state.items.find(item => item.id === product.id);
     if (existing) {
