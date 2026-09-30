@@ -46,7 +46,7 @@ export default function ProductsSection() {
   };
 
   // Smooth infinite auto-scroll
-  useAnimationFrame((time, delta) => {
+  useAnimationFrame((_time, delta) => {
     // Pause if the user is dragging OR hovering
     if (isDragging.current || isHovered.current || trackWidth === 0) return;
     

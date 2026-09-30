@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { motion, type Variants, useScroll, useTransform } from 'framer-motion';
 import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
 import SpecularButton from '../../components/SpecularButton';

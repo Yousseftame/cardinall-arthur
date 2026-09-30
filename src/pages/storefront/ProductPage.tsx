@@ -4,7 +4,6 @@ import { PRODUCTS } from '../../data/products';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
-import SpecularButton from '../../components/SpecularButton';
 import FAQSection from '../../components/sections/FAQSection';
 import { useCartStore } from '../../store/cartStore';
 
@@ -89,7 +88,7 @@ export default function ProductPage() {
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
-              onDragEnd={(e, { offset, velocity }) => {
+              onDragEnd={(_e, { offset, velocity }) => {
                 const swipe = swipePower(offset.x, velocity.x);
                 if (swipe < -swipeConfidenceThreshold) {
                   paginate(1);

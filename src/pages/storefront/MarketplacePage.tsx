@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion, type Variants, useScroll, useTransform } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
 import marketplace2 from '../../assets/marketplace2.webp';
 import banner2 from '../../assets/banner2.webp';
 import marketplaceImg from '../../assets/marketplace1.webp';
-
-import bag1 from '../../assets/690725e34cc7bc9a71464b6e_Elegant Black Handbag.avif';
-import bag2 from '../../assets/6907260496f08def56838d36_Black Leather Handbag.avif';
-import bag3 from '../../assets/69073d30b82ece2f5b69f07d_Beige Tote Bag Display.avif';
 
 const textContainerVariants: Variants = {
   hidden: { opacity: 0 },

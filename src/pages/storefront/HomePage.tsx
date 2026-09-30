@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import HeroSection from "../../components/sections/HeroSection";
 import AboutSection from "../../components/sections/AboutSection";
-import MarqueeSection from "../../components/sections/MarqueeSection";
 import ProductsSection from "../../components/sections/ProductsSection";
 import WorkProcessSection from "../../components/sections/WorkProcessSection";
 import ServicesSection from "../../components/sections/ServicesSection";
@@ -10,7 +9,6 @@ import LatestProjectsSection from "../../components/sections/LatestProjectsSecti
 import ClientFeedbackSection from "../../components/sections/ClientFeedbackSection";
 import BreakSection from "../../components/sections/BreakSection";
 import LetsTalkSection from "../../components/sections/LetsTalkSection";
-import FooterSection from "../../components/sections/FooterSection";
 
 export default function HomePage() {
   const location = useLocation();
