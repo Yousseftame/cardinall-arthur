@@ -1,5 +1,5 @@
-import { getFirestore } from "firebase/firestore";
-import { app } from "../firebase";
+// import { getFirestore } from "firebase/firestore";
+// import { app } from "../firebase";
 import type { Product } from "../types";
 
 // Initialize Firestore
