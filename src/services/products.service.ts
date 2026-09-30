@@ -3,7 +3,7 @@ import { app } from "../firebase";
 import type { Product } from "../types";
 
 // Initialize Firestore
-const _db = getFirestore(app);
+// const _db = getFirestore(app);
 
 // Services isolate your Firebase logic. This keeps your React components clean 
 // and makes it easier to update logic without changing UI.

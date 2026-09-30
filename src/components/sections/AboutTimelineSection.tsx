@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useSpring } from 'framer-motion';
 import { DiaTextReveal } from '../ui/dia-text-reveal';
 
 const timelineData = [
@@ -23,7 +23,7 @@ const timelineData = [
   }
 ];
 
-function TimelineItem({ item, index }: { item: typeof timelineData[0], index: number }) {
+function TimelineItem({ item, index: _index }: { item: typeof timelineData[0], index: number }) {
   const isRight = item.align === "right";
   
   return (
