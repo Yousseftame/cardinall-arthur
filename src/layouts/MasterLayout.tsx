@@ -1,5 +1,6 @@
-import { Outlet } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css'; // Modern lenis provides default styles
 
@@ -7,8 +8,14 @@ import Navbar from '../components/layout/Navbar';
 import CartSidebar from '../components/layout/CartSidebar';
 import MenuSidebar from '../components/layout/MenuSidebar';
 import ScrolledNavbar from '../components/layout/ScrolledNavbar';
+import SplashScreen from '../components/layout/SplashScreen';
+import FooterSection from '../components/sections/FooterSection';
 
 export default function MasterLayout() {
+  const [isSplashComplete, setIsSplashComplete] = useState(false);
+  const location = useLocation();
+  const lenisRef = useRef<Lenis | null>(null);
+
   useEffect(() => {
     // Initialize Lenis for buttery smooth scrolling
     const lenis = new Lenis({
@@ -21,6 +28,8 @@ export default function MasterLayout() {
       touchMultiplier: 2,
     });
 
+    lenisRef.current = lenis;
+
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -31,13 +40,31 @@ export default function MasterLayout() {
     // Cleanup on unmount
     return () => {
       lenis.destroy();
+      lenisRef.current = null;
     };
   }, []);
 
+  // Scroll to top on every route change, through Lenis so it's respected
+  useEffect(() => {
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(0, { immediate: true });
+    } else {
+      // Fallback if Lenis hasn't initialized yet
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
+
   return (
-    <div className="min-h-screen flex flex-col bg-background font-sans text-foreground">
-      <Navbar />
-      <ScrolledNavbar />
+    <>
+      <AnimatePresence mode="wait">
+        {!isSplashComplete && (
+          <SplashScreen key="splash" onComplete={() => setIsSplashComplete(true)} />
+        )}
+      </AnimatePresence>
+
+      <div className="min-h-screen flex flex-col bg-background font-sans text-foreground">
+        <Navbar />
+        <ScrolledNavbar />
       <CartSidebar />
       <MenuSidebar />
       
@@ -47,10 +74,8 @@ export default function MasterLayout() {
         <Outlet />
       </main>
 
-      {/* Replace with your actual Footer component later */}
-      <footer className="p-6 bg-secondary text-secondary-foreground text-center border-t border-border mt-auto">
-        <p className="font-heading">© 2026 Cardinal Arthur Perfumes. All rights reserved.</p>
-      </footer>
+      <FooterSection />
     </div>
+    </>
   );
 }

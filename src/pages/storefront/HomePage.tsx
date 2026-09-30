@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import HeroSection from "../../components/sections/HeroSection";
 import AboutSection from "../../components/sections/AboutSection";
 import MarqueeSection from "../../components/sections/MarqueeSection";
@@ -5,17 +7,35 @@ import ProductsSection from "../../components/sections/ProductsSection";
 import WorkProcessSection from "../../components/sections/WorkProcessSection";
 import ServicesSection from "../../components/sections/ServicesSection";
 import LatestProjectsSection from "../../components/sections/LatestProjectsSection";
+import ClientFeedbackSection from "../../components/sections/ClientFeedbackSection";
+import BreakSection from "../../components/sections/BreakSection";
+import LetsTalkSection from "../../components/sections/LetsTalkSection";
+import FooterSection from "../../components/sections/FooterSection";
 
 export default function HomePage() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.scrollTo === 'letstalk') {
+      setTimeout(() => {
+        document.querySelector('#letstalk')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      // Clean up state so we don't scroll again on browser back/forward
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
   return (
     <div>
       <HeroSection />
       <AboutSection />
-      <MarqueeSection />
       <ProductsSection />
       <WorkProcessSection />
       <ServicesSection />
       <LatestProjectsSection />
+      <ClientFeedbackSection />
+      <BreakSection />
+      <LetsTalkSection />
     </div>
   );
 }

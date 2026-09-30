@@ -1,23 +1,14 @@
 import { useState } from "react";
-import { Plus, Minus, X } from "lucide-react";
+import { X } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useMenuStore } from "../../store/menuStore";
 
 const NAV_LINKS = [
-  { id: "about", label: "About Us", href: "#about" },
-  { 
-    id: "collections",
-    label: "Collections", 
-    expandable: true,
-    subLinks: [
-      { id: "signature", label: "Signature Series", href: "#signature" },
-      { id: "private", label: "Private Blend", href: "#private" },
-      { id: "home", label: "Home Fragrance", href: "#home" }
-    ]
-  },
-  { id: "portfolio", label: "Portfolio", href: "#portfolio" },
-  { id: "testimonials", label: "Testimonials", href: "#testimonials" },
-  { id: "contact", label: "Contact Us", isContact: true },
+  { id: "home", label: "Home", href: "/" },
+  { id: "marketplace", label: "Marketplace", href: "/marketplace" },
+  { id: "about", label: "Our Story", href: "/about" },
+  { id: "cant-find-it", label: "Community", href: "/cant-find-it" },
 ];
 
 const SECONDARY_LINKS = [
@@ -42,16 +33,13 @@ const linkVariants: Variants = {
 
 export default function MenuSidebar() {
   const { isMenuOpen, closeMenu } = useMenuStore();
-  const [projectsExpanded, setProjectsExpanded] = useState(false);
+  const navigate = useNavigate();
 
-  const handleScrollTo = (href: string) => {
+  const handleNavigation = (href: string) => {
     closeMenu();
-    // Allow animation to finish before scrolling
+    // Allow animation to finish before navigating
     setTimeout(() => {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
+      navigate(href);
     }, 400);
   };
 
@@ -103,57 +91,12 @@ export default function MenuSidebar() {
                     animate="visible"
                     variants={linkVariants}
                   >
-                    {link.isContact ? (
-                      <button 
-                        className="w-full text-left font-heading text-3xl md:text-4xl font-medium tracking-tight uppercase hover:text-[#2C0E11] transition-colors duration-300" 
-                        onClick={() => handleScrollTo("#contact")}
-                      >
-                        <span>{link.label}</span>
-                      </button>
-                    ) : link.expandable ? (
-                      <div className="flex flex-col">
-                        <button 
-                          className="w-full text-left flex justify-between items-center font-heading text-3xl md:text-4xl font-medium tracking-tight uppercase hover:text-[#2C0E11] transition-colors duration-300" 
-                          onClick={() => setProjectsExpanded(!projectsExpanded)}
-                        >
-                          <span>{link.label}</span>
-                          {projectsExpanded ? (
-                            <Minus className="w-6 h-6 shrink-0 stroke-[1.5]" aria-hidden />
-                          ) : (
-                            <Plus className="w-6 h-6 shrink-0 stroke-[1.5]" aria-hidden />
-                          )}
-                        </button>
-                        <AnimatePresence>
-                          {projectsExpanded && (
-                            <motion.ul 
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden mt-4 flex flex-col gap-4"
-                            >
-                              {link.subLinks?.map((sub) => (
-                                <li key={sub.id}>
-                                  <button 
-                                    className="font-medium text-lg uppercase tracking-widest text-[#6a6a6a] hover:text-[#2C0E11] transition-colors"
-                                    style={{ fontFamily: '"Outfit", sans-serif' }}
-                                    onClick={() => handleScrollTo(sub.href)}
-                                  >
-                                    {sub.label}
-                                  </button>
-                                </li>
-                              ))}
-                            </motion.ul>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    ) : "href" in link && link.href ? (
-                      <button 
-                        onClick={() => handleScrollTo(link.href)} 
-                        className="w-full text-left font-heading text-3xl md:text-4xl font-medium tracking-tight uppercase hover:text-[#2C0E11] transition-colors duration-300"
-                      >
-                        <span>{link.label}</span>
-                      </button>
-                    ) : null}
+                    <button 
+                      onClick={() => handleNavigation(link.href)} 
+                      className="w-full text-left font-heading text-3xl md:text-4xl font-medium tracking-tight uppercase hover:text-primary transition-colors duration-300"
+                    >
+                      <span>{link.label}</span>
+                    </button>
                   </motion.li>
                 ))}
               </ul>
@@ -191,7 +134,7 @@ export default function MenuSidebar() {
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-[#2C0E11] transition-colors"
+                        className="text-xs uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-primary transition-colors"
                         style={{ fontFamily: '"Outfit", sans-serif' }}
                         onClick={closeMenu}
                       >

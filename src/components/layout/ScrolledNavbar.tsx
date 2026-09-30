@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShoppingBag, Menu } from 'lucide-react';
+import { ShoppingCart, Menu } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
 import { useMenuStore } from '../../store/menuStore';
 
@@ -42,7 +42,7 @@ export default function ScrolledNavbar() {
             className="flex items-center gap-3 group"
           >
             <Menu className="w-6 h-6 text-[#1a1a1a] stroke-[2]" />
-            <span className="hidden md:inline-block font-medium uppercase tracking-[0.25em] text-[11px] text-[#1a1a1a] group-hover:text-[#2C0E11] transition-colors">
+            <span className="hidden md:inline-block font-medium uppercase tracking-[0.25em] text-[11px] text-[#1a1a1a] group-hover:text-primary transition-colors">
               Menu
             </span>
           </button>
@@ -57,8 +57,8 @@ export default function ScrolledNavbar() {
           {/* Right: Cart Button (Icon Only, Bold) */}
           <div className="relative cursor-pointer group flex items-center justify-center p-2 -mr-2" onClick={openCart}>
             <div className="relative">
-              <ShoppingBag className="w-6 h-6 text-[#1a1a1a] stroke-[2] group-hover:text-[#2C0E11] transition-colors" />
-              <span className="absolute -top-1.5 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#1a1a1a] text-[10px] font-medium text-[#f8f7f3] shadow-md group-hover:bg-[#2C0E11] transition-colors">
+              <ShoppingCart className="w-6 h-6 text-[#1a1a1a] stroke-[2] group-hover:text-primary transition-colors" />
+              <span className="absolute -top-1.5 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#1a1a1a] text-[10px] font-medium text-[#f8f7f3] shadow-md group-hover:bg-primary transition-colors">
                 {items.length}
               </span>
             </div>

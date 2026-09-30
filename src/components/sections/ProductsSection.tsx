@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useAnimationFrame } from 'framer-motion';
 import { DiaTextReveal } from '../ui/dia-text-reveal';
 import bag1 from '../../assets/690725e34cc7bc9a71464b6e_Elegant Black Handbag.avif';
@@ -141,9 +142,9 @@ export default function ProductsSection() {
 
         {/* Explore Button */}
         <div className="flex justify-center mt-20">
-          <a href="#" className="font-heading uppercase text-sm font-semibold tracking-widest border-b border-black pb-1 hover:text-gray-500 hover:border-gray-500 transition-colors duration-300">
+          <Link to="/marketplace" className="font-heading uppercase text-sm font-semibold tracking-widest border-b border-black pb-1 hover:text-gray-500 hover:border-gray-500 transition-colors duration-300">
             EXPLORE BAGS
-          </a>
+          </Link>
         </div>
 
       </div>

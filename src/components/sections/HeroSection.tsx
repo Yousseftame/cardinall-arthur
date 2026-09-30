@@ -3,6 +3,7 @@ import heroBg from '../../assets/hero-bg.avif';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { DiaTextReveal } from '../ui/dia-text-reveal';
+import { useSplashStore } from '../../store/splashStore';
 
 export default function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
@@ -10,6 +11,7 @@ export default function HeroSection() {
   const [isMobile, setIsMobile] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const isSplashVisible = useSplashStore(state => state.isSplashVisible);
 
   useEffect(() => {
     AOS.init({ once: true });
@@ -18,7 +20,6 @@ export default function HeroSection() {
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    // Initial center position
     if (containerRef.current) {
       setMousePos({
         x: containerRef.current.clientWidth / 2,
@@ -26,16 +27,20 @@ export default function HeroSection() {
       });
     }
 
-    // Trigger the entrance animation after a short delay
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 400);
-
     return () => {
       window.removeEventListener('resize', checkMobile);
-      clearTimeout(timer);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isSplashVisible) {
+      // Wait 1.5 seconds after splash begins fading before starting Hero animations
+      const timer = setTimeout(() => {
+        setIsLoaded(true);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [isSplashVisible]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (!containerRef.current || !isLoaded) return;
@@ -117,9 +122,12 @@ export default function HeroSection() {
           ...transitionStyle
         }}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white/80 mix-blend-overlay">
-          <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        {/* Only fade in the plus icon after the initial frame shrinking is fully completed */}
+        <div className={`transition-opacity duration-500 ease-out ${isLoaded ? 'opacity-100 delay-[1500ms]' : 'opacity-0'}`}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white/80 mix-blend-overlay">
+            <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
       </div>
 
       {/* Floating Text Labels */}
@@ -135,14 +143,16 @@ export default function HeroSection() {
         <h1 
           className="font-heading text-[12vw] leading-none tracking-tighter font-light uppercase whitespace-nowrap opacity-95 select-none w-full text-center scale-y-[1.35] origin-bottom pt-4"
         >
-          <DiaTextReveal 
-            text="Cardinal Arthur" 
-            textColor="#ffffff" 
-            colors={["#ffffff", "#ffffff", "transparent"]}
-            duration={1.8}
-            delay={1.2}
-            once={true}
-          />
+          {isLoaded && (
+            <DiaTextReveal 
+              text="Cardinal Arthur" 
+              textColor="#ffffff" 
+              colors={["#ffffff", "#ffffff", "transparent"]}
+              duration={1.8}
+              delay={1.5}
+              once={true}
+            />
+          )}
         </h1>
       </div>
     </section>
