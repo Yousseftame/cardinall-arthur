@@ -62,7 +62,7 @@ function PartnerCard({ children }: { children: React.ReactNode }) {
           }}
         />
         
-        {/* Content */}
+        {/* Content page */}
         <div className="relative z-10 text-white/40 group-hover:text-white transition-colors duration-1000 ease-out">
           {children}
         </div>
