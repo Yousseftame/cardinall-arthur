@@ -26,7 +26,6 @@ const itemVariants: Variants = {
 function PartnerCard({ children }: { children: React.ReactNode }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -39,8 +38,6 @@ function PartnerCard({ children }: { children: React.ReactNode }) {
       variants={itemVariants} 
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
       className="relative rounded-xl overflow-hidden group cursor-default aspect-[4/3] md:aspect-[3/2] p-[1px] bg-white/[0.03]"
     >
       {/* Outer Spotlight (Creates the dynamic border glow) */}
