@@ -7,7 +7,7 @@ import TrustedPartnersSection from '../../components/sections/TrustedPartnersSec
 import WorkProcessSection from '../../components/sections/WorkProcessSection';
 import AboutTimelineSection from '../../components/sections/AboutTimelineSection';
 import AboutVisionSection from '../../components/sections/AboutVisionSection';
-import AboutFoundersSection from '../../components/sections/AboutFoundersSection';
+
 import AboutSocialsSection from '../../components/sections/AboutSocialsSection';
 import FAQSection from '../../components/sections/FAQSection';
 

@@ -1,8 +1,6 @@
 import SpecularButton from '../SpecularButton';
 import { DiaTextReveal } from '../ui/dia-text-reveal';
 import { motion, type Variants } from 'framer-motion';
-import ScrollVelocity from '../ScrollVelocity';
-
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -26,23 +24,6 @@ const LogoSeparator = () => (
   />
 );
 
-const Row1 = (
-  <div className="flex items-center whitespace-nowrap">
-    <span>Cardinal</span>
-    <LogoSeparator />
-    <span>Arthur</span>
-    <LogoSeparator />
-  </div>
-);
-
-const Row2 = (
-  <div className="flex items-center whitespace-nowrap">
-    <span>Cardinal</span>
-    <LogoSeparator />
-    <span>Arthur</span>
-    <LogoSeparator />
-  </div>
-);
 
 export default function LetsTalkSection() {
   return (

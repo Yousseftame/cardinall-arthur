@@ -5,9 +5,6 @@ import { Eye, ShoppingCart, X } from 'lucide-react';
 import { DiaTextReveal } from '../ui/dia-text-reveal';
 import { PRODUCTS } from '../../data/products';
 import { useCartStore } from '../../store/cartStore';
-import bag1 from '../../assets/690725e34cc7bc9a71464b6e_Elegant Black Handbag.avif';
-import bag2 from '../../assets/6907260496f08def56838d36_Black Leather Handbag.avif';
-import bag3 from '../../assets/69073d30b82ece2f5b69f07d_Beige Tote Bag Display.avif';
 
 const swipeConfidenceThreshold = 10000;
 const swipePower = (offset: number, velocity: number) => {

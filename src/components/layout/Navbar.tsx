@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Menu, User, Search } from 'lucide-react';
+import { ShoppingCart, User, Search } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
 import { useMenuStore } from '../../store/menuStore';
 import { useSplashStore } from '../../store/splashStore';
@@ -33,14 +33,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLetsTalkScroll = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (location.pathname === '/') {
-      document.querySelector('#letstalk')?.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      navigate('/', { state: { scrollTo: 'letstalk' } });
-    }
-  };
 
   return (
     <div 
