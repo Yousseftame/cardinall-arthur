@@ -70,7 +70,7 @@ export default function AboutPhilosophySection() {
       <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden z-0">
         
         {/* Text Reveal Area (Mapped to the first 18% of the total scroll) */}
-        <div className="flex flex-col items-center justify-center font-heading font-medium tracking-tighter uppercase text-[15vw] md:text-[14vw] leading-[0.85]">
+        <div className="flex flex-col items-center justify-center font-heading font-light tracking-tighter uppercase text-[15vw] md:text-[14vw] leading-[0.85]">
           <AnimatedText text="THINK." progress={smoothProgress} startRange={0.02} endRange={0.10} />
           <AnimatedText text="BUILD. WIN." progress={smoothProgress} startRange={0.10} endRange={0.18} />
         </div>

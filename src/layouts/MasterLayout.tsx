@@ -7,7 +7,6 @@ import 'lenis/dist/lenis.css'; // Modern lenis provides default styles
 import Navbar from '../components/layout/Navbar';
 import CartSidebar from '../components/layout/CartSidebar';
 import MenuSidebar from '../components/layout/MenuSidebar';
-import ScrolledNavbar from '../components/layout/ScrolledNavbar';
 import SplashScreen from '../components/layout/SplashScreen';
 import FooterSection from '../components/sections/FooterSection';
 
@@ -64,7 +63,6 @@ export default function MasterLayout() {
 
       <div className="min-h-screen flex flex-col bg-background font-sans text-foreground">
         <Navbar />
-        <ScrolledNavbar />
       <CartSidebar />
       <MenuSidebar />
       

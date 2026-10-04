@@ -138,7 +138,7 @@ export default function TrustedPartnersSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-20%" }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="text-4xl md:text-7xl font-heading font-medium tracking-tighter uppercase"
+          className="text-4xl md:text-7xl font-heading font-light tracking-tighter uppercase"
         >
           <DiaTextReveal 
             text="TRUSTED PARTNERS." 

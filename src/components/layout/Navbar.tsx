@@ -1,122 +1,123 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { ShoppingCart } from 'lucide-react';
-import SpecularButton from '../SpecularButton';
+import { ShoppingCart, Menu, User, Search } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
+import { useMenuStore } from '../../store/menuStore';
 import { useSplashStore } from '../../store/splashStore';
 
 export default function Navbar() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  
   const { openCart, items } = useCartStore();
+  const { openMenu } = useMenuStore();
   const isSplashVisible = useSplashStore(state => state.isSplashVisible);
+  
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Determine if the current page has a light background
-  const isLightPage = false; // All pages are now dark
-
   useEffect(() => {
     if (!isSplashVisible) {
-      // Sync with the HeroSection animation delay (1.5s after splash lifts)
       const timer = setTimeout(() => {
         setIsLoaded(true);
-      }, 1500);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [isSplashVisible]);
 
-  // Define text colors based on the page background
-  const linkTextColor = isLightPage ? 'text-black/70 hover:text-primary' : 'text-white/80 hover:text-primary';
-  
-  const buttonBaseColor = isLightPage ? '#1a1a1a' : '#52525b';
-  const buttonTextColor = isLightPage ? '#1a1a1a' : '#ffffff';
-  const buttonLineColor = isLightPage ? 'rgba(0,0,0,0.08)' : '#ffffff';
-  const buttonGradient = isLightPage 
-    ? '!bg-[#1a1a1a]/[0.06] hover:!bg-[#1a1a1a]/[0.10] !text-[#1a1a1a] border border-black/10 shadow-none backdrop-blur-sm'
-    : '!bg-gradient-to-br !from-white/10 !via-transparent !to-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),inset_0_-1px_1px_rgba(255,255,255,0.1),0_4px_24px_-8px_rgba(0,0,0,0.5)] hover:!from-white/15 hover:!via-white/5 hover:!to-white/10';
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleLetsTalkScroll = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (location.pathname === '/') {
+      document.querySelector('#letstalk')?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/', { state: { scrollTo: 'letstalk' } });
+    }
+  };
 
   return (
     <div 
-      className={`absolute top-0 left-0 w-full z-50 px-12 py-4 flex items-center justify-between bg-transparent transition-all duration-[1500ms] ease-out transform ${
-        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
+      className={`fixed top-0 left-1/2 -translate-x-1/2 z-50 transition-all duration-[1200ms] ease-[0.16,1,0.3,1] transform ${
+        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-[150%]'
       }`}
     >
-      {/* Left side: Logo */}
-      <Link to="/" className="flex items-center group h-[68px] -translate-y-1.5">
-        <img 
-          src="/logo-removebg-preview.png" 
-          alt="Logo" 
-          className="h-[68px] w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-md"
-        />
-      </Link>
+      <div 
+        className={`relative flex items-center justify-between px-5 md:px-12 py-2.5 md:py-3.5 transition-all duration-500 ease-out backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.8)] ${
+          isScrolled 
+            ? 'bg-black/95 w-[100vw] md:w-[85vw] lg:w-[75vw]' 
+            : 'bg-black/90 w-[100vw] md:w-[95vw] lg:w-[85vw]'
+        }`}
+        style={{
+          // Scaled angled edges for both mobile and desktop
+          clipPath: 'polygon(0 0, 100% 0, calc(100% - 16px) 100%, 16px 100%)'
+        }}
+      >
+        {/* Elegant Bottom Line (Double layered for a sleek glowing center) */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40%] h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent shadow-[0_0_8px_rgba(255,255,255,0.8)]"></div>
 
-      {/* Center: Links */}
-      <nav className="hidden md:flex items-center gap-10">
-        <Link to="/" className={`relative group ${linkTextColor} text-xs tracking-wide font-medium uppercase transition-colors duration-300 py-1`}>
-          Home
-          <span className="absolute left-0 bottom-0 w-full h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center transform-gpu will-change-transform backface-hidden"></span>
-        </Link>
-        <Link to="/marketplace" className={`relative group ${linkTextColor} text-xs tracking-wide font-medium uppercase transition-colors duration-300 py-1`}>
-          Marketplace
-          <span className="absolute left-0 bottom-0 w-full h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center transform-gpu will-change-transform backface-hidden"></span>
-        </Link>
-        <Link to="/about" onClick={() => window.scrollTo(0,0)} className={`relative group ${linkTextColor} text-xs tracking-wide font-medium uppercase transition-colors duration-300 py-1`}>
-          Our Story
-          <span className="absolute left-0 bottom-0 w-full h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center transform-gpu will-change-transform backface-hidden"></span>
-        </Link>
-        <Link to="/cant-find-it" onClick={() => window.scrollTo(0,0)} className={`relative group ${linkTextColor} text-xs tracking-wide font-medium uppercase transition-colors duration-300 py-1`}>
-          Community
-          <span className="absolute left-0 bottom-0 w-full h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center transform-gpu will-change-transform backface-hidden"></span>
-        </Link>
-      </nav>
-
-      {/* Right side: Actions */}
-      <div className="flex items-center gap-4">
-        <div className="relative">
-          <div onClick={openCart}>
-            <SpecularButton 
-              size="md"
-              radius={14}
-              tintOpacity={0}
-              blur={12}
-              baseColor={buttonBaseColor}
-              textColor={buttonTextColor}
-              lineColor={buttonLineColor}
-              className={`!p-[14px] text-xs tracking-wide font-medium uppercase transition-all duration-300 pointer-events-auto ${buttonGradient}`}
-            >
-              <div className="flex items-center justify-center pointer-events-none">
-                <ShoppingCart className="w-5 h-5" />
-              </div>
-            </SpecularButton>
+        {/* Left: Menu */}
+        <button onClick={openMenu} className="flex items-center gap-1.5 md:gap-2 p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group z-10">
+          <div className="relative flex flex-col justify-center gap-[4px] md:gap-[5px] w-4 h-4 md:w-5 md:h-5">
+            <span className="w-full h-[1.5px] bg-current block transition-all duration-300 transform origin-right"></span>
+            <span className="w-[60%] h-[1.5px] bg-current block transition-all duration-300 group-hover:w-full"></span>
           </div>
-          <span className="absolute -top-2 -right-2 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-white text-black text-[11px] font-heading font-medium shadow-md pointer-events-none z-10">
-            {items.length}
-          </span>
-        </div>
-        <a 
-          href="#letstalk"
+          <span className="inline-block font-heading text-[10px] sm:text-[11px] md:text-xs tracking-[0.25em] uppercase font-medium mt-0.5">Menu</span>
+        </button>
+
+        {/* Center: Name with Logo Between */}
+        <Link 
+          to="/" 
           onClick={(e) => {
-            e.preventDefault();
             if (location.pathname === '/') {
-              document.querySelector('#letstalk')?.scrollIntoView({ behavior: 'smooth' });
+              e.preventDefault();
+              // Ensures the click registers completely before triggering the smooth scroll
+              requestAnimationFrame(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              });
             } else {
-              navigate('/', { state: { scrollTo: 'letstalk' } });
+              window.scrollTo(0,0);
             }
-          }}
+          }} 
+          className="flex items-center gap-1.5 md:gap-3 group absolute left-1/2 -translate-x-1/2 w-max z-10 cursor-pointer"
         >
-          <SpecularButton 
-            size="md"
-            radius={14}
-            tintOpacity={0}
-            blur={12}
-            baseColor={buttonBaseColor}
-            textColor={buttonTextColor}
-            lineColor={buttonLineColor}
-            className={`text-xs tracking-wide font-medium uppercase transition-all duration-300 ${buttonGradient}`}
-          >
-            Let's Talk
-          </SpecularButton>
-        </a>
+          <span className="font-heading text-[10px] sm:text-xs md:text-lg font-light tracking-tighter uppercase text-white whitespace-nowrap mt-0.5 md:mt-1">
+            Cardinal
+          </span>
+          <img 
+            src="/logo-removebg-preview.png" 
+            alt="Logo" 
+            className="h-6 sm:h-7 md:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+          />
+          <span className="font-heading text-[10px] sm:text-xs md:text-lg font-light tracking-tighter uppercase text-white whitespace-nowrap mt-0.5 md:mt-1">
+            Arthur
+          </span>
+        </Link>
+
+        {/* Right: Actions */}
+        <div className="flex items-center gap-0.5 sm:gap-1 md:gap-3 z-10">
+          <button className="p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group">
+            <Search className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
+          </button>
+
+          <Link to="/auth/login" className="block p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group">
+            <User className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
+          </Link>
+          
+          <div className="relative p-1.5 md:p-2 text-white/80 hover:text-white transition-colors cursor-pointer group" onClick={openCart}>
+            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
+            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-white text-black text-[8px] md:text-[9px] font-bold shadow-md pointer-events-none transition-transform group-hover:scale-110">
+              {items.length}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

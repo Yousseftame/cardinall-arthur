@@ -17,7 +17,7 @@ export default function NotFoundPage() {
       </div>
 
       <div className="relative z-10 flex flex-col items-center text-center max-w-6xl mx-auto">
-        <h1 className="font-heading text-4xl md:text-6xl lg:text-8xl xl:text-[100px] font-bold uppercase tracking-tight leading-[0.85] mb-12 whitespace-nowrap">
+        <h1 className="font-heading text-4xl md:text-6xl lg:text-8xl xl:text-[100px] uppercase leading-[0.85] mb-12 whitespace-nowrap font-light tracking-tighter">
           <DiaTextReveal 
             text="PAGE NOT FOUND" 
             textColor="#ffffff" 

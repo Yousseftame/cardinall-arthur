@@ -115,7 +115,7 @@ export default function MenuSidebar() {
                         animate="visible"
                         variants={linkVariants}
                       >
-                        <span className="text-xs uppercase tracking-[0.2em] text-[#6a6a6a] cursor-default" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                        <span className="text-xs uppercase tracking-[0.2em] text-[#6a6a6a] cursor-default" >
                           {link.label}
                         </span>
                       </motion.li>
@@ -135,7 +135,7 @@ export default function MenuSidebar() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs uppercase tracking-[0.2em] text-[#1a1a1a] hover:text-primary transition-colors"
-                        style={{ fontFamily: '"Outfit", sans-serif' }}
+                        
                         onClick={closeMenu}
                       >
                         {social.label}

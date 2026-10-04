@@ -128,7 +128,7 @@ export default function CantFindItPage() {
           
           {/* Left Side: Typography */}
           <div className="flex flex-col gap-10 z-10">
-            <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl xl:text-[100px] font-bold uppercase tracking-tight leading-[0.85]">
+            <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl xl:text-[100px] uppercase leading-[0.85] font-light tracking-tighter">
               <DiaTextReveal 
                 text="COMMUNITY" 
                 textColor="#ffffff" 
@@ -149,7 +149,7 @@ export default function CantFindItPage() {
             </h1>
             <p 
               className="text-xl md:text-2xl font-medium leading-relaxed max-w-lg text-white/70"
-              style={{ fontFamily: '"Outfit", sans-serif' }}
+              
             >
               Can't find your perfect scent? Share the notes you desire or the designer inspiration you're looking for, and let us craft it for you.
             </p>
@@ -171,7 +171,7 @@ export default function CantFindItPage() {
                     placeholder="Your Name*" 
                     required
                     className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg"
-                    style={{ fontFamily: '"Outfit", sans-serif' }}
+                    
                   />
                 </motion.div>
                 <motion.div variants={itemVariants} className="relative group">
@@ -180,7 +180,7 @@ export default function CantFindItPage() {
                     placeholder="Your Email*" 
                     required
                     className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg"
-                    style={{ fontFamily: '"Outfit", sans-serif' }}
+                    
                   />
                 </motion.div>
               </div>
@@ -191,7 +191,7 @@ export default function CantFindItPage() {
                   placeholder="Desired Notes (e.g. Vanilla, Bergamot, Oud)*" 
                   required
                   className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg"
-                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                  
                 />
               </motion.div>
 
@@ -200,7 +200,7 @@ export default function CantFindItPage() {
                   type="text" 
                   placeholder="Designer Inspiration (Optional)" 
                   className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg"
-                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                  
                 />
               </motion.div>
 
@@ -210,7 +210,7 @@ export default function CantFindItPage() {
                   required
                   rows={3}
                   className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg resize-y"
-                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                  
                 ></textarea>
               </motion.div>
 

@@ -44,7 +44,7 @@ export default function CartSidebar() {
           >
             {/* Ultra-Minimal Header */}
             <div className="flex items-center justify-between px-10 pt-10 pb-6">
-              <h2 className="font-heading text-2xl font-medium tracking-tight uppercase text-[#1a1a1a] flex items-center gap-4">
+              <h2 className="font-heading text-2xl uppercase text-[#1a1a1a] flex items-center gap-4 font-light tracking-tighter">
                 Cart
                 <span className="text-sm font-light tracking-normal text-[#1a1a1a]/50">
                   {items.length > 0 ? `(${items.length})` : ''}
@@ -77,7 +77,7 @@ export default function CartSidebar() {
                   <motion.p 
                     variants={itemVars}
                     className="text-[#6a6a6a] text-sm tracking-wide font-light leading-relaxed mb-12 max-w-[280px]"
-                    style={{ fontFamily: '"Outfit", sans-serif' }}
+                    
                   >
                     It appears you haven't added any pieces to your collection yet.
                   </motion.p>
@@ -116,7 +116,7 @@ export default function CartSidebar() {
                       <div className="flex-1 flex flex-col justify-between py-1">
                         <div>
                           <div className="flex justify-between items-start mb-2">
-                            <h3 className="font-heading text-lg font-medium tracking-tight uppercase text-[#1a1a1a]">
+                            <h3 className="font-heading text-lg uppercase text-[#1a1a1a] font-light tracking-tighter">
                               {item.name}
                             </h3>
                           </div>
@@ -124,7 +124,7 @@ export default function CartSidebar() {
                             Qty: {item.quantity}
                           </p>
                         </div>
-                        <p className="font-medium text-sm text-[#1a1a1a]" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                        <p className="font-medium text-sm text-[#1a1a1a]" >
                           {item.price} EGP
                         </p>
                       </div>
@@ -139,7 +139,7 @@ export default function CartSidebar() {
               <div className="p-10 bg-[#f8f7f3] border-t border-[#1a1a1a]/10">
                 <div className="flex items-center justify-between mb-8">
                   <span className="text-xs uppercase tracking-[0.2em] text-[#6a6a6a]">Subtotal</span>
-                  <span className="font-medium text-xl text-[#1a1a1a]" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                  <span className="font-medium text-xl text-[#1a1a1a]" >
                     {getCartTotal().toFixed(2)} EGP
                   </span>
                 </div>

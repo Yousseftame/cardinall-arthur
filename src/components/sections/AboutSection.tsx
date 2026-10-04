@@ -84,22 +84,24 @@ export default function AboutSection() {
       <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row gap-8 md:gap-12">
         
         {/* Left Side: Label */}
-        <div 
-          data-aos="fade-right" 
-          data-aos-duration="1000"
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1, ease: "easeOut" }}
           className="md:w-[200px] lg:w-[240px] flex-shrink-0"
         >
-          <div className="flex items-center gap-1.5 text-[24px] font-heading font-bold tracking-normal uppercase">
+          <div className="flex items-center gap-1.5 text-[24px] font-heading font-medium tracking-normal uppercase">
             <span className="text-[22px] leading-none mb-0.5">®</span>
             <span>ABOUT</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Side: Large Text */}
         <div className="flex-1">
           <p 
             ref={textRef}
-            className="text-[32px] leading-[1.15] font-heading font-bold uppercase tracking-normal flex flex-wrap"
+            className="text-[32px] leading-[1.15] font-serif font-light uppercase tracking-tighter flex flex-wrap"
           >
             {wordElements}
           </p>

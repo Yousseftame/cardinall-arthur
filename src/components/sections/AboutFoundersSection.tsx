@@ -14,7 +14,7 @@ export default function AboutFoundersSection() {
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-heading font-medium tracking-tighter uppercase">
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-heading uppercase font-light tracking-tighter">
             <DiaTextReveal 
               text="THE FOUNDERS" 
               textColor="#ffffff" 
@@ -34,8 +34,8 @@ export default function AboutFoundersSection() {
               />
             </div>
             <div className="flex justify-between items-center px-1">
-              <span className="font-bold text-lg md:text-[20px] tracking-tight text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>Daniel Carter</span>
-              <span className="text-white/60 text-xs md:text-sm font-light" style={{ fontFamily: "'Outfit', sans-serif" }}>Founder & CEO</span>
+              <span className="font-bold text-lg md:text-[20px] tracking-tight text-white" >Daniel Carter</span>
+              <span className="text-white/60 text-xs md:text-sm font-light" >Founder & CEO</span>
             </div>
           </div>
 
@@ -49,8 +49,8 @@ export default function AboutFoundersSection() {
               />
             </div>
             <div className="flex justify-between items-center px-1">
-              <span className="font-bold text-lg md:text-[20px] tracking-tight text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>Sophia Martinez</span>
-              <span className="text-white/60 text-xs md:text-sm font-light" style={{ fontFamily: "'Outfit', sans-serif" }}>Co-Founder & Chief Strategy Officer</span>
+              <span className="font-bold text-lg md:text-[20px] tracking-tight text-white" >Sophia Martinez</span>
+              <span className="text-white/60 text-xs md:text-sm font-light" >Co-Founder & Chief Strategy Officer</span>
             </div>
           </div>
         </div>

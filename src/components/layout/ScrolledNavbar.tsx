@@ -49,7 +49,7 @@ export default function ScrolledNavbar() {
 
           {/* Center: Minimal Typography Logo */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer" onClick={scrollToTop}>
-            <h1 className="font-heading text-lg md:text-xl font-medium tracking-[0.15em] uppercase text-[#1a1a1a]">
+            <h1 className="font-heading text-lg md:text-xl tracking-[0.15em] uppercase text-[#1a1a1a] font-light tracking-tighter">
               Cardinal Arthur
             </h1>
           </div>

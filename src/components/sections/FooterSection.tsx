@@ -49,7 +49,7 @@ export default function FooterSection() {
           <p className="text-gray-400 text-sm md:text-base font-light mb-4 md:mb-6">
             Reach out if you're ready to make something amazing together.
           </p>
-          <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold uppercase tracking-tight break-all w-full leading-none whitespace-nowrap overflow-hidden">
+          <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl uppercase break-all w-full leading-none whitespace-nowrap overflow-hidden font-light tracking-tighter">
             <DiaTextReveal 
               text="INFO@CARDINAL.COM" 
               textColor="#ffffff" 
@@ -74,7 +74,7 @@ export default function FooterSection() {
           <div className="lg:col-span-2 flex flex-col gap-3">
             {['FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'TWITTER'].map((social) => (
               <motion.a variants={itemVariants} href="#" key={social} className="flex items-center gap-1.5 group w-fit">
-                <span className="font-heading text-xl md:text-[22px] font-bold uppercase tracking-wide group-hover:text-primary transition-colors">
+                <span className="font-serif text-xl md:text-[22px] font-light uppercase tracking-tighter group-hover:text-primary transition-colors">
                   {social}
                 </span>
                 <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-primary" />
@@ -85,7 +85,7 @@ export default function FooterSection() {
           {/* Nav Links */}
           <div className="lg:col-span-2 lg:col-start-4 xl:col-start-5 flex flex-col gap-3">
             {['HOME', 'ABOUT', 'SERVICE', 'PROJECT'].map((link) => (
-              <motion.a variants={itemVariants} href={`#${link.toLowerCase()}`} key={link} className="font-heading text-xl md:text-[22px] font-bold uppercase tracking-wide hover:text-primary transition-colors w-fit">
+              <motion.a variants={itemVariants} href={`#${link.toLowerCase()}`} key={link} className="font-serif text-xl md:text-[22px] font-light uppercase tracking-tighter hover:text-primary transition-colors w-fit">
                 {link}
               </motion.a>
             ))}
@@ -96,7 +96,7 @@ export default function FooterSection() {
             <motion.p 
               variants={itemVariants}
               className="text-white text-sm leading-relaxed mb-10 max-w-[300px]"
-              style={{ fontFamily: '"Outfit", sans-serif' }}
+              
             >
               Sign up for our newsletter to get latest insights and updates
             </motion.p>
@@ -105,7 +105,7 @@ export default function FooterSection() {
                 type="email" 
                 placeholder="Enter email address" 
                 className="bg-transparent border-none focus:outline-none text-white placeholder-white w-full text-sm"
-                style={{ fontFamily: '"Outfit", sans-serif' }}
+                
                 required
               />
               <SpecularButton 

@@ -40,7 +40,7 @@ export default function AuthLayout() {
           <Link 
             to="/" 
             className="flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-white/50 hover:text-white transition-colors group"
-            style={{ fontFamily: '"Outfit", sans-serif' }}
+            
           >
             <span>Back to Store</span>
             <ArrowLeft className="w-4 h-4 rotate-180 transform group-hover:translate-x-1 transition-transform" />

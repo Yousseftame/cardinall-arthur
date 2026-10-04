@@ -35,7 +35,7 @@ export default function WorkProcessSection() {
       {/* Header Area */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 gap-12">
         <h2 
-          className="font-heading text-6xl md:text-8xl font-bold uppercase tracking-tight leading-[0.9] flex flex-col"
+          className="font-heading text-6xl md:text-8xl uppercase leading-[0.9] flex flex-col font-light tracking-tighter"
         >
           <DiaTextReveal 
             text="WORK" 
@@ -56,7 +56,7 @@ export default function WorkProcessSection() {
         </h2>
         <p 
           className="max-w-md text-[#999] text-base md:text-lg font-light leading-relaxed mb-2"
-          style={{ fontFamily: '"Outfit", sans-serif' }}
+          
         >
           See how our proven process transforms your brand with custom design solutions that deliver measurable impact from day one.
         </p>
@@ -79,8 +79,8 @@ export default function WorkProcessSection() {
               <span className="text-[#0a0a0a] font-heading font-bold text-xl tracking-tight">01</span>
             </div>
             <div className="mt-8">
-              <h3 className="font-heading text-2xl font-bold uppercase tracking-tight mb-4">RESEARCH & DEFINE</h3>
-              <p className="text-[#999] text-sm leading-relaxed font-light" style={{ fontFamily: '"Outfit", sans-serif' }}>
+              <h3 className="font-heading text-2xl uppercase mb-4 font-light tracking-tighter">RESEARCH & DEFINE</h3>
+              <p className="text-[#999] text-sm leading-relaxed font-light" >
                 We begin by understanding the problem, the users, and the business goals from start to finish.
               </p>
             </div>
@@ -104,8 +104,8 @@ export default function WorkProcessSection() {
               <span className="text-[#0a0a0a] font-heading font-bold text-xl tracking-tight">03</span>
             </div>
             <div className="mt-8">
-              <h3 className="font-heading text-2xl font-bold uppercase tracking-tight mb-4">TEST & IMPLEMENT</h3>
-              <p className="text-[#999] text-sm leading-relaxed font-light" style={{ fontFamily: '"Outfit", sans-serif' }}>
+              <h3 className="font-heading text-2xl uppercase mb-4 font-light tracking-tighter">TEST & IMPLEMENT</h3>
+              <p className="text-[#999] text-sm leading-relaxed font-light" >
                 Refining the final solution, testing usability, and handing off assets for development.
               </p>
             </div>
@@ -129,8 +129,8 @@ export default function WorkProcessSection() {
               <span className="text-[#0a0a0a] font-heading font-bold text-xl tracking-tight">02</span>
             </div>
             <div className="mt-8">
-              <h3 className="font-heading text-2xl font-bold uppercase tracking-tight mb-4">IDEATE & DESIGN</h3>
-              <p className="text-[#999] text-sm leading-relaxed font-light" style={{ fontFamily: '"Outfit", sans-serif' }}>
+              <h3 className="font-heading text-2xl uppercase mb-4 font-light tracking-tighter">IDEATE & DESIGN</h3>
+              <p className="text-[#999] text-sm leading-relaxed font-light" >
                 We craft clear, user-friendly flows and high-fidelity interfaces.
               </p>
             </div>

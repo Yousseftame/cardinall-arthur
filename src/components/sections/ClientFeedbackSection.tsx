@@ -58,7 +58,7 @@ export default function ClientFeedbackSection() {
     <section className="relative w-full bg-[#0a0a0a] text-white">
       {/* Sticky Title Background */}
       <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden z-0 pointer-events-none">
-        <h2 className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold uppercase tracking-tight leading-[0.85] text-center flex flex-col items-center justify-center">
+        <h2 className="font-heading text-5xl md:text-7xl lg:text-8xl uppercase leading-[0.85] text-center flex flex-col items-center justify-center font-light tracking-tighter">
           <span>CLIENT</span>
           <span>FEEDBACK</span>
         </h2>
@@ -82,7 +82,7 @@ export default function ClientFeedbackSection() {
                 </div>
                 
                 {/* Highlight Title */}
-                <h3 className="text-white text-lg md:text-xl font-bold leading-snug tracking-tighter mt-5">
+                <h3 className="text-white text-lg md:text-xl leading-snug mt-5 font-medium">
                   {feedback.title}
                 </h3>
                 

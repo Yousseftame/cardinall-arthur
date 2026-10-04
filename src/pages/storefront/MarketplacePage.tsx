@@ -185,7 +185,7 @@ export default function MarketplacePage() {
               {/* Main Typography */}
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center w-full px-4 transform -skew-x-[12deg] pointer-events-none">
                 <h1 
-                  className="font-heading font-black text-white uppercase text-5xl md:text-7xl lg:text-[84px] xl:text-[96px] leading-[0.85] tracking-tight flex flex-col items-center scale-x-105"
+                  className="font-heading text-white uppercase text-5xl md:text-7xl lg:text-[84px] xl:text-[96px] leading-[0.85] flex flex-col items-center scale-x-105 font-light tracking-tighter"
                   style={{ textShadow: "0 10px 20px rgba(0,0,0,0.6)" }}
                 >
                   {BANNERS[currentIndex].title.map((line, i) => (
@@ -211,7 +211,7 @@ export default function MarketplacePage() {
                 className="absolute bottom-10 md:bottom-12 left-0 right-0 z-10 px-4 flex justify-center pointer-events-none transform-gpu"
                 style={{ willChange: 'opacity, transform' }}
               >
-                <p className="text-white/80 font-light text-sm md:text-base lg:text-lg max-w-xl text-center drop-shadow-lg" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                <p className="text-white/80 font-light text-sm md:text-base lg:text-lg max-w-xl text-center drop-shadow-lg" >
                   {BANNERS[currentIndex].subtitle}
                 </p>
               </motion.div>
@@ -237,7 +237,7 @@ export default function MarketplacePage() {
       {/* 2. Products Section */}
       <section className="px-4 md:px-12 w-full max-w-[1920px] mx-auto">
         <div className="flex flex-col mb-6 mt-12 md:mt-16">
-          <h2 className="font-heading text-4xl md:text-5xl lg:text-[56px] font-light tracking-tighter uppercase mb-8">
+          <h2 className="font-heading text-4xl md:text-5xl lg:text-[56px] uppercase mb-8 font-light tracking-tighter">
             <DiaTextReveal 
               text="THE COLLECTION" 
               textColor="#ffffff" 
@@ -246,7 +246,7 @@ export default function MarketplacePage() {
           </h2>
           
           {/* Category Filter */}
-          <div className="flex items-center gap-6 md:gap-8 overflow-x-auto scrollbar-hide w-full" style={{ fontFamily: '"Outfit", sans-serif' }}>
+          <div className="flex items-center gap-6 md:gap-8 overflow-x-auto scrollbar-hide w-full" >
             {CATEGORIES.map((category) => (
               <button
                 key={category}
@@ -293,7 +293,7 @@ export default function MarketplacePage() {
                 <div className="absolute top-3 right-4 bg-[#0a0a0a] text-white w-16 h-16 md:w-[72px] md:h-[72px] rounded-full flex items-center justify-center z-10">
                   <span 
                     className="font-semibold text-[11px] md:text-[13px] tracking-wide text-center leading-tight whitespace-nowrap flex items-center gap-[3px]"
-                    style={{ fontFamily: '"Outfit", sans-serif' }}
+                    
                   >
                     <span>{product.price.replace('LE ', '')}</span>
                     <span>EGP</span>
@@ -304,14 +304,14 @@ export default function MarketplacePage() {
               {/* Text Content */}
               <div className="flex flex-col px-1 flex-grow">
                 <h3 
-                  className="font-medium text-lg md:text-xl text-white mb-1.5 group-hover:text-white/60 transition-colors line-clamp-2" 
-                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                  className="text-lg md:text-xl text-white mb-1.5 group-hover:text-white/60 transition-colors line-clamp-2 font-medium" 
+                  
                 >
                   {product.name}
                 </h3>
                 <p 
                   className="text-white/60 text-sm leading-relaxed line-clamp-3" 
-                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                  
                 >
                   {product.desc}
                 </p>

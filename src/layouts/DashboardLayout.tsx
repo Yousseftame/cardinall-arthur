@@ -16,27 +16,27 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <aside className="w-64 bg-[#111] border-r border-white/10 p-6 flex flex-col justify-between">
         <div>
-          <h2 className="text-xl font-medium tracking-widest uppercase mb-12" style={{ fontFamily: '"Outfit", sans-serif' }}>
+          <h2 className="text-xl uppercase mb-12 font-heading font-light tracking-tighter" >
             Admin Panel
           </h2>
           <nav className="flex flex-col gap-2">
-            <Link to="/admin" className="px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm text-white/70 hover:text-white" style={{ fontFamily: '"Outfit", sans-serif' }}>Dashboard</Link>
-            <Link to="/admin/products" className="px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm text-white/70 hover:text-white" style={{ fontFamily: '"Outfit", sans-serif' }}>Products</Link>
-            <Link to="/admin/orders" className="px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm text-white/70 hover:text-white" style={{ fontFamily: '"Outfit", sans-serif' }}>Orders</Link>
+            <Link to="/admin" className="px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm text-white/70 hover:text-white" >Dashboard</Link>
+            <Link to="/admin/products" className="px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm text-white/70 hover:text-white" >Products</Link>
+            <Link to="/admin/orders" className="px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm text-white/70 hover:text-white" >Orders</Link>
           </nav>
         </div>
 
         {/* Bottom Section: User Info & Logout */}
         <div>
           <div className="mb-4 px-4 text-center">
-            <p className="text-xs text-white/40 truncate font-light" style={{ fontFamily: '"Outfit", sans-serif' }}>
+            <p className="text-xs text-white/40 truncate font-light" >
               {user?.email}
             </p>
           </div>
           <button 
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 active:scale-[0.98] transition-all text-sm font-bold uppercase tracking-wider"
-            style={{ fontFamily: '"Outfit", sans-serif' }}
+            
           >
             <LogOut className="w-4 h-4" />
             Logout

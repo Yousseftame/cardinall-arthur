@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import HeroSection from "../../components/sections/HeroSection";
-import AboutSection from "../../components/sections/AboutSection";
 import ProductsSection from "../../components/sections/ProductsSection";
-import WorkProcessSection from "../../components/sections/WorkProcessSection";
 import ServicesSection from "../../components/sections/ServicesSection";
 import LatestProjectsSection from "../../components/sections/LatestProjectsSection";
 import ClientFeedbackSection from "../../components/sections/ClientFeedbackSection";
@@ -26,11 +24,9 @@ export default function HomePage() {
   return (
     <div>
       <HeroSection />
-      <AboutSection />
       <ProductsSection />
-      <WorkProcessSection />
-      <ServicesSection />
       <LatestProjectsSection />
+      <ServicesSection />
       <ClientFeedbackSection />
       <BreakSection />
       <LetsTalkSection />

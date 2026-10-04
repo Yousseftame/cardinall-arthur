@@ -54,12 +54,12 @@ function TimelineItem({ item, index: _index }: { item: typeof timelineData[0], i
           }}
         >
           <div className="flex justify-between items-end border-b border-white/20 pb-4 mb-6">
-            <h3 className="text-3xl md:text-4xl font-heading font-medium tracking-tighter">{item.title}</h3>
+            <h3 className="text-3xl md:text-4xl font-heading font-light tracking-tighter">{item.title}</h3>
             <span className="text-sm tracking-widest text-white/60 font-medium">{item.year}</span>
           </div>
           <p 
             className="text-white/60 text-[17px] leading-relaxed max-w-md font-light tracking-tight"
-            style={{ fontFamily: "'Outfit', sans-serif" }}
+            
           >
             {item.description}
           </p>
@@ -95,7 +95,7 @@ export default function AboutTimelineSection() {
         viewport={{ once: true, margin: "-20%" }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
       >
-        <h2 className="text-4xl md:text-7xl font-heading font-medium tracking-tighter uppercase">
+        <h2 className="text-4xl md:text-7xl font-heading uppercase font-light tracking-tighter">
           <DiaTextReveal 
             text="OUR JOURNEY IN CRAFT." 
             textColor="#ffffff" 

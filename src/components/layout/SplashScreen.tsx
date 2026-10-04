@@ -58,7 +58,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
         >
           <div className="flex items-center gap-4 sm:gap-6 md:gap-8 translate-y-1 pb-[6px]">
             <h1 
-              className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-light tracking-tighter uppercase scale-y-[1.1] origin-bottom"
+              className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading uppercase scale-y-[1.1] origin-bottom font-light tracking-tighter"
             >
               CARDINAL
             </h1>
@@ -68,7 +68,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
               className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto object-contain opacity-90"
             />
             <h1 
-              className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-light tracking-tighter uppercase scale-y-[1.1] origin-bottom"
+              className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading uppercase scale-y-[1.1] origin-bottom font-light tracking-tighter"
             >
               ARTHUR
             </h1>

@@ -123,7 +123,7 @@ export default function HeroSection() {
         }}
       >
         {/* Only fade in the plus icon after the initial frame shrinking is fully completed */}
-        <div className={`transition-opacity duration-500 ease-out ${isLoaded ? 'opacity-100 delay-[1500ms]' : 'opacity-0'}`}>
+        <div className="hidden">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-white/80 mix-blend-overlay">
             <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
@@ -131,17 +131,23 @@ export default function HeroSection() {
       </div>
 
       {/* Floating Text Labels */}
-      <div className={`hidden lg:flex absolute w-full px-12 top-[35%] -translate-y-1/2 left-0 z-40 pointer-events-none text-white text-[10px] md:text-xs tracking-[0.2em] font-semibold uppercase justify-between items-center transition-opacity duration-[1500ms] delay-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
-         <div>UI/UX DESIGNER</div>
-         <div>BRAND DESIGNER</div>
-         <div>ILLUSTRATOR</div>
-         <div>LA, CALIFORNIA</div>
+      <div className={`absolute w-full h-full inset-0 px-6 pt-24 pb-28 md:py-0 md:px-12 md:top-[35%] md:h-auto md:-translate-y-1/2 left-0 z-40 pointer-events-none text-white text-[9px] md:text-xs tracking-[0.15em] md:tracking-[0.2em] font-semibold uppercase flex flex-col md:flex-row justify-between items-start md:items-center transition-opacity duration-[1500ms] delay-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+         <div className="flex w-full justify-between md:w-auto md:justify-start">
+           <div>UI/UX DESIGNER</div>
+           <div className="md:hidden">BRAND DESIGNER</div>
+         </div>
+         <div className="hidden md:block">BRAND DESIGNER</div>
+         <div className="hidden md:block">ILLUSTRATOR</div>
+         <div className="flex w-full justify-between md:w-auto md:justify-start mt-auto md:mt-0">
+           <div className="md:hidden">ILLUSTRATOR</div>
+           <div>LA, CALIFORNIA</div>
+         </div>
       </div>
 
       {/* Large Bottom Text */}
-      <div className="absolute bottom-0 left-0 w-full text-center z-50 pointer-events-none translate-y-[28%] md:translate-y-[22%] flex justify-center">
+      <div className="absolute bottom-[18%] md:bottom-0 left-0 w-full text-center z-30 pointer-events-none flex justify-center px-4 md:translate-y-[4%]">
         <h1 
-          className="font-heading text-[12vw] leading-none tracking-tighter font-light uppercase whitespace-nowrap opacity-95 select-none w-full text-center scale-y-[1.35] origin-bottom pt-4"
+          className="font-heading text-[9vw] sm:text-[9vw] md:text-[8vw] lg:text-[7.5vw] leading-[0.85] uppercase whitespace-nowrap opacity-90 select-none w-full text-center scale-y-[1.05] md:scale-y-[1.15] origin-bottom font-light tracking-wide"
         >
           {isLoaded && (
             <DiaTextReveal 

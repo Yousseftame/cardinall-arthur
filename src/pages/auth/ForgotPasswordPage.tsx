@@ -95,21 +95,21 @@ export default function ForgotPasswordPage() {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="w-full max-w-md mx-auto"
     >
-      <Link to="/auth/login" className="inline-flex items-center gap-2 text-white/50 hover:text-white text-sm tracking-widest uppercase font-semibold mb-8 group transition-colors" style={{ fontFamily: '"Outfit", sans-serif' }}>
+      <Link to="/auth/login" className="inline-flex items-center gap-2 text-white/50 hover:text-white text-sm tracking-widest uppercase font-semibold mb-8 group transition-colors" >
         <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
         Back to Login
       </Link>
       
-      <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-white mb-2" style={{ fontFamily: '"Outfit", sans-serif' }}>
+      <h1 className="text-4xl md:text-5xl text-white mb-2 font-heading font-light tracking-tighter" >
         Reset Password
       </h1>
-      <p className="text-white/50 text-sm md:text-base mb-12 font-light leading-relaxed" style={{ fontFamily: '"Outfit", sans-serif' }}>
+      <p className="text-white/50 text-sm md:text-base mb-12 font-light leading-relaxed" >
         Enter your email address and we'll send you a link to reset your password.
       </p>
 
       <form className="space-y-8" onSubmit={handleReset}>
         <div>
-          <label className="block text-white/70 text-xs font-semibold uppercase tracking-widest mb-3" style={{ fontFamily: '"Outfit", sans-serif' }}>
+          <label className="block text-white/70 text-xs font-semibold uppercase tracking-widest mb-3" >
             Email Address
           </label>
           <input 
@@ -119,7 +119,7 @@ export default function ForgotPasswordPage() {
             disabled={countdown > 0}
             placeholder="you@example.com"
             className="w-full bg-transparent border-b border-white/[0.15] pb-3 text-white text-lg placeholder:text-white/20 focus:outline-none focus:border-white transition-colors disabled:opacity-50"
-            style={{ fontFamily: '"Outfit", sans-serif' }}
+            
           />
         </div>
 
@@ -132,7 +132,7 @@ export default function ForgotPasswordPage() {
               ? 'bg-white/[0.08] text-white/60 cursor-not-allowed shadow-none' 
               : 'bg-white text-black hover:bg-white/90 active:scale-[0.98]'
           }`}
-          style={{ fontFamily: '"Outfit", sans-serif' }}
+          
         >
           {/* Progress Line running across the bottom */}
           {countdown > 0 && (
@@ -163,7 +163,7 @@ export default function ForgotPasswordPage() {
             <Link 
               to="/auth/login" 
               className="w-full py-4 rounded-xl font-bold uppercase tracking-wider text-sm transition-all border border-white/10 hover:border-white/30 hover:bg-white/5 flex items-center justify-center text-white"
-              style={{ fontFamily: '"Outfit", sans-serif' }}
+              
             >
               Return to Login
             </Link>

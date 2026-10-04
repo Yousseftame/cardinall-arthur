@@ -66,7 +66,7 @@ export default function AboutVisionSection() {
         <div className="flex-1">
           <p 
             ref={textRef}
-            className="text-[32px] leading-[1.15] font-heading font-bold uppercase tracking-normal flex flex-wrap"
+            className="text-[32px] leading-[1.15] font-serif font-light uppercase tracking-tighter flex flex-wrap"
           >
             {renderText(fullText)}
           </p>

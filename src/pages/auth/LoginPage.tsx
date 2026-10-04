@@ -52,16 +52,16 @@ export default function LoginPage() {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="w-full max-w-md mx-auto"
     >
-      <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-white mb-2" style={{ fontFamily: '"Outfit", sans-serif' }}>
+      <h1 className="text-4xl md:text-5xl text-white mb-2 font-heading font-light tracking-tighter" >
         Welcome Back
       </h1>
-      <p className="text-white/50 text-sm md:text-base mb-12 font-light leading-relaxed" style={{ fontFamily: '"Outfit", sans-serif' }}>
+      <p className="text-white/50 text-sm md:text-base mb-12 font-light leading-relaxed" >
         Enter your details to access your account.
       </p>
 
       <form className="space-y-8" onSubmit={handleLogin}>
         <div>
-          <label className="block text-white/70 text-xs font-semibold uppercase tracking-widest mb-3" style={{ fontFamily: '"Outfit", sans-serif' }}>
+          <label className="block text-white/70 text-xs font-semibold uppercase tracking-widest mb-3" >
             Email Address
           </label>
           <input 
@@ -70,12 +70,12 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             className="w-full bg-transparent border-b border-white/[0.15] pb-3 text-white text-lg placeholder:text-white/20 focus:outline-none focus:border-white transition-colors"
-            style={{ fontFamily: '"Outfit", sans-serif' }}
+            
           />
         </div>
 
         <div className="relative">
-          <label className="block text-white/70 text-xs font-semibold uppercase tracking-widest mb-3" style={{ fontFamily: '"Outfit", sans-serif' }}>
+          <label className="block text-white/70 text-xs font-semibold uppercase tracking-widest mb-3" >
             Password
           </label>
           <div className="relative">
@@ -85,7 +85,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="w-full bg-transparent border-b border-white/[0.15] pb-3 pr-10 text-white text-lg placeholder:text-white/20 focus:outline-none focus:border-white transition-colors"
-              style={{ fontFamily: '"Outfit", sans-serif' }}
+              
             />
             <button
               type="button"
@@ -99,7 +99,7 @@ export default function LoginPage() {
         </div>
 
         <div className="flex items-center justify-end mt-4">
-          <Link to="/auth/forgot-password" className="text-white/50 text-sm hover:text-white transition-colors underline underline-offset-4" style={{ fontFamily: '"Outfit", sans-serif' }}>
+          <Link to="/auth/forgot-password" className="text-white/50 text-sm hover:text-white transition-colors underline underline-offset-4" >
             Forgot Password?
           </Link>
         </div>
@@ -108,7 +108,7 @@ export default function LoginPage() {
           type="submit"
           disabled={isLoading}
           className="w-full mt-8 bg-white text-black py-4 rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-white/90 active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
-          style={{ fontFamily: '"Outfit", sans-serif' }}
+          
         >
           {isLoading ? (
             <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />

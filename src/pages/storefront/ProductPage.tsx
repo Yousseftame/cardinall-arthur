@@ -72,39 +72,41 @@ export default function ProductPage() {
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
         
         {/* Left: Image Gallery */}
-        <div className="relative w-full aspect-square bg-white rounded-[2rem] flex items-center justify-center overflow-hidden group">
+        <div className="relative w-full min-h-[400px] md:min-h-[600px] bg-white rounded-[2rem] flex flex-col items-center justify-center p-8 md:p-12 overflow-hidden group">
           {/* Main Image */}
-          <AnimatePresence initial={false} custom={direction}>
-            <motion.img 
-              key={activeImage}
-              src={gallery[activeImage]} 
-              alt={product.name}
-              custom={direction}
-              variants={imageVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.2}
-              onDragEnd={(_e, { offset, velocity }) => {
-                const swipe = swipePower(offset.x, velocity.x);
-                if (swipe < -swipeConfidenceThreshold) {
-                  paginate(1);
-                } else if (swipe > swipeConfidenceThreshold) {
-                  paginate(-1);
-                } else {
-                  if (offset.x < -50) paginate(1);
-                  else if (offset.x > 50) paginate(-1);
-                }
-              }}
-              className="absolute inset-0 w-full h-full object-contain p-8 md:p-12 cursor-grab active:cursor-grabbing"
-            />
-          </AnimatePresence>
+          <div className="w-full aspect-square md:h-full flex items-center justify-center relative mb-8 overflow-hidden">
+            <AnimatePresence initial={false} custom={direction}>
+              <motion.img 
+                key={activeImage}
+                src={gallery[activeImage]} 
+                alt={product.name}
+                custom={direction}
+                variants={imageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={(_e, { offset, velocity }) => {
+                  const swipe = swipePower(offset.x, velocity.x);
+                  if (swipe < -swipeConfidenceThreshold) {
+                    paginate(1);
+                  } else if (swipe > swipeConfidenceThreshold) {
+                    paginate(-1);
+                  } else {
+                    if (offset.x < -50) paginate(1);
+                    else if (offset.x > 50) paginate(-1);
+                  }
+                }}
+                className="absolute inset-0 w-full h-full object-contain cursor-grab active:cursor-grabbing"
+              />
+            </AnimatePresence>
+          </div>
           
-          {/* Bottom Left Thumbnails */}
-          <div className="absolute bottom-6 left-6 flex gap-2 z-10 bg-[#0a0a0a] p-1.5 rounded-xl">
+          {/* Thumbnails */}
+          <div className="flex gap-4 z-10 flex-wrap justify-center">
             {gallery.map((img, idx) => (
               <button 
                 key={idx}
@@ -112,27 +114,11 @@ export default function ProductPage() {
                   setDirection(idx > activeImage ? 1 : -1);
                   setActiveImage(idx);
                 }}
-                className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-colors bg-white ${activeImage === idx ? 'border-white' : 'border-transparent hover:border-white/50'}`}
+                className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl overflow-hidden border-[1.5px] md:border-2 transition-colors shrink-0 ${activeImage === idx ? 'border-[#0a0a0a]' : 'border-transparent hover:border-[#0a0a0a]/30'}`}
               >
                 <img src={img} alt="Thumbnail" className="w-full h-full object-contain p-1" />
               </button>
             ))}
-          </div>
-
-          {/* Bottom Right Arrows */}
-          <div className="absolute bottom-6 right-6 flex gap-2 z-10 bg-[#0a0a0a] p-1.5 rounded-full">
-            <button 
-              onClick={() => paginate(-1)}
-              className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-white"
-            >
-              <ArrowLeft className="w-6 h-6 stroke-[2.5]" />
-            </button>
-            <button 
-              onClick={() => paginate(1)}
-              className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-white"
-            >
-              <ArrowRight className="w-6 h-6 stroke-[2.5]" />
-            </button>
           </div>
         </div>
 
@@ -141,15 +127,15 @@ export default function ProductPage() {
           <Link 
             to="/marketplace" 
             className="inline-flex items-center gap-4 text-[13px] font-semibold uppercase tracking-[0.1em] text-white hover:opacity-50 transition-opacity mb-8 group" 
-            style={{ fontFamily: '"Outfit", sans-serif' }}
+            
           >
             <ArrowLeft className="w-5 h-5 stroke-[2.5] transition-transform group-hover:-translate-x-1" />
             BACK TO OVERVIEW
           </Link>
           
           <h1 
-            className="text-[48px] md:text-[64px] leading-[1.05] font-semibold text-white mb-6 tracking-tight"
-            style={{ fontFamily: '"Outfit", sans-serif' }}
+            className="text-[48px] md:text-[64px] leading-[1.05] text-white mb-6 font-medium"
+            
           >
             <DiaTextReveal
               text={product.name}
@@ -161,14 +147,14 @@ export default function ProductPage() {
 
           <div 
             className="text-3xl md:text-[40px] font-semibold text-white mb-10 tracking-tight"
-            style={{ fontFamily: '"Outfit", sans-serif' }}
+            
           >
-            {product.price.replace('LE ', '')} EGP
+            {product.price}
           </div>
 
           <p 
             className="text-white/70 text-lg md:text-xl leading-relaxed mb-12 max-w-xl font-medium"
-            style={{ fontFamily: '"Outfit", sans-serif' }}
+            
           >
             {product.desc}
           </p>
@@ -179,7 +165,7 @@ export default function ProductPage() {
               onClick={() => setIsShippingOpen(!isShippingOpen)}
               className="w-full flex items-center justify-between py-4 text-white"
             >
-              <span className="font-bold uppercase tracking-wider text-lg" style={{ fontFamily: '"Outfit", sans-serif' }}>
+              <span className="font-bold uppercase tracking-wider text-lg" >
                 SHIPPING & RETURNS
               </span>
               <div className="relative w-4 h-4 flex items-center justify-center">
@@ -207,7 +193,7 @@ export default function ProductPage() {
                     transition={{ duration: 0.3, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
                     className="pb-6 pt-2"
                   >
-                    <div className="text-white/60 text-sm leading-relaxed" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                    <div className="text-white/60 text-sm leading-relaxed" >
                       Free standard shipping on all orders over 5,000 EGP. Returns accepted within 14 days of delivery. Custom items are final sale.
                     </div>
                   </motion.div>
@@ -227,7 +213,7 @@ export default function ProductPage() {
               </button>
               <span 
                 className="text-white text-2xl font-medium w-4 text-center select-none"
-                style={{ fontFamily: '"Outfit", sans-serif' }}
+                
               >
                 {quantity}
               </span>
@@ -242,7 +228,7 @@ export default function ProductPage() {
             <motion.button 
               onClick={handleAddToCart} 
               className="w-full sm:flex-1 bg-white text-black py-4 px-8 rounded-xl font-bold uppercase tracking-wider text-xl relative overflow-hidden"
-              style={{ fontFamily: '"Outfit", sans-serif' }}
+              
               whileHover={{ 
                 scale: 1.02,
                 boxShadow: '0 12px 32px -8px rgba(0,0,0,0.45)'
@@ -272,21 +258,23 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [cardW, setCardW] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(3);
   const isDragging = React.useRef(false);
   const didDrag = React.useRef(false); // stays true through the post-drag click
   const autoplayPauseRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const clickBlockRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const GAP = 12;
-  const VISIBLE = 3;
-  const maxIdx = Math.max(0, related.length - VISIBLE);
+  const maxIdx = Math.max(0, related.length - visibleCount);
 
   // Measure container to compute exact card width
   React.useEffect(() => {
     const measure = () => {
       if (containerRef.current) {
+        const v = window.innerWidth < 768 ? 1 : (window.innerWidth < 1024 ? 2 : 3);
+        setVisibleCount(v);
         const total = containerRef.current.offsetWidth;
-        setCardW((total - GAP * (VISIBLE - 1)) / VISIBLE);
+        setCardW((total - GAP * (v - 1)) / v);
       }
     };
     measure();
@@ -329,10 +317,9 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
   return (
     <section className="mt-48 pb-24 max-w-[1400px] mx-auto px-4 md:px-12">
       {/* Header */}
-      <div className="flex items-center justify-between mb-10">
+      <div className="flex items-center justify-between mb-10 gap-4">
         <h2
-          className="text-4xl md:text-5xl font-semibold text-white tracking-tight"
-          style={{ fontFamily: '"Outfit", sans-serif' }}
+          className="text-4xl md:text-5xl text-white font-medium"
         >
           <DiaTextReveal
             text="You may also like"
@@ -343,8 +330,7 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
         </h2>
         <Link
           to="/marketplace"
-          className="inline-flex items-center gap-2 bg-white text-black text-sm font-bold uppercase tracking-widest px-6 py-3 rounded-xl hover:bg-white/90 transition-colors"
-          style={{ fontFamily: '"Outfit", sans-serif' }}
+          className="shrink-0 whitespace-nowrap inline-flex items-center gap-2 bg-white text-black text-xs md:text-sm font-bold uppercase tracking-widest px-5 py-3 rounded-xl hover:bg-white/90 transition-colors"
         >
           VIEW ALL
         </Link>
@@ -355,7 +341,7 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
 
         {/* Left Arrow — outside the track, floating left */}
         <div
-          className="absolute left-0 z-10"
+          className="absolute left-0 z-10 hidden md:block"
           style={{ top: cardW > 0 ? cardW * 0.6 : '38%', transform: 'translateX(calc(-100% - 8px)) translateY(-50%)' }}
         >
           <div className="bg-[#0a0a0a] p-1.5 rounded-full">
@@ -418,26 +404,23 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
                         className="absolute inset-0 w-full h-full object-contain p-6 md:p-8 opacity-0 transition-opacity duration-500 group-hover/image:opacity-100 pointer-events-none"
                       />
                       {/* Price Badge */}
-                      <div className="absolute top-3 right-4 bg-[#0a0a0a] text-white w-16 h-16 md:w-[72px] md:h-[72px] rounded-full flex items-center justify-center z-10">
-                        <span
-                          className="font-semibold text-[11px] md:text-[13px] tracking-wide text-center leading-tight whitespace-nowrap flex items-center gap-[3px]"
-                          style={{ fontFamily: '"Outfit", sans-serif' }}
-                        >
-                          <span>{p.price.replace('LE ', '')}</span>
-                          <span>EGP</span>
+                      <div className="absolute top-4 right-4 md:top-3 md:right-4 bg-[#0a0a0a] text-white w-16 h-16 md:w-[72px] md:h-[72px] rounded-full flex items-center justify-center z-10 shadow-lg">
+                        <span className="font-semibold text-[13px] tracking-wide text-center leading-none flex flex-col items-center justify-center gap-0.5">
+                          <span>{p.price.replace(' EGP', '')}</span>
+                          <span className="text-[9px] text-white/70">EGP</span>
                         </span>
                       </div>
                     </div>
                     {/* Name + Desc */}
                     <h3
-                      className="font-semibold text-2xl text-white group-hover:text-white/50 transition-colors mb-1.5"
-                      style={{ fontFamily: '"Outfit", sans-serif' }}
+                      className="text-2xl text-white group-hover:text-white/50 transition-colors mb-1.5 font-medium"
+                      
                     >
                       {p.name}
                     </h3>
                     <p
                       className="text-white/60 text-sm leading-relaxed"
-                      style={{ fontFamily: '"Outfit", sans-serif' }}
+                      
                     >
                       {p.desc}
                     </p>
@@ -450,7 +433,7 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
 
         {/* Right Arrow — outside the track, floating right */}
         <div
-          className="absolute right-0 z-10"
+          className="absolute right-0 z-10 hidden md:block"
           style={{ top: cardW > 0 ? cardW * 0.6 : '38%', transform: 'translateX(calc(100% + 8px)) translateY(-50%)' }}
         >
           <div className="bg-[#0a0a0a] p-1.5 rounded-full">
@@ -463,10 +446,7 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
             </button>
           </div>
         </div>
-
       </div>
     </section>
   );
 }
-
-

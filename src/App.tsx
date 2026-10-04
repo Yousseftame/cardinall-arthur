@@ -30,7 +30,6 @@ function App() {
               background: 'rgba(10, 10, 10, 0.85)',
               backdropFilter: 'blur(12px)',
               color: '#fff',
-              fontFamily: '"Outfit", sans-serif',
               borderRadius: '100px',
               border: '1px solid rgba(255,255,255,0.08)',
               padding: '14px 24px',

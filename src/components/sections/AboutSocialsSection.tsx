@@ -16,14 +16,14 @@ export default function AboutSocialsSection() {
     <section className="w-full bg-black text-white py-24 md:py-32 overflow-hidden flex flex-col items-center">
       <div className="text-center mb-16 md:mb-24 px-4 w-full flex flex-col items-center">
         <h2 
-          className="text-4xl md:text-5xl lg:text-[64px] mb-6 font-light tracking-tight"
-          style={{ fontFamily: "'Outfit', sans-serif" }}
+          className="text-4xl md:text-5xl lg:text-[64px] mb-6 font-heading font-light tracking-tighter"
+          
         >
           On Socials
         </h2>
         <p 
           className="text-white/60 text-[15px] md:text-[17px] leading-relaxed font-light text-center"
-          style={{ fontFamily: "'Outfit', sans-serif" }}
+          
         >
           A look inside our process, behind-the-scenes stories, material<br className="hidden md:block" /> studies, and glimpses of what inspires us daily.
         </p>

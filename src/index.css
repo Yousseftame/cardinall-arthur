@@ -6,7 +6,8 @@
 
 @theme inline {
     --font-heading: 'Clash Display', Arial, sans-serif;
-    --font-sans: 'Geist Mono', Arial, sans-serif;
+    --font-sans: 'Outfit', sans-serif;
+    --font-serif: 'Helvetica Neue', Helvetica, system-ui, -apple-system, sans-serif;
     
     /* Brand Colors */
     --color-caramel: #B28558;
@@ -131,4 +132,7 @@
   html {
     @apply font-sans;
     }
+  p, .desc {
+    @apply font-serif;
+  }
 }

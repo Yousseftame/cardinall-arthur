@@ -96,7 +96,7 @@ export default function ServicesSection() {
 
       {/* Intro Header */}
       <div className="max-w-[900px] mx-auto flex flex-col items-center justify-center text-center gap-10 px-6 md:px-12">
-        <div className="flex items-center gap-2 text-[18px] md:text-[22px] font-medium tracking-wide text-white" style={{ fontFamily: '"Outfit", sans-serif' }}>
+        <div className="flex items-center gap-2 text-[18px] md:text-[22px] font-heading font-light tracking-tighter uppercase text-white" >
           <div className="relative mt-[2px] flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
@@ -105,7 +105,7 @@ export default function ServicesSection() {
         </div>
         <p 
           ref={textRef}
-          className="text-[32px] md:text-[32px] leading-[1.15] font-heading font-bold uppercase tracking-normal flex flex-wrap justify-center"
+          className="text-[32px] md:text-[32px] leading-[1.15] font-serif font-light uppercase tracking-tighter flex flex-wrap justify-center"
         >
           {wordElements}
         </p>
@@ -126,7 +126,7 @@ export default function ServicesSection() {
             <div className="w-full mx-auto px-6 md:px-12 lg:px-16">
               {/* Card Header (Title & Number) */}
               <div className="flex justify-between items-start pb-6 md:pb-10 mb-8 md:mb-12">
-                <h3 className="text-4xl md:text-7xl font-heading font-bold uppercase tracking-tight w-3/4 leading-[0.9]">
+                <h3 className="text-4xl md:text-7xl font-heading uppercase w-3/4 leading-[0.9] font-light tracking-tighter">
                   {service.title}
                 </h3>
                 <span className="text-2xl md:text-5xl font-heading font-bold text-white/90">
@@ -149,7 +149,7 @@ export default function ServicesSection() {
                 <div className="w-full md:max-w-[450px] lg:max-w-[600px] flex flex-col justify-center">
                   <p 
                     className="text-[#aaa] text-lg md:text-xl font-light leading-relaxed mb-10" 
-                    style={{ fontFamily: '"Outfit", sans-serif' }}
+                    
                   >
                     {service.desc}
                   </p>

@@ -42,8 +42,8 @@ export default function FAQSection() {
           <div className="hidden md:block md:w-[35%] lg:w-[40%] shrink-0"></div>
           <div className="flex-grow">
             <h2 
-              className="text-4xl md:text-5xl lg:text-[56px] font-medium tracking-tight"
-              style={{ fontFamily: '"Outfit", sans-serif' }}
+              className="text-4xl md:text-5xl lg:text-[56px] font-heading font-light tracking-tighter"
+              
             >
               Frequently Asked Questions
             </h2>
@@ -85,7 +85,7 @@ export default function FAQSection() {
                 <div className="flex flex-col flex-grow justify-center md:max-w-2xl">
                   <h3 
                     className={`text-xl md:text-[22px] font-medium tracking-wide transition-colors duration-500 flex items-center min-h-[48px] ${isOpen ? 'text-white' : 'text-white/90 group-hover:text-white'}`}
-                    style={{ fontFamily: '"Outfit", sans-serif' }}
+                    
                   >
                     {faq.question}
                   </h3>
@@ -108,7 +108,7 @@ export default function FAQSection() {
                         >
                           <p 
                             className="text-white/50 text-sm md:text-base leading-relaxed font-light"
-                            style={{ fontFamily: '"Outfit", sans-serif' }}
+                            
                           >
                             {faq.answer}
                           </p>

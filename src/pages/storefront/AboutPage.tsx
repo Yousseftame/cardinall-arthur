@@ -1,8 +1,10 @@
 import { useRef } from 'react';
 import { motion, type Variants, useScroll, useTransform } from 'framer-motion';
 import aboutImg from '../../assets/aboutpage1.webp';
+import AboutSection from '../../components/sections/AboutSection';
 import AboutPhilosophySection from '../../components/sections/AboutPhilosophySection';
 import TrustedPartnersSection from '../../components/sections/TrustedPartnersSection';
+import WorkProcessSection from '../../components/sections/WorkProcessSection';
 import AboutTimelineSection from '../../components/sections/AboutTimelineSection';
 import AboutVisionSection from '../../components/sections/AboutVisionSection';
 import AboutFoundersSection from '../../components/sections/AboutFoundersSection';
@@ -110,11 +112,13 @@ export default function AboutPage() {
         </div>
       </div>
 
+      <AboutSection />
       <AboutPhilosophySection />
+      <WorkProcessSection />
       <AboutTimelineSection />
       <AboutVisionSection />
       <TrustedPartnersSection />
-      <AboutFoundersSection />
+      {/* <AboutFoundersSection /> */}
       <AboutSocialsSection />
       <FAQSection />
     </>

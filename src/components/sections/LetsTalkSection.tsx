@@ -52,7 +52,7 @@ export default function LetsTalkSection() {
         {/* Left Column */}
         <div className="flex flex-col justify-between">
           <div className="flex flex-col gap-16 md:gap-24">
-            <h2 className="font-heading text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold uppercase tracking-normal leading-[0.85] whitespace-nowrap">
+            <h2 className="font-heading text-4xl md:text-6xl lg:text-7xl xl:text-8xl uppercase leading-[0.85] whitespace-nowrap font-light tracking-tighter">
               <DiaTextReveal 
                 text="LET'S TALK" 
                 textColor="#ffffff" 
@@ -64,8 +64,8 @@ export default function LetsTalkSection() {
             </h2>
             
             <p 
-              className="text-xl md:text-2xl lg:text-[22px] font-bold uppercase leading-snug tracking-normal max-w-lg"
-              style={{ fontFamily: '"Outfit", sans-serif' }}
+              className="text-xl md:text-2xl lg:text-[22px] font-serif font-light uppercase leading-snug tracking-tighter max-w-lg"
+              
             >
               HAVE AN IDEA IN MIND? LET'S CONNECT AND EXPLORE HOW WE CAN HELP BRING IT TO LIFE.
             </p>
@@ -143,15 +143,15 @@ export default function LetsTalkSection() {
         
       </div>
 
-      {/* Infinite Scroll Velocity Section */}
-      <div className="mt-32 md:mt-48 w-full flex flex-col gap-6 md:gap-10">
+      {/* Infinite Scroll Velocity Section - Hidden on Home Page */}
+      {/* <div className="mt-32 md:mt-48 w-full flex flex-col gap-6 md:gap-10">
         <ScrollVelocity
           texts={[Row1, Row2]}
           velocity={60}
           className="font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold uppercase tracking-tight flex items-center"
           parallaxClassName="py-2 overflow-hidden flex items-center"
         />
-      </div>
+      </div> */}
     </section>
   );
 }
