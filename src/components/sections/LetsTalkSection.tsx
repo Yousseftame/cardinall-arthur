@@ -16,13 +16,6 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
-const LogoSeparator = () => (
-  <img 
-    src="/logo-removebg-preview.png" 
-    alt="Logo" 
-    className="h-8 md:h-12 lg:h-16 w-auto object-contain mx-6 md:mx-10 flex-shrink-0 opacity-80" 
-  />
-);
 
 
 export default function LetsTalkSection() {

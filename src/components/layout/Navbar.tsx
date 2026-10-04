@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { ShoppingCart, User, Search } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
@@ -14,7 +14,7 @@ export default function Navbar() {
   const isSplashVisible = useSplashStore(state => state.isSplashVisible);
   
   const location = useLocation();
-  const navigate = useNavigate();
+
   
   useEffect(() => {
     if (!isSplashVisible) {
