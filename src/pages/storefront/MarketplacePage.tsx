@@ -53,6 +53,7 @@ import { useNavigate } from 'react-router-dom';
 import { PRODUCTS } from '../../data/products';
 import FAQSection from '../../components/sections/FAQSection';
 import { Eye, ShoppingCart, X } from 'lucide-react';
+import PulseHeart from '../../components/PulseHeart';
 import { useCartStore } from '../../store/cartStore';
 
 const swipeConfidenceThreshold = 10000;
@@ -472,6 +473,15 @@ export default function MarketplacePage() {
                     >
                       <ShoppingCart strokeWidth={1.5} className="w-5 h-5 md:w-[22px] md:h-[22px]" />
                     </button>
+                    <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center -m-2">
+                      <PulseHeart 
+                        showCount={false} 
+                        size={22} 
+                        pillColor="transparent" 
+                        idleColor="rgba(26,26,26,0.7)" 
+                        likedColor="#ff4d6d" 
+                      />
+                    </div>
                   </div>
                 </div>
                 

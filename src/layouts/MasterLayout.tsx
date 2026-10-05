@@ -7,7 +7,9 @@ import 'lenis/dist/lenis.css'; // Modern lenis provides default styles
 import Navbar from '../components/layout/Navbar';
 import CartSidebar from '../components/layout/CartSidebar';
 import MenuSidebar from '../components/layout/MenuSidebar';
+import SearchOverlay from '../components/layout/SearchOverlay';
 import SplashScreen from '../components/layout/SplashScreen';
+import WelcomeModal from '../components/layout/WelcomeModal';
 import FooterSection from '../components/sections/FooterSection';
 
 export default function MasterLayout() {
@@ -65,7 +67,8 @@ export default function MasterLayout() {
         <Navbar />
       <CartSidebar />
       <MenuSidebar />
-      
+      <SearchOverlay />
+      <WelcomeModal />
       
       <main className="flex-grow">
         {/* Outlet renders the matched child route component */}

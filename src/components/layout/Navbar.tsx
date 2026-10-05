@@ -1,8 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { ShoppingCart, User, Search } from 'lucide-react';
+import { ShoppingCart, Heart, Search } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
 import { useMenuStore } from '../../store/menuStore';
+import { useSearchStore } from '../../store/searchStore';
 import { useSplashStore } from '../../store/splashStore';
 
 export default function Navbar() {
@@ -11,6 +12,7 @@ export default function Navbar() {
   
   const { openCart, items } = useCartStore();
   const { openMenu } = useMenuStore();
+  const { openSearch } = useSearchStore();
   const isSplashVisible = useSplashStore(state => state.isSplashVisible);
   
   const location = useLocation();
@@ -95,12 +97,12 @@ export default function Navbar() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-3 z-10">
-          <button className="p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group">
+          <button onClick={openSearch} className="p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group">
             <Search className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
           </button>
 
-          <Link to="/auth/login" className="block p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group">
-            <User className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
+          <Link to="/favorites" className="block p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group">
+            <Heart className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
           </Link>
           
           <div className="relative p-1.5 md:p-2 text-white/80 hover:text-white transition-colors cursor-pointer group" onClick={openCart}>

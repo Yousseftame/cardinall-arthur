@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import HeroSection from "../../components/sections/HeroSection";
 import ProductsSection from "../../components/sections/ProductsSection";
-import ServicesSection from "../../components/sections/ServicesSection";
+// import ServicesSection from "../../components/sections/ServicesSection";
 import LatestProjectsSection from "../../components/sections/LatestProjectsSection";
 import ClientFeedbackSection from "../../components/sections/ClientFeedbackSection";
 import BreakSection from "../../components/sections/BreakSection";
@@ -26,7 +26,7 @@ export default function HomePage() {
       <HeroSection />
       <ProductsSection />
       <LatestProjectsSection />
-      <ServicesSection />
+      {/* <ServicesSection /> */}
       <ClientFeedbackSection />
       <BreakSection />
       <LetsTalkSection />

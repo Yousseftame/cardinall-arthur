@@ -16,6 +16,8 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
+import CategoriesPage from "./pages/admin/CategoriesPage";
+
 // Initialize QueryClient
 const queryClient = new QueryClient();
 
@@ -66,9 +68,32 @@ function App() {
             {/* 2. Admin Dashboard Layout (Protected) */}
             <Route path="/admin" element={<ProtectedRoute />}>
               <Route element={<DashboardLayout />}>
-                <Route index element={<div className="text-white text-2xl font-medium tracking-widest uppercase">Admin Dashboard Home</div>} />
-                <Route path="products" element={<div className="text-white text-2xl font-medium tracking-widest uppercase">Admin Products Management</div>} />
-                <Route path="orders" element={<div className="text-white text-2xl font-medium tracking-widest uppercase">Admin Orders Management</div>} />
+                <Route index element={<div className="text-gray-500 text-2xl font-light tracking-widest uppercase">Admin Dashboard Home</div>} />
+                
+                {/* Store Management */}
+                <Route path="categories" element={<CategoriesPage />} />
+                <Route path="products" element={<div className="text-white text-xl font-light tracking-widest uppercase">Products Management</div>} />
+                <Route path="orders" element={<div className="text-white text-xl font-light tracking-widest uppercase">Orders Management</div>} />
+                <Route path="checkout" element={<div className="text-white text-xl font-light tracking-widest uppercase">Checkout Settings</div>} />
+                
+                {/* Home Page */}
+                <Route path="hero" element={<div className="text-white text-xl font-light tracking-widest uppercase">Hero Section Editor</div>} />
+                <Route path="projects" element={<div className="text-white text-xl font-light tracking-widest uppercase">Latest Projects Editor</div>} />
+                <Route path="partners" element={<div className="text-white text-xl font-light tracking-widest uppercase">Trusted Partners Editor</div>} />
+                <Route path="banners" element={<div className="text-white text-xl font-light tracking-widest uppercase">Banners Management</div>} />
+                
+                {/* About Page */}
+                <Route path="about-intro" element={<div className="text-white text-xl font-light tracking-widest uppercase">About Us Section Editor</div>} />
+                <Route path="timeline" element={<div className="text-white text-xl font-light tracking-widest uppercase">Timeline Section Editor</div>} />
+                <Route path="vision" element={<div className="text-white text-xl font-light tracking-widest uppercase">Vision Section Editor</div>} />
+                <Route path="socials" element={<div className="text-white text-xl font-light tracking-widest uppercase">On Socials Editor</div>} />
+                
+                {/* Customer Service */}
+                <Route path="feedback" element={<div className="text-white text-xl font-light tracking-widest uppercase">Client Feedback</div>} />
+                <Route path="cant-find" element={<div className="text-white text-xl font-light tracking-widest uppercase">Can't Find It Requests</div>} />
+                <Route path="contact" element={<div className="text-white text-xl font-light tracking-widest uppercase">Contact Us Messages</div>} />
+                <Route path="faq" element={<div className="text-white text-xl font-light tracking-widest uppercase">FAQ Editor</div>} />
+                <Route path="terms" element={<div className="text-white text-xl font-light tracking-widest uppercase">Terms & Conditions Editor</div>} />
               </Route>
             </Route>
 

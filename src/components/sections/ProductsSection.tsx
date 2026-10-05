@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, useMotionValue, useAnimationFrame, AnimatePresence } from 'framer-motion';
 import { Eye, ShoppingCart, X } from 'lucide-react';
+import PulseHeart from '../PulseHeart';
 import { DiaTextReveal } from '../ui/dia-text-reveal';
 import { PRODUCTS } from '../../data/products';
 import { useCartStore } from '../../store/cartStore';
@@ -237,6 +238,15 @@ export default function ProductsSection() {
                     >
                       <ShoppingCart strokeWidth={1.5} className="w-[22px] h-[22px]" />
                     </button>
+                    <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center -m-2">
+                      <PulseHeart 
+                        showCount={false} 
+                        size={22} 
+                        pillColor="transparent" 
+                        idleColor="rgba(26,26,26,0.7)" 
+                        likedColor="#ff4d6d" 
+                      />
+                    </div>
                   </div>
                 </div>
                 
@@ -262,7 +272,7 @@ export default function ProductsSection() {
         {/* Explore Button */}
         <div className="flex justify-center mt-20">
           <Link to="/marketplace" className="font-heading uppercase text-sm font-semibold tracking-widest border-b border-black pb-1 hover:text-gray-500 hover:border-gray-500 transition-colors duration-300">
-            EXPLORE BAGS
+            EXPLORE SHOP
           </Link>
         </div>
 

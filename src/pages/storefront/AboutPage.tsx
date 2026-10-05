@@ -4,7 +4,7 @@ import aboutImg from '../../assets/aboutpage1.webp';
 import AboutSection from '../../components/sections/AboutSection';
 import AboutPhilosophySection from '../../components/sections/AboutPhilosophySection';
 import TrustedPartnersSection from '../../components/sections/TrustedPartnersSection';
-import WorkProcessSection from '../../components/sections/WorkProcessSection';
+// import WorkProcessSection from '../../components/sections/WorkProcessSection';
 import AboutTimelineSection from '../../components/sections/AboutTimelineSection';
 import AboutVisionSection from '../../components/sections/AboutVisionSection';
 
@@ -114,7 +114,7 @@ export default function AboutPage() {
 
       <AboutSection />
       <AboutPhilosophySection />
-      <WorkProcessSection />
+      {/* <WorkProcessSection /> */}
       <AboutTimelineSection />
       <AboutVisionSection />
       <TrustedPartnersSection />
