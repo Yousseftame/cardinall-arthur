@@ -45,7 +45,7 @@ export default function AboutVisionSection() {
   };
 
   return (
-    <section className="w-full bg-black text-white py-32 md:py-48 px-8 md:px-16 lg:px-24">
+    <section className="relative z-10 w-full bg-black text-white py-16 md:py-48 px-6 md:px-16 lg:px-24 border-none outline-none -mt-[1px] -mb-[1px] md:mt-0 md:mb-0">
       <style>
         {`
           @keyframes illuminateWhite {
@@ -66,7 +66,7 @@ export default function AboutVisionSection() {
         <div className="flex-1">
           <p 
             ref={textRef}
-            className="text-[32px] leading-[1.15] font-serif font-light uppercase tracking-tighter flex flex-wrap"
+            className="text-[20px] md:text-[32px] leading-[1.25] md:leading-[1.15] font-serif font-light uppercase tracking-tighter flex flex-wrap"
           >
             {renderText(fullText)}
           </p>

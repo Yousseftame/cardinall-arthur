@@ -49,7 +49,8 @@ export default function ProductsSection() {
   const [trackWidth, setTrackWidth] = useState(0);
   const isDragging = useRef(false);
   const isHovered = useRef(false);
-  const lastXRef = useRef(0);
+  const velocity = useRef(0);
+  const isDragged = useRef(false);
 
   // Calculate the width of exactly ONE base set of products
   useEffect(() => {
@@ -70,31 +71,43 @@ export default function ProductsSection() {
     return wrappedX;
   };
 
-  // Smooth infinite auto-scroll
+  // Smooth infinite auto-scroll with momentum
   useAnimationFrame((_time, delta) => {
-    // Pause if the user is dragging OR hovering OR viewing modal
-    if (isDragging.current || isHovered.current || trackWidth === 0 || selectedProduct) return;
+    if (trackWidth === 0 || selectedProduct) return;
     
-    // Adjust scroll speed here (higher multiplier = faster)
-    let moveBy = delta * 0.05;
-    x.set(wrapX(x.get() - moveBy));
+    let currentX = x.get();
+    
+    if (isDragging.current) {
+      // onPan handles the drag
+    } else {
+      // Apply momentum
+      if (Math.abs(velocity.current) > 0.02) {
+        currentX += velocity.current * delta;
+        velocity.current *= 0.95; // friction
+      } else if (!isHovered.current) {
+        // Standard auto scroll
+        currentX -= delta * 0.05;
+      }
+    }
+    
+    x.set(wrapX(currentX));
   });
 
-  const onPointerDown = (e: React.PointerEvent) => {
+  const handlePanStart = () => {
     isDragging.current = true;
-    lastXRef.current = e.clientX;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    velocity.current = 0;
   };
 
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (!isDragging.current || trackWidth === 0) return;
-    const dx = e.clientX - lastXRef.current;
-    lastXRef.current = e.clientX;
-    x.set(wrapX(x.get() + dx));
+  const handlePan = (_e: any, info: any) => {
+    if (Math.abs(info.offset.x) > 5) {
+      isDragged.current = true;
+    }
+    x.set(wrapX(x.get() + info.delta.x));
   };
 
-  const onPointerUp = () => {
+  const handlePanEnd = (_e: any, info: any) => {
     isDragging.current = false;
+    velocity.current = info.velocity.x / 1000;
   };
 
   const handleAddToCart = (product: typeof PRODUCTS[0], qty = 1) => {
@@ -174,21 +187,21 @@ export default function ProductsSection() {
 
         {/* Draggable Auto-Scrolling Product Track */}
         <div 
-          className="relative w-full overflow-hidden cursor-grab active:cursor-grabbing"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          onPointerEnter={() => (isHovered.current = true)}
-          onPointerLeave={() => {
+          className="relative w-full overflow-hidden cursor-grab active:cursor-grabbing pb-4"
+          onPointerDown={() => (isDragged.current = false)}
+          onMouseEnter={() => (isHovered.current = true)}
+          onMouseLeave={() => {
             isHovered.current = false;
-            isDragging.current = false; // Failsafe for drag state
+            isDragging.current = false;
           }}
         >
           <motion.div 
             ref={trackRef}
             style={{ x }}
-            className="flex gap-8 md:gap-12 px-4 md:px-6 w-max touch-none"
+            className="flex gap-8 md:gap-12 px-4 md:px-6 w-max touch-pan-y"
+            onPanStart={handlePanStart}
+            onPan={handlePan}
+            onPanEnd={handlePanEnd}
           >
             
             {loopItems.map((product, idx) => (
@@ -202,8 +215,12 @@ export default function ProductsSection() {
                   <img 
                     src={product.image} 
                     alt={product.name} 
+                    draggable={false}
                     className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out cursor-pointer pointer-events-auto"
-                    onClick={() => navigate(`/product/${product.id}`)}
+                    onClick={() => {
+                      if (isDragged.current) return;
+                      navigate(`/product/${product.id}`);
+                    }}
                   />
                   
                   {/* Quick Action Pill (Always visible on mobile, hover on desktop) */}
@@ -226,7 +243,10 @@ export default function ProductsSection() {
                 {/* Details */}
                 <h3 
                   className="text-base mb-1 group-hover:text-black/60 transition-colors font-medium cursor-pointer"
-                  onClick={() => navigate(`/product/${product.id}`)}
+                  onClick={() => {
+                    if (isDragged.current) return;
+                    navigate(`/product/${product.id}`);
+                  }}
                 >
                   {product.name}
                 </h3>

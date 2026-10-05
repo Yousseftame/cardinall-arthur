@@ -5,7 +5,7 @@ import founder2 from '../../assets/founder2.png';
 
 export default function AboutFoundersSection() {
   return (
-    <section className="w-full bg-black text-white py-24 md:py-32 px-8 md:px-16 lg:px-24">
+    <section className="w-full bg-black text-white pt-24 pb-8 md:pt-32 md:pb-12 px-8 md:px-16 lg:px-24 -mt-[1px] -mb-[1px] md:mt-0 md:mb-0 relative z-10">
       <div className="w-full mx-auto max-w-[1400px]">
         <motion.div 
           className="mb-12 md:mb-20 px-2"

@@ -63,7 +63,7 @@ export default function AboutSection() {
   return (
     <section 
       id="about" 
-      className="w-full bg-[#0a0a0a] text-white py-32 md:py-48 px-8 md:px-16 lg:px-24 border-t border-white/5"
+      className="relative z-10 w-full bg-[#0a0a0a] text-white py-16 md:py-48 px-6 md:px-16 lg:px-24 border-t border-white/5 -mt-[1px] -mb-[1px] md:mt-0 md:mb-0"
     >
       <style>
         {`
@@ -101,13 +101,13 @@ export default function AboutSection() {
         <div className="flex-1">
           <p 
             ref={textRef}
-            className="text-[32px] leading-[1.15] font-serif font-light uppercase tracking-tighter flex flex-wrap"
+            className="text-[20px] md:text-[32px] leading-[1.25] md:leading-[1.15] font-serif font-light uppercase tracking-tighter flex flex-wrap"
           >
             {wordElements}
           </p>
 
           {/* Statistics Row (Aligned with description) */}
-          <div className="mt-24 md:mt-32 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 justify-items-start">
+          <div className="mt-16 md:mt-32 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 justify-items-start">
             <StatItem end="10" suffix="+" label="YEARS OF EXPERIENCE" />
             <StatItem end="40" suffix="+" label="PROJECTS COMPLETED" />
             <StatItem end="95" suffix="%" label="REPEAT CLIENTS" />
@@ -117,7 +117,7 @@ export default function AboutSection() {
       </div>
 
       {/* Pyramid Image Gallery */}
-      <div ref={galleryRef} className="max-w-[1400px] mx-auto mt-24 md:mt-32 relative z-10">
+      <div ref={galleryRef} className="max-w-[1400px] mx-auto mt-16 md:mt-32 relative z-10">
         <div className="flex items-end gap-4 w-full h-[400px] md:h-[600px]">
           
           {/* Image 1 (Tallest) */}
