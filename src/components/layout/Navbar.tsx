@@ -5,6 +5,7 @@ import { useCartStore } from '../../store/cartStore';
 import { useMenuStore } from '../../store/menuStore';
 import { useSearchStore } from '../../store/searchStore';
 import { useSplashStore } from '../../store/splashStore';
+import { useFavoriteStore } from '../../store/favoriteStore';
 
 export default function Navbar() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -14,6 +15,7 @@ export default function Navbar() {
   const { openMenu } = useMenuStore();
   const { openSearch } = useSearchStore();
   const isSplashVisible = useSplashStore(state => state.isSplashVisible);
+  const { items: favoriteItems } = useFavoriteStore();
   
   const location = useLocation();
 
@@ -101,13 +103,16 @@ export default function Navbar() {
             <Search className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
           </button>
 
-          <Link to="/favorites" className="block p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group">
+          <Link to="/favorites" className="relative block p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group">
             <Heart className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
+            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-white text-black text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
+              {favoriteItems.length}
+            </span>
           </Link>
           
           <div className="relative p-1.5 md:p-2 text-white/80 hover:text-white transition-colors cursor-pointer group" onClick={openCart}>
             <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
-            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-white text-black text-[8px] md:text-[9px] font-bold shadow-md pointer-events-none transition-transform group-hover:scale-110">
+            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-white text-black text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
               {items.length}
             </span>
           </div>

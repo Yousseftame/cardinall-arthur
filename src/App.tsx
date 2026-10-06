@@ -9,6 +9,8 @@ import ProductPage from "./pages/storefront/ProductPage";
 import AboutPage from "./pages/storefront/AboutPage";
 import CantFindItPage from "./pages/storefront/CantFindItPage";
 import NotFoundPage from "./pages/storefront/NotFoundPage";
+import CheckoutPage from "./pages/storefront/CheckoutPage";
+import FavoritesPage from "./pages/storefront/FavoritesPage";
 
 import LoginPage from "./pages/auth/LoginPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
@@ -63,6 +65,8 @@ function App() {
               <Route path="product/:id" element={<ProductPage />} />
               <Route path="about" element={<AboutPage />} />
               <Route path="cant-find-it" element={<CantFindItPage />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+              <Route path="favorites" element={<FavoritesPage />} />
             </Route>
 
             {/* 2. Admin Dashboard Layout (Protected) */}

@@ -47,13 +47,13 @@ export default function LetsTalkSection() {
 
           <div className="flex items-center gap-4 md:gap-6 mt-16 lg:mt-32">
             <img 
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=150&auto=format&fit=crop" 
-              alt="Leon Rowley" 
-              className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover"
+              src="/logo-removebg-preview.png" 
+              alt="Cardinal Arthur Logo" 
+              className="w-14 h-14 md:w-16 md:h-16 object-contain"
             />
             <div className="flex flex-col gap-0.5">
-              <span className="text-primary font-black text-lg md:text-xl uppercase tracking-wide">LEON ROWLEY</span>
-              <span className="text-gray-200 text-sm md:text-base tracking-normal font-medium">CEO and Founder</span>
+              <span className="text-primary font-black text-lg md:text-xl uppercase tracking-wide">CARDINAL ARTHUR</span>
+              <span className="text-gray-200 text-sm md:text-base tracking-normal font-medium">Client Support</span>
             </div>
           </div>
         </div>

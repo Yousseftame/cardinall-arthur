@@ -41,10 +41,10 @@ export default function WelcomeModal() {
           className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-hidden cursor-pointer"
         >
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 30, scale: 0.96 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             onClick={(e) => e.stopPropagation()}
             className="relative w-[95%] max-w-[460px] aspect-[1/1.1] mx-auto mt-[35vh] md:mt-[25vh] cursor-auto"
           >
@@ -54,10 +54,10 @@ export default function WelcomeModal() {
                 {!subscribed ? (
                   <motion.div
                     key="form"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.4, ease: "easeOut", delay: 0.15 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
                     className="w-full"
                   >
                     <h2 className="font-sans text-xl md:text-3xl text-black font-bold tracking-tight mb-3">

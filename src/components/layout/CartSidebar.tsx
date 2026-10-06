@@ -2,9 +2,21 @@ import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useCartStore } from '../../store/cartStore';
 import SpecularButton from '../SpecularButton';
+import { useNavigate } from 'react-router-dom';
 
 export default function CartSidebar() {
-  const { isOpen, closeCart, items, getCartTotal } = useCartStore();
+  const { isOpen, closeCart, items, getCartTotal, updateQuantity, clearCart } = useCartStore();
+  const navigate = useNavigate();
+
+  const handleCheckout = () => {
+    closeCart();
+    navigate('/checkout');
+  };
+
+  const handleDiscover = () => {
+    closeCart();
+    navigate('/marketplace', { state: { scrollToProducts: true } });
+  };
 
   // Animation variants for the empty state elements
   const containerVars: Variants = {
@@ -50,12 +62,22 @@ export default function CartSidebar() {
                   {items.length > 0 ? `(${items.length})` : ''}
                 </span>
               </h2>
-              <button 
-                onClick={closeCart}
-                className="group p-2 -mr-2 flex items-center justify-center transition-transform hover:rotate-90 duration-500 ease-out"
-              >
-                <X className="w-6 h-6 text-[#1a1a1a] stroke-[1.5]" />
-              </button>
+              <div className="flex items-center gap-6">
+                {items.length > 0 && (
+                  <button 
+                    onClick={clearCart}
+                    className="text-sm text-[#6a6a6a] hover:text-[#1a1a1a] underline underline-offset-4 decoration-[#6a6a6a]/40 hover:decoration-[#1a1a1a] transition-all duration-300"
+                  >
+                    Clear the cart
+                  </button>
+                )}
+                <button 
+                  onClick={closeCart}
+                  className="group p-2 -mr-2 flex items-center justify-center transition-transform hover:rotate-90 duration-500 ease-out"
+                >
+                  <X className="w-6 h-6 text-[#1a1a1a] stroke-[1.5]" />
+                </button>
+              </div>
             </div>
 
             {/* Content */}
@@ -83,7 +105,7 @@ export default function CartSidebar() {
                   </motion.p>
 
                   <motion.div variants={itemVars}>
-                    <div onClick={closeCart} className="w-full">
+                    <div onClick={handleDiscover} className="w-full">
                       <SpecularButton 
                         size="lg"
                         radius={14}
@@ -113,20 +135,34 @@ export default function CartSidebar() {
                       </div>
                       
                       {/* Details */}
-                      <div className="flex-1 flex flex-col justify-between py-1">
-                        <div>
-                          <div className="flex justify-between items-start mb-2">
-                            <h3 className="font-heading text-lg uppercase text-[#1a1a1a] font-light tracking-tighter">
-                              {item.name}
-                            </h3>
+                      <div className="flex-1 flex flex-col justify-center py-2">
+                        <h3 className="text-[15px] font-medium uppercase text-[#1a1a1a] tracking-normal pr-4 mb-5">
+                          {item.name}
+                        </h3>
+                        
+                        <div className="flex items-center justify-between w-full pr-1 gap-2">
+                          <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)} 
+                              className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] rounded-full border border-gray-300 text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a]/5 transition-colors shrink-0"
+                            >
+                              <span className="text-base sm:text-lg font-light leading-none mb-[2px]">-</span>
+                            </button>
+                            <span className="text-[#1a1a1a] text-[15px] font-medium w-3 text-center select-none">
+                              {item.quantity}
+                            </span>
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)} 
+                              className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] rounded-full border border-gray-300 text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a]/5 transition-colors shrink-0"
+                            >
+                              <span className="text-base sm:text-lg font-light leading-none mb-[2px]">+</span>
+                            </button>
                           </div>
-                          <p className="text-xs text-[#6a6a6a] tracking-widest uppercase mb-4">
-                            Qty: {item.quantity}
+                          
+                          <p className="font-medium text-[15px] sm:text-[16px] text-[#1a1a1a] whitespace-nowrap text-right" >
+                            {item.price} EGP
                           </p>
                         </div>
-                        <p className="font-medium text-sm text-[#1a1a1a]" >
-                          {item.price} EGP
-                        </p>
                       </div>
                     </div>
                   ))}
@@ -138,12 +174,12 @@ export default function CartSidebar() {
             {items.length > 0 && (
               <div className="p-10 bg-[#f8f7f3] border-t border-[#1a1a1a]/10">
                 <div className="flex items-center justify-between mb-8">
-                  <span className="text-xs uppercase tracking-[0.2em] text-[#6a6a6a]">Subtotal</span>
+                  <span className="text-xs uppercase tracking-wide text-[#6a6a6a]">Subtotal</span>
                   <span className="font-medium text-xl text-[#1a1a1a]" >
                     {getCartTotal().toFixed(2)} EGP
                   </span>
                 </div>
-                <div className="w-full">
+                <div className="w-full" onClick={handleCheckout}>
                   <SpecularButton 
                     size="lg"
                     radius={14}
@@ -154,11 +190,11 @@ export default function CartSidebar() {
                     intensity={1.5}
                     className="w-full text-xs tracking-widest font-medium uppercase !bg-[#1a1a1a] !text-[#f8f7f3] shadow-lg hover:!bg-black transition-colors duration-300"
                   >
-                    Proceed to Checkout
+                    Checkout
                   </SpecularButton>
                 </div>
                 <p className="text-[10px] uppercase tracking-widest text-center text-[#1a1a1a]/40 mt-6">
-                  Taxes and shipping calculated at checkout
+                  Shipping calculated at checkout
                 </p>
               </div>
             )}
