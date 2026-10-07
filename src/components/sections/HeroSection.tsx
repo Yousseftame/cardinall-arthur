@@ -63,7 +63,7 @@ export default function HeroSection() {
     }
   };
 
-  const baseSquareSize = isMobile ? 315 : 280;
+  const baseSquareSize = isMobile ? 240 : 280;
   // Start massive (4000px) then shrink down to the base size
   const currentSquareSize = isLoaded ? baseSquareSize : 4000;
   const halfSize = currentSquareSize / 2;
