@@ -52,7 +52,7 @@ export default function AboutPhilosophySection() {
   // Track scroll progress through the total 600vh section
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"]
+    offset: ["start 75%", "end end"]
   });
 
   const smoothProgress = useSpring(scrollYProgress, {
@@ -67,12 +67,12 @@ export default function AboutPhilosophySection() {
       className="relative w-full bg-black text-white" 
     >
       {/* Sticky Text Background */}
-      <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden z-0">
+      <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-start pt-[25vh] md:pt-[30vh] overflow-hidden z-0">
         
-        {/* Text Reveal Area (Mapped to the first 18% of the total scroll) */}
+        {/* Text Reveal Area */}
         <div className="flex flex-col items-center justify-center font-heading font-light tracking-tighter uppercase text-[15vw] md:text-[14vw] leading-[0.85]">
-          <AnimatedText text="THINK." progress={smoothProgress} startRange={0.02} endRange={0.10} />
-          <AnimatedText text="BUILD. WIN." progress={smoothProgress} startRange={0.10} endRange={0.18} />
+          <AnimatedText text="THINK." progress={smoothProgress} startRange={0.0} endRange={0.08} />
+          <AnimatedText text="BUILD. WIN." progress={smoothProgress} startRange={0.08} endRange={0.16} />
         </div>
       </div>
 
@@ -86,27 +86,27 @@ export default function AboutPhilosophySection() {
         <img 
           src={img1} 
           alt="Philosophy 1"
-          className="absolute right-[5%] top-[280vh] w-[45vw] md:w-[28vw] mix-blend-difference z-20"
+          className="absolute right-[5%] top-[150vh] w-[45vw] md:w-[28vw] mix-blend-difference z-20"
         />
         <img 
           src={img2} 
           alt="Philosophy 2"
-          className="absolute left-[5%] top-[400vh] w-[40vw] md:w-[25vw] mix-blend-difference z-20"
+          className="absolute left-[5%] top-[250vh] w-[40vw] md:w-[25vw] mix-blend-difference z-20"
         />
         <img 
           src={img3} 
           alt="Philosophy 3"
-          className="absolute left-[20%] top-[520vh] w-[35vw] md:w-[22vw] mix-blend-difference z-20"
+          className="absolute left-[20%] top-[350vh] w-[35vw] md:w-[22vw] mix-blend-difference z-20"
         />
         <img 
           src={img4} 
           alt="Philosophy 4"
-          className="absolute right-[15%] top-[640vh] w-[50vw] md:w-[32vw] mix-blend-difference z-20"
+          className="absolute right-[15%] top-[450vh] w-[50vw] md:w-[32vw] mix-blend-difference z-20"
         />
 
         {/* Tall spacer to stretch the section so all images can scroll past. 
-            750vh spacer + 100vh sticky = 850vh total section height */}
-        <div className="h-[750vh]"></div>
+            550vh spacer + 100vh sticky = 650vh total section height */}
+        <div className="h-[550vh]"></div>
       </div>
     </section>
   );

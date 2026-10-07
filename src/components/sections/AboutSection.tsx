@@ -63,7 +63,7 @@ export default function AboutSection() {
   return (
     <section 
       id="about" 
-      className="relative z-10 w-full bg-[#0a0a0a] text-white py-16 md:py-48 px-6 md:px-16 lg:px-24 border-t border-white/5 -mt-[1px] -mb-[1px] md:mt-0 md:mb-0"
+      className="relative z-10 w-full bg-[#0a0a0a] text-white pt-16 pb-4 md:pt-48 md:pb-12 px-6 md:px-16 lg:px-24 border-t border-white/5 -mt-[1px] -mb-[1px] md:mt-0 md:mb-0"
     >
       <style>
         {`

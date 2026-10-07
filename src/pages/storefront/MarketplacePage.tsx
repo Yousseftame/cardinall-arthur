@@ -309,12 +309,7 @@ export default function MarketplacePage() {
                 {letter === " " ? "\u00A0" : letter}
               </motion.span>
             ))}
-            <motion.span variants={letterVariants} className="ml-1 md:ml-4 flex items-center justify-center relative translate-y-[2%] inline-block">
-              <svg viewBox="0 0 100 100" className="w-[0.8em] h-[0.8em]" fill="none" stroke="currentColor" strokeWidth="5">
-                <circle cx="50" cy="50" r="44" />
-                <path d="M64,32 A 22,22 0 1,0 64,68" />
-              </svg>
-            </motion.span>
+
           </motion.h1>
         </div>
       </div>

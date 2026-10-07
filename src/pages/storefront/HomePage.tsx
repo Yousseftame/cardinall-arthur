@@ -6,6 +6,7 @@ import ProductsSection from "../../components/sections/ProductsSection";
 import LatestProjectsSection from "../../components/sections/LatestProjectsSection";
 import ClientFeedbackSection from "../../components/sections/ClientFeedbackSection";
 import BreakSection from "../../components/sections/BreakSection";
+import TrustedPartnersSection from "../../components/sections/TrustedPartnersSection";
 import LetsTalkSection from "../../components/sections/LetsTalkSection";
 
 export default function HomePage() {
@@ -29,6 +30,7 @@ export default function HomePage() {
       {/* <ServicesSection /> */}
       <ClientFeedbackSection />
       <BreakSection />
+      <TrustedPartnersSection />
       <LetsTalkSection />
     </div>
   );

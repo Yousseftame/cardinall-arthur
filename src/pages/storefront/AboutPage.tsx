@@ -3,7 +3,7 @@ import { motion, type Variants, useScroll, useTransform } from 'framer-motion';
 import aboutImg from '../../assets/aboutpage1.webp';
 import AboutSection from '../../components/sections/AboutSection';
 import AboutPhilosophySection from '../../components/sections/AboutPhilosophySection';
-import TrustedPartnersSection from '../../components/sections/TrustedPartnersSection';
+
 // import WorkProcessSection from '../../components/sections/WorkProcessSection';
 import AboutTimelineSection from '../../components/sections/AboutTimelineSection';
 import AboutVisionSection from '../../components/sections/AboutVisionSection';
@@ -102,12 +102,7 @@ export default function AboutPage() {
                 {letter}
               </motion.span>
             ))}
-            <motion.span variants={letterVariants} className="ml-1 md:ml-4 flex items-center justify-center relative translate-y-[2%] inline-block">
-              <svg viewBox="0 0 100 100" className="w-[0.8em] h-[0.8em]" fill="none" stroke="currentColor" strokeWidth="5">
-                <circle cx="50" cy="50" r="44" />
-                <path d="M64,32 A 22,22 0 1,0 64,68" />
-              </svg>
-            </motion.span>
+
           </motion.h1>
         </div>
       </div>
@@ -117,9 +112,9 @@ export default function AboutPage() {
       {/* <WorkProcessSection /> */}
       <AboutTimelineSection />
       <AboutVisionSection />
-      <TrustedPartnersSection />
       {/* <AboutFoundersSection /> */}
       <AboutSocialsSection />
+
       <FAQSection />
     </>
   );

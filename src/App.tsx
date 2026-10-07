@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import MasterLayout from "./layouts/MasterLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -22,6 +23,14 @@ import CategoriesPage from "./pages/admin/CategoriesPage";
 
 // Initialize QueryClient
 const queryClient = new QueryClient();
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
 function App() {
   return (
@@ -57,6 +66,7 @@ function App() {
           }}
         />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             {/* 1. Storefront Layout (Master) */}
             <Route path="/" element={<MasterLayout />}>

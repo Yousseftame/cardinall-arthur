@@ -22,7 +22,7 @@ const itemVariants: Variants = {
 };
 
 const BrandRow = (
-  <div className="flex items-center whitespace-nowrap text-black font-black text-[5rem] md:text-[8rem] lg:text-[11rem] xl:text-[13rem] uppercase tracking-tighter leading-[0.8] py-4">
+  <div className="flex items-center whitespace-nowrap text-black/90 font-heading font-normal text-[5rem] md:text-[8rem] lg:text-[11rem] xl:text-[13rem] uppercase tracking-wide leading-[0.8] py-4">
     <span>CARDINAL</span>
     <span className="mx-6 md:mx-12">-</span>
     <span>ARTHUR</span>

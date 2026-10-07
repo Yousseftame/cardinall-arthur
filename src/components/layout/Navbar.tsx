@@ -78,8 +78,6 @@ export default function Navbar() {
               requestAnimationFrame(() => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               });
-            } else {
-              window.scrollTo(0,0);
             }
           }} 
           className="flex items-center gap-1.5 md:gap-3 group absolute left-1/2 -translate-x-1/2 w-max z-10 cursor-pointer"
