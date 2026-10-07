@@ -63,7 +63,7 @@ export default function HeroSection() {
     }
   };
 
-  const baseSquareSize = isMobile ? 220 : 280;
+  const baseSquareSize = isMobile ? 315 : 280;
   // Start massive (4000px) then shrink down to the base size
   const currentSquareSize = isLoaded ? baseSquareSize : 4000;
   const halfSize = currentSquareSize / 2;
@@ -87,14 +87,14 @@ export default function HeroSection() {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative h-screen w-full overflow-hidden bg-[#111] flex items-center justify-center cursor-default"
+      className="relative h-[82dvh] md:h-[100dvh] w-full overflow-hidden bg-[#111] flex items-center justify-center cursor-default"
     >
       {/* Blurred Background Image */}
       <div className="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center pointer-events-none">
         <img 
           src={heroBg} 
           alt="Hero Background" 
-          className={`absolute w-[100vw] h-[100vh] max-w-none object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-90 scale-[1.05] pointer-events-none transition-all duration-[1500ms] ease-out ${isLoaded ? 'blur-[8px]' : 'blur-0'}`} 
+          className={`absolute w-full h-full object-cover object-center opacity-90 scale-[1.05] pointer-events-none transition-all duration-[1500ms] ease-out ${isLoaded ? 'blur-[8px]' : 'blur-0'}`} 
         />
         {/* Dark overlay */}
         <div className={`absolute inset-0 bg-black/30 transition-opacity duration-[1500ms] ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`} />
@@ -108,7 +108,7 @@ export default function HeroSection() {
         <img 
           src={heroBg} 
           alt="Sharp Hero" 
-          className="absolute w-[100vw] h-[100vh] max-w-none object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 filter brightness-110 contrast-110 grayscale-[20%] pointer-events-none" 
+          className="absolute w-full h-full object-cover object-center filter brightness-110 contrast-110 grayscale-[20%] pointer-events-none" 
         />
       </div>
 
@@ -131,7 +131,7 @@ export default function HeroSection() {
       </div>
 
       {/* Floating Text Labels */}
-      <div className={`absolute w-full h-full inset-0 px-6 pt-24 pb-28 md:py-0 md:px-12 md:top-[35%] md:h-auto md:-translate-y-1/2 left-0 z-40 pointer-events-none text-white text-[9px] md:text-xs tracking-[0.15em] md:tracking-[0.2em] font-semibold uppercase flex flex-col md:flex-row justify-between items-start md:items-center transition-opacity duration-[1500ms] delay-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`absolute w-full h-full inset-0 px-6 pt-24 pb-10 md:py-0 md:px-12 md:top-[35%] md:h-auto md:-translate-y-1/2 left-0 z-40 pointer-events-none text-white text-[9px] md:text-xs tracking-[0.15em] md:tracking-[0.2em] font-semibold uppercase flex flex-col md:flex-row justify-between items-start md:items-center transition-opacity duration-[1500ms] delay-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
          <div className="flex w-full justify-between md:w-auto md:justify-start">
            <div>UI/UX DESIGNER</div>
            <div className="md:hidden">BRAND DESIGNER</div>
@@ -145,7 +145,7 @@ export default function HeroSection() {
       </div>
 
       {/* Large Bottom Text */}
-      <div className="absolute bottom-[18%] md:bottom-0 left-0 w-full text-center z-30 pointer-events-none flex justify-center px-4 md:translate-y-[4%]">
+      <div className="absolute bottom-[15%] md:bottom-0 left-0 w-full text-center z-30 pointer-events-none flex justify-center px-4 md:translate-y-[4%]">
         <h1 
           className="font-heading text-[9vw] sm:text-[9vw] md:text-[8vw] lg:text-[7.5vw] leading-[0.85] uppercase whitespace-nowrap opacity-90 select-none w-full text-center scale-y-[1.05] md:scale-y-[1.15] origin-bottom font-light tracking-wide"
         >

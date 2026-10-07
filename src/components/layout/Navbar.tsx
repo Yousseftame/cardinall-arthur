@@ -45,10 +45,10 @@ export default function Navbar() {
       }`}
     >
       <div 
-        className={`relative flex items-center justify-between px-5 md:px-12 py-2.5 md:py-3.5 transition-all duration-500 ease-out backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.8)] ${
+        className={`relative flex items-center justify-between px-5 md:px-12 py-2.5 md:py-3.5 transition-all duration-500 ease-out backdrop-blur-2xl shadow-sm border border-white/40 ${
           isScrolled 
-            ? 'bg-black/95 w-[100vw] md:w-[85vw] lg:w-[75vw]' 
-            : 'bg-black/90 w-[100vw] md:w-[95vw] lg:w-[85vw]'
+            ? 'bg-gradient-to-br from-white/10 via-white/30 to-white/80 w-[100vw] md:w-[85vw] lg:w-[75vw]' 
+            : 'bg-gradient-to-br from-white/10 via-white/30 to-white/80 w-[100vw] md:w-[95vw] lg:w-[85vw]'
         }`}
         style={{
           // Scaled angled edges for both mobile and desktop
@@ -56,11 +56,11 @@ export default function Navbar() {
         }}
       >
         {/* Elegant Bottom Line (Double layered for a sleek glowing center) */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40%] h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent shadow-[0_0_8px_rgba(255,255,255,0.8)]"></div>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] h-[1px] bg-gradient-to-r from-transparent via-black/20 to-transparent"></div>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40%] h-[1px] bg-gradient-to-r from-transparent via-black/40 to-transparent shadow-[0_0_8px_rgba(0,0,0,0.2)]"></div>
 
         {/* Left: Menu */}
-        <button onClick={openMenu} className="flex items-center gap-1.5 md:gap-2 p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group z-10">
+        <button onClick={openMenu} className="flex items-center gap-1.5 md:gap-2 p-1.5 md:p-2 text-[#1a1a1a]/70 hover:text-[#1a1a1a] transition-colors group z-10">
           <div className="relative flex flex-col justify-center gap-[4px] md:gap-[5px] w-4 h-4 md:w-5 md:h-5">
             <span className="w-full h-[1.5px] bg-current block transition-all duration-300 transform origin-right"></span>
             <span className="w-[60%] h-[1.5px] bg-current block transition-all duration-300 group-hover:w-full"></span>
@@ -84,7 +84,7 @@ export default function Navbar() {
           }} 
           className="flex items-center gap-1.5 md:gap-3 group absolute left-1/2 -translate-x-1/2 w-max z-10 cursor-pointer"
         >
-          <span className="font-heading text-[10px] sm:text-xs md:text-lg font-light tracking-tighter uppercase text-white whitespace-nowrap mt-0.5 md:mt-1">
+          <span className="font-heading text-[10px] sm:text-xs md:text-lg font-light tracking-tighter uppercase text-[#1a1a1a] whitespace-nowrap mt-0.5 md:mt-1">
             Cardinal
           </span>
           <img 
@@ -92,27 +92,27 @@ export default function Navbar() {
             alt="Logo" 
             className="h-6 sm:h-7 md:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
           />
-          <span className="font-heading text-[10px] sm:text-xs md:text-lg font-light tracking-tighter uppercase text-white whitespace-nowrap mt-0.5 md:mt-1">
+          <span className="font-heading text-[10px] sm:text-xs md:text-lg font-light tracking-tighter uppercase text-[#1a1a1a] whitespace-nowrap mt-0.5 md:mt-1">
             Arthur
           </span>
         </Link>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-0.5 sm:gap-1 md:gap-3 z-10">
-          <button onClick={openSearch} className="p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group">
+          <button onClick={openSearch} className="p-1.5 md:p-2 text-[#1a1a1a]/70 hover:text-[#1a1a1a] transition-colors group">
             <Search className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
           </button>
 
-          <Link to="/favorites" className="relative block p-1.5 md:p-2 text-white/80 hover:text-white transition-colors group">
+          <Link to="/favorites" className="relative block p-1.5 md:p-2 text-[#1a1a1a]/70 hover:text-[#1a1a1a] transition-colors group">
             <Heart className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
-            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-white text-black text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
+            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-[#1a1a1a] text-white text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
               {favoriteItems.length}
             </span>
           </Link>
           
-          <div className="relative p-1.5 md:p-2 text-white/80 hover:text-white transition-colors cursor-pointer group" onClick={openCart}>
+          <div className="relative p-1.5 md:p-2 text-[#1a1a1a]/70 hover:text-[#1a1a1a] transition-colors cursor-pointer group" onClick={openCart}>
             <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
-            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-white text-black text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
+            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-[#1a1a1a] text-white text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
               {items.length}
             </span>
           </div>

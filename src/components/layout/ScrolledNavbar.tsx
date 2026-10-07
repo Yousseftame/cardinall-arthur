@@ -35,7 +35,7 @@ export default function ScrolledNavbar() {
     <>
       {/* Top Navbar */}
       <div 
-        className={`fixed top-0 left-0 w-full z-40 bg-[#f8f7f3]/95 backdrop-blur-md border-b border-[#1a1a1a]/5 transition-transform duration-500 ease-[0.22,1,0.36,1] ${
+        className={`fixed top-0 left-0 w-full z-40 bg-gradient-to-br from-white/10 via-white/30 to-white/80 backdrop-blur-2xl border-b border-white/40 shadow-sm transition-transform duration-500 ease-[0.22,1,0.36,1] ${
           isVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
