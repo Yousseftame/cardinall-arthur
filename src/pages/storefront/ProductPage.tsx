@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PRODUCTS } from '../../data/products';
-import { ArrowLeft, ArrowRight, Share2, Copy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Share2, Copy, Eye, ShoppingCart, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
@@ -339,6 +339,58 @@ export default function ProductPage() {
 function YouMayAlsoLike({ currentId }: { currentId: number }) {
   const related = PRODUCTS.filter((p) => p.id !== currentId);
   const [activeIdx, setActiveIdx] = useState(0);
+  const navigate = useNavigate();
+  const { addItem, openCart } = useCartStore();
+  const { toggleItem: toggleFavorite, isFavorite } = useFavoriteStore();
+  const [selectedProduct, setSelectedProduct] = useState<typeof PRODUCTS[0] | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isShippingOpen, setIsShippingOpen] = useState(false);
+
+  const openQuickView = (product: typeof PRODUCTS[0]) => {
+    setQuantity(1);
+    setActiveImage(0);
+    setDirection(0);
+    setIsShippingOpen(false);
+    setSelectedProduct(product);
+  };
+
+  const handleAddToCart = (product: typeof PRODUCTS[0], qty = 1) => {
+    for (let i = 0; i < qty; i++) {
+      addItem({
+        id: product.id.toString(),
+        name: product.name,
+        price: parseFloat(product.price.replace(/[^0-9.-]+/g, "")),
+        imageUrl: product.image,
+        description: product.desc,
+        stock: 99,
+      });
+    }
+    openCart();
+    setSelectedProduct(null);
+  };
+
+  React.useEffect(() => {
+    if (selectedProduct) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedProduct]);
+
+  React.useEffect(() => {
+    if (!selectedProduct) return;
+    const timer = setInterval(() => {
+      setDirection(1);
+      setActiveImage((prev) => (prev === 0 ? 1 : 0));
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [selectedProduct, activeImage]);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [cardW, setCardW] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
@@ -452,62 +504,92 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
               onDragStart={() => { isDragging.current = true; didDrag.current = true; }}
               onDragEnd={handleDragEnd}
             >
-              {related.map((p) => (
+              {related.map((product) => (
                 <div
-                  key={p.id}
-                  className="flex-shrink-0"
+                  key={product.id}
+                  className="flex flex-col items-center group flex-shrink-0 relative"
                   style={{ width: cardW }}
                 >
-                  <Link
-                    to={`/product/${p.id}`}
-                    className="block group"
-                    draggable={false}
+                  {/* Image Container */}
+                  <div className="relative w-full aspect-[4/5] md:aspect-square mb-6 overflow-hidden bg-[#f8f7f3] rounded-[2rem] flex items-center justify-center pointer-events-none">
+                    <img 
+                      src={product.image} 
+                      alt={product.name} 
+                      draggable={false}
+                      className="w-full h-full object-contain p-6 md:p-8 mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out cursor-pointer pointer-events-auto"
+                      onClick={(e) => {
+                        if (didDrag.current) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          return;
+                        }
+                        navigate(`/product/${product.id}`);
+                      }}
+                    />
+                    
+                    {/* Quick Action Pill (Always visible on mobile, hover on desktop) */}
+                    <div className="absolute left-3 top-3 md:left-4 md:top-4 flex flex-col items-center justify-center gap-3 md:gap-5 bg-gradient-to-br from-white/10 via-white/30 to-white/80 backdrop-blur-2xl rounded-full py-4 px-2.5 md:py-5 md:px-3.5 opacity-100 scale-100 md:opacity-0 md:scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-400 ease-out pointer-events-auto z-10 shadow-sm border border-white/40">
+                      <button 
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          if (didDrag.current) return;
+                          openQuickView(product); 
+                        }}
+                        className="text-[#1a1a1a]/70 hover:text-[#1a1a1a] hover:scale-110 transition-all duration-300 flex items-center justify-center" aria-label="Quick view"
+                      >
+                        <Eye strokeWidth={1.5} className="w-5 h-5 md:w-[22px] md:h-[22px]" />
+                      </button>
+                      <button 
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          if (didDrag.current) return;
+                          handleAddToCart(product); 
+                        }}
+                        className="text-[#1a1a1a]/70 hover:text-[#1a1a1a] hover:scale-110 transition-all duration-300 flex items-center justify-center" aria-label="Add to cart"
+                      >
+                        <ShoppingCart strokeWidth={1.5} className="w-5 h-5 md:w-[22px] md:h-[22px]" />
+                      </button>
+                      <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center -m-2">
+                        <PulseHeart 
+                          liked={isFavorite(product.id.toString())}
+                          onChange={() => {
+                            if (didDrag.current) return;
+                            toggleFavorite({
+                              id: product.id.toString(),
+                              name: product.name,
+                              price: parseFloat(product.price.replace(/[^0-9.-]+/g, "")),
+                              imageUrl: product.image,
+                              description: product.desc,
+                              stock: 99,
+                            });
+                          }}
+                          showCount={false} 
+                          size={22} 
+                          pillColor="transparent" 
+                          idleColor="rgba(26,26,26,0.7)" 
+                          likedColor="#ff4d6d" 
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Details */}
+                  <h3 
+                    className="text-sm md:text-base mb-1 text-white group-hover:text-white/60 transition-colors font-medium cursor-pointer text-center"
                     onClick={(e) => {
                       if (didDrag.current) {
                         e.preventDefault();
                         e.stopPropagation();
+                        return;
                       }
+                      navigate(`/product/${product.id}`);
                     }}
                   >
-                    {/* Image */}
-                    <div
-                      className="relative bg-white rounded-2xl overflow-hidden mb-4 group/image"
-                      style={{ height: cardW * 1.2 }}
-                    >
-                      <img
-                        src={p.image}
-                        alt={p.name}
-                        draggable={false}
-                        className="absolute inset-0 w-full h-full object-contain p-6 md:p-8 transition-opacity duration-500 group-hover/image:opacity-0 pointer-events-none"
-                      />
-                      <img
-                        src={p.hoverImage}
-                        alt={p.name}
-                        draggable={false}
-                        className="absolute inset-0 w-full h-full object-contain p-6 md:p-8 opacity-0 transition-opacity duration-500 group-hover/image:opacity-100 pointer-events-none"
-                      />
-                      {/* Price Badge */}
-                      <div className="absolute top-4 right-4 md:top-3 md:right-4 bg-[#0a0a0a] text-white w-16 h-16 md:w-[72px] md:h-[72px] rounded-full flex items-center justify-center z-10 shadow-lg">
-                        <span className="font-semibold text-[13px] tracking-wide text-center leading-none flex flex-col items-center justify-center gap-0.5">
-                          <span>{p.price.replace(' EGP', '')}</span>
-                          <span className="text-[9px] text-white/70">EGP</span>
-                        </span>
-                      </div>
-                    </div>
-                    {/* Name + Desc */}
-                    <h3
-                      className="text-2xl text-white group-hover:text-white/50 transition-colors mb-1.5 font-medium"
-                      
-                    >
-                      {p.name}
-                    </h3>
-                    <p
-                      className="text-white/60 text-sm leading-relaxed"
-                      
-                    >
-                      {p.desc}
-                    </p>
-                  </Link>
+                    {product.name}
+                  </h3>
+                  <p className="text-white/60 text-xs md:text-sm tracking-wide text-center">
+                    {product.price}
+                  </p>
                 </div>
               ))}
             </motion.div>
