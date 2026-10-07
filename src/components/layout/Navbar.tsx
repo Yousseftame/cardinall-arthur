@@ -40,32 +40,25 @@ export default function Navbar() {
 
   return (
     <div 
-      className={`fixed top-0 left-1/2 -translate-x-1/2 z-50 transition-all duration-[1200ms] ease-[0.16,1,0.3,1] transform ${
+      className={`fixed top-0 left-1/2 -translate-x-1/2 z-50 transition-all duration-[1200ms] ease-[0.16,1,0.3,1] transform w-full px-4 sm:px-6 md:px-8 mt-4 md:mt-6 ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-[150%]'
       }`}
     >
       <div 
-        className={`relative flex items-center justify-between px-5 md:px-12 py-2.5 md:py-3.5 transition-all duration-500 ease-out backdrop-blur-2xl shadow-sm border border-white/40 ${
+        className={`relative flex items-center justify-between mx-auto px-5 md:px-8 py-3 transition-all duration-500 ease-out backdrop-blur-[24px] backdrop-saturate-[180%] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.08)] border border-white/40 rounded-full overflow-hidden bg-gradient-to-b from-white/70 via-white/40 to-white/20 ${
           isScrolled 
-            ? 'bg-gradient-to-br from-white/10 via-white/30 to-white/80 w-[100vw] md:w-[85vw] lg:w-[75vw]' 
-            : 'bg-gradient-to-br from-white/10 via-white/30 to-white/80 w-[100vw] md:w-[95vw] lg:w-[85vw]'
+            ? 'w-[95%] md:w-[75vw] lg:w-[60vw]' 
+            : 'w-[100%] md:w-[85vw] lg:w-[70vw]'
         }`}
-        style={{
-          // Scaled angled edges for both mobile and desktop
-          clipPath: 'polygon(0 0, 100% 0, calc(100% - 16px) 100%, 16px 100%)'
-        }}
       >
-        {/* Elegant Bottom Line (Double layered for a sleek glowing center) */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] h-[1px] bg-gradient-to-r from-transparent via-black/20 to-transparent"></div>
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[40%] h-[1px] bg-gradient-to-r from-transparent via-black/40 to-transparent shadow-[0_0_8px_rgba(0,0,0,0.2)]"></div>
 
         {/* Left: Menu */}
-        <button onClick={openMenu} className="flex items-center gap-1.5 md:gap-2 p-1.5 md:p-2 text-[#1a1a1a]/70 hover:text-[#1a1a1a] transition-colors group z-10">
-          <div className="relative flex flex-col justify-center gap-[4px] md:gap-[5px] w-4 h-4 md:w-5 md:h-5">
-            <span className="w-full h-[1.5px] bg-current block transition-all duration-300 transform origin-right"></span>
-            <span className="w-[60%] h-[1.5px] bg-current block transition-all duration-300 group-hover:w-full"></span>
+        <button onClick={openMenu} className="flex items-center gap-2 md:gap-2.5 p-1.5 md:p-2 text-[#1a1a1a]/80 hover:text-[#1a1a1a] transition-colors group z-10">
+          <div className="flex flex-col justify-center items-start gap-[5px] md:gap-[6px] w-[18px] md:w-[20px]">
+            <span className="w-full h-[2px] bg-current rounded-full transition-all duration-500 ease-[0.16,1,0.3,1] group-hover:w-[60%]"></span>
+            <span className="w-[60%] h-[2px] bg-current rounded-full transition-all duration-500 ease-[0.16,1,0.3,1] group-hover:w-full"></span>
           </div>
-          <span className="inline-block font-heading text-[10px] sm:text-[11px] md:text-xs tracking-[0.25em] uppercase font-medium mt-0.5">Menu</span>
+          <span className="inline-block font-heading text-[10.5px] sm:text-[11px] md:text-xs tracking-[0.2em] uppercase font-medium mt-0.5">Menu</span>
         </button>
 
         {/* Center: Name with Logo Between */}
@@ -82,15 +75,15 @@ export default function Navbar() {
           }} 
           className="flex items-center gap-1.5 md:gap-3 group absolute left-1/2 -translate-x-1/2 w-max z-10 cursor-pointer"
         >
-          <span className="font-heading text-[10px] sm:text-xs md:text-lg font-light tracking-tighter uppercase text-[#1a1a1a] whitespace-nowrap mt-0.5 md:mt-1">
+          <span style={{ fontFamily: "'Pinyon Script', cursive" }} className="text-[18px] sm:text-[20px] md:text-[28px] text-black whitespace-nowrap mt-0.5 md:mt-1 drop-shadow-sm">
             Cardinal
           </span>
           <img 
             src="/logo-removebg-preview.png" 
             alt="Logo" 
-            className="h-6 sm:h-7 md:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+            className="h-[30px] sm:h-[34px] md:h-[42px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
           />
-          <span className="font-heading text-[10px] sm:text-xs md:text-lg font-light tracking-tighter uppercase text-[#1a1a1a] whitespace-nowrap mt-0.5 md:mt-1">
+          <span style={{ fontFamily: "'Pinyon Script', cursive" }} className="text-[18px] sm:text-[20px] md:text-[28px] text-black whitespace-nowrap mt-0.5 md:mt-1 drop-shadow-sm">
             Arthur
           </span>
         </Link>

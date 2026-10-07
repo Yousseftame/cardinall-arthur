@@ -147,7 +147,8 @@ export default function HeroSection() {
       {/* Large Bottom Text */}
       <div className="absolute bottom-[15%] md:bottom-0 left-0 w-full text-center z-30 pointer-events-none flex justify-center px-4 md:translate-y-[4%]">
         <h1 
-          className="font-heading text-[9vw] sm:text-[9vw] md:text-[8vw] lg:text-[7.5vw] leading-[0.85] uppercase whitespace-nowrap opacity-90 select-none w-full text-center scale-y-[1.05] md:scale-y-[1.15] origin-bottom font-light tracking-wide"
+          style={{ fontFamily: "'Pinyon Script', cursive" }}
+          className="text-[13vw] sm:text-[13vw] md:text-[11vw] lg:text-[10.5vw] leading-[0.85] whitespace-nowrap opacity-90 select-none w-full text-center scale-y-[1.05] md:scale-y-[1.15] origin-bottom font-light"
         >
           {isLoaded && (
             <DiaTextReveal 
