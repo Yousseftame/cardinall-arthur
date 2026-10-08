@@ -77,7 +77,7 @@ export default function ServicesSection() {
   });
 
   return (
-    <section className="w-full bg-[#0a0a0a] text-white pt-12 pb-0 md:pt-20 md:pb-0">
+    <section className="w-full bg-[#2C0E11] text-white pt-12 pb-0 md:pt-20 md:pb-0">
       <style>
         {`
           @keyframes illuminate {
@@ -116,7 +116,7 @@ export default function ServicesSection() {
         {servicesData.map((service, i) => (
           <div 
             key={i} 
-            className="sticky w-full bg-[#0a0a0a] border-t border-b border-white/40 flex flex-col py-16 md:py-24 min-h-[85vh]"
+            className="sticky w-full bg-[#2C0E11] border-t border-b border-white/40 flex flex-col py-16 md:py-24 min-h-[85vh]"
             style={{ 
               top: '12vh', 
               zIndex: 10 + i

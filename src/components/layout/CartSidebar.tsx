@@ -43,7 +43,7 @@ export default function CartSidebar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             onClick={closeCart}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[90]"
+            className="fixed inset-0 bg-[#2C0E11]/60 backdrop-blur-md z-[90]"
           />
 
           {/* Sidebar */}
@@ -114,7 +114,7 @@ export default function CartSidebar() {
                         baseColor="#B28558"
                         lineColor="#B28558"
                         intensity={1.5}
-                        className="w-full text-xs tracking-widest font-medium uppercase !bg-[#1a1a1a] !text-[#f8f7f3] shadow-lg hover:!bg-black transition-colors duration-300"
+                        className="w-full text-xs tracking-widest font-medium uppercase !bg-[#2C0E11] !text-[#f8f7f3] shadow-lg hover:!bg-[#2C0E11] transition-colors duration-300"
                       >
                         Discover Collection
                       </SpecularButton>
@@ -144,7 +144,7 @@ export default function CartSidebar() {
                           <div className="flex items-center gap-3 sm:gap-5 shrink-0">
                             <button 
                               onClick={() => updateQuantity(item.id, item.quantity - 1)} 
-                              className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] rounded-full border border-gray-300 text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a]/5 transition-colors shrink-0"
+                              className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] rounded-full border border-gray-300 text-[#1a1a1a] flex items-center justify-center hover:bg-[#2C0E11]/5 transition-colors shrink-0"
                             >
                               <span className="text-base sm:text-lg font-light leading-none mb-[2px]">-</span>
                             </button>
@@ -153,7 +153,7 @@ export default function CartSidebar() {
                             </span>
                             <button 
                               onClick={() => updateQuantity(item.id, item.quantity + 1)} 
-                              className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] rounded-full border border-gray-300 text-[#1a1a1a] flex items-center justify-center hover:bg-[#1a1a1a]/5 transition-colors shrink-0"
+                              className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] rounded-full border border-gray-300 text-[#1a1a1a] flex items-center justify-center hover:bg-[#2C0E11]/5 transition-colors shrink-0"
                             >
                               <span className="text-base sm:text-lg font-light leading-none mb-[2px]">+</span>
                             </button>
@@ -188,7 +188,7 @@ export default function CartSidebar() {
                     baseColor="#B28558"
                     lineColor="#B28558"
                     intensity={1.5}
-                    className="w-full text-xs tracking-widest font-medium uppercase !bg-[#1a1a1a] !text-[#f8f7f3] shadow-lg hover:!bg-black transition-colors duration-300"
+                    className="w-full text-xs tracking-widest font-medium uppercase !bg-[#2C0E11] !text-[#f8f7f3] shadow-lg hover:!bg-[#2C0E11] transition-colors duration-300"
                   >
                     Checkout
                   </SpecularButton>

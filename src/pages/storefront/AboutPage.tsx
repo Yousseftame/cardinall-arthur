@@ -51,7 +51,7 @@ export default function AboutPage() {
     <>
       {/* Page Transition Overlays */}
       <motion.div
-        className="fixed inset-0 z-[80] bg-black"
+        className="fixed inset-0 z-[80] bg-[#2C0E11]"
         initial={{ y: 0 }}
         animate={{ y: '-100%' }}
         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
@@ -63,7 +63,7 @@ export default function AboutPage() {
         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.3 }}
       />
       <motion.div
-        className="fixed inset-0 z-[60] bg-black"
+        className="fixed inset-0 z-[60] bg-[#2C0E11]"
         initial={{ y: 0 }}
         animate={{ y: '-100%' }}
         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.5 }}

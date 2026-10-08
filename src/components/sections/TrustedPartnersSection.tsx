@@ -49,7 +49,7 @@ function PartnerCard({ children }: { children: React.ReactNode }) {
       />
       
       {/* Inner Card Surface */}
-      <div className="relative z-10 w-full h-full bg-[#0a0a0a] rounded-[11px] overflow-hidden flex items-center justify-center">
+      <div className="relative z-10 w-full h-full bg-[#2C0E11] rounded-[11px] overflow-hidden flex items-center justify-center">
         
         {/* Inner Spotlight (Illuminates the background behind the logo) */}
         <div 
@@ -131,7 +131,7 @@ export default function TrustedPartnersSection() {
   };
 
   return (
-    <section className="relative w-full py-24 md:py-32 bg-black text-white flex flex-col items-center -mt-[1px] -mb-[1px] md:mt-0 md:mb-0 z-30">
+    <section className="relative w-full py-24 md:py-32 bg-[#2C0E11] text-white flex flex-col items-center -mt-[1px] -mb-[1px] md:mt-0 md:mb-0 z-30">
       <div className="relative z-10 w-full mb-16 md:mb-20 px-4 flex flex-col items-center text-center">
         <motion.h2 
           initial={{ opacity: 0, y: 30 }}

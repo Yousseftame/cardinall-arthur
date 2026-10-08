@@ -20,7 +20,7 @@ const itemVariants: Variants = {
 
 export default function LetsTalkSection() {
   return (
-    <section id="letstalk" className="w-full bg-[#0a0a0a] text-white pt-24 md:pt-32 pb-16 overflow-hidden">
+    <section id="letstalk" className="w-full bg-[#2C0E11] text-white pt-24 md:pt-32 pb-16 overflow-hidden">
       <div className="w-full max-w-[120rem] mx-auto px-4 md:px-10 lg:px-16 xl:px-20 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 xl:gap-40">
         
         {/* Left Column */}

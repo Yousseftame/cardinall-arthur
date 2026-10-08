@@ -66,14 +66,14 @@ export default function ScrolledNavbar() {
             </button>
             <Link to="/favorites" className="relative p-1.5 md:p-2 text-[#1a1a1a] hover:text-primary transition-colors group">
               <Heart className="w-5 h-5 md:w-6 md:h-6 stroke-[2] transition-transform group-hover:scale-110" />
-              <span className="absolute -top-1.5 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#1a1a1a] text-[10px] font-sans font-semibold leading-none pt-[1px] text-[#f8f7f3] shadow-md group-hover:bg-primary transition-colors">
+              <span className="absolute -top-1.5 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#2C0E11] text-[10px] font-sans font-semibold leading-none pt-[1px] text-[#f8f7f3] shadow-md group-hover:bg-primary transition-colors">
                 {favoriteItems.length}
               </span>
             </Link>
             <div className="relative cursor-pointer group flex items-center justify-center p-2 -mr-2" onClick={openCart}>
               <div className="relative">
                 <ShoppingCart className="w-6 h-6 text-[#1a1a1a] stroke-[2] group-hover:text-primary transition-colors" />
-                <span className="absolute -top-1.5 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#1a1a1a] text-[10px] font-sans font-semibold leading-none pt-[1px] text-[#f8f7f3] shadow-md group-hover:bg-primary transition-colors">
+                <span className="absolute -top-1.5 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#2C0E11] text-[10px] font-sans font-semibold leading-none pt-[1px] text-[#f8f7f3] shadow-md group-hover:bg-primary transition-colors">
                   {items.length}
                 </span>
               </div>

@@ -31,7 +31,7 @@ export default function WorkProcessSection() {
   };
 
   return (
-    <section ref={sectionRef} className="bg-[#0a0a0a] text-[#f8f7f3] py-32 px-6 md:px-12 lg:px-24">
+    <section ref={sectionRef} className="bg-[#2C0E11] text-[#f8f7f3] py-32 px-6 md:px-12 lg:px-24">
       {/* Header Area */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 gap-12">
         <h2 

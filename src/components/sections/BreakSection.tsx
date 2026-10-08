@@ -29,7 +29,7 @@ export default function BreakSection() {
         }}
       />
       {/* Optional dark overlay if needed */}
-      <div className="absolute inset-0 bg-black/20" />
+      <div className="absolute inset-0 bg-[#2C0E11]/20" />
     </section>
   );
 }

@@ -301,7 +301,7 @@ export default function ProductsSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 overflow-y-auto [&::-webkit-scrollbar]:hidden"
+              className="fixed inset-0 bg-[#2C0E11]/40 backdrop-blur-sm z-50 overflow-y-auto [&::-webkit-scrollbar]:hidden"
               style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
               data-lenis-prevent
               onClick={() => setSelectedProduct(null)}
@@ -312,12 +312,12 @@ export default function ProductsSection() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
                   transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                  className="bg-[#0a0a0a] w-full max-w-4xl rounded-[2.5rem] flex flex-col md:flex-row relative max-h-none md:max-h-[85vh] shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
+                  className="bg-[#2C0E11] w-full max-w-4xl rounded-[2.5rem] flex flex-col md:flex-row relative max-h-none md:max-h-[85vh] shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button 
                     onClick={() => setSelectedProduct(null)}
-                    className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-11 h-11 bg-black/10 md:bg-white/10 hover:bg-black/20 md:hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-black md:text-white transition-colors"
+                    className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-11 h-11 bg-[#2C0E11]/10 md:bg-white/10 hover:bg-[#2C0E11]/20 md:hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-black md:text-white transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>

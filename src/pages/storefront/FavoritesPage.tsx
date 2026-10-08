@@ -26,7 +26,7 @@ export default function FavoritesPage() {
 
   return (
     <>
-      <div className="bg-[#0a0a0a] min-h-screen pt-32 pb-20 overflow-x-hidden text-white">
+      <div className="bg-[#2C0E11] min-h-screen pt-32 pb-20 overflow-x-hidden text-white">
         <section className="px-4 md:px-12 w-full max-w-[1920px] mx-auto">
           <div className="flex flex-col mb-12 mt-12 md:mt-16 text-center items-center">
             <h1 className="font-heading text-4xl md:text-5xl lg:text-[56px] uppercase mb-8 font-light tracking-tighter">

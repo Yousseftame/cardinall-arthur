@@ -60,7 +60,7 @@ export default function CantFindItPage() {
     <>
       {/* Page Transition Overlays */}
       <motion.div
-        className="fixed inset-0 z-[80] bg-black"
+        className="fixed inset-0 z-[80] bg-[#2C0E11]"
         initial={{ y: 0 }}
         animate={{ y: '-100%' }}
         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
@@ -72,7 +72,7 @@ export default function CantFindItPage() {
         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.3 }}
       />
       <motion.div
-        className="fixed inset-0 z-[60] bg-black"
+        className="fixed inset-0 z-[60] bg-[#2C0E11]"
         initial={{ y: 0 }}
         animate={{ y: '-100%' }}
         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.5 }}
@@ -118,7 +118,7 @@ export default function CantFindItPage() {
       </div>
 
       {/* Main Content Form */}
-      <div className="min-h-screen bg-[#0a0a0a] text-white pt-32 pb-24 md:pt-40 flex items-center overflow-hidden">
+      <div className="min-h-screen bg-[#2C0E11] text-white pt-32 pb-24 md:pt-40 flex items-center overflow-hidden">
         <div className="w-full max-w-[1400px] mx-auto px-4 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 xl:gap-32 items-center">
           
           {/* Left Side: Typography */}

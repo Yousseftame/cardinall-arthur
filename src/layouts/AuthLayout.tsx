@@ -5,7 +5,7 @@ import authImg from '../assets/auth.avif';
 
 export default function AuthLayout() {
   return (
-    <div className="min-h-screen w-full flex bg-[#0a0a0a] text-white overflow-hidden">
+    <div className="min-h-screen w-full flex bg-[#2C0E11] text-white overflow-hidden">
       {/* Left Side: Image */}
       <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
         <motion.img 
@@ -16,7 +16,7 @@ export default function AuthLayout() {
           alt="Authentication" 
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-[#2C0E11]/20" />
         
         {/* Logo over image */}
         <div className="absolute top-12 left-12">
@@ -27,7 +27,7 @@ export default function AuthLayout() {
       </div>
 
       {/* Right Side: Form Content */}
-      <div className="w-full lg:w-1/2 flex flex-col relative bg-[#0a0a0a] min-h-screen">
+      <div className="w-full lg:w-1/2 flex flex-col relative bg-[#2C0E11] min-h-screen">
         {/* Back Button (Mobile) */}
         <div className="absolute top-8 left-6 lg:hidden z-10">
           <Link to="/" className="p-2 -ml-2 text-white hover:text-white/70 transition-colors block">

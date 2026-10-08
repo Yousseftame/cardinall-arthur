@@ -55,7 +55,7 @@ const FEEDBACKS = [
 
 export default function ClientFeedbackSection() {
   return (
-    <section className="relative w-full bg-[#0a0a0a] text-white">
+    <section className="relative w-full bg-[#2C0E11] text-white">
       {/* Sticky Title Background */}
       <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden z-0 pointer-events-none">
         <h2 className="font-heading text-5xl md:text-7xl lg:text-8xl uppercase leading-[0.85] text-center flex flex-col items-center justify-center font-light tracking-tighter">

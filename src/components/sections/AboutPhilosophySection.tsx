@@ -64,7 +64,7 @@ export default function AboutPhilosophySection() {
   return (
     <section 
       ref={containerRef}
-      className="relative w-full bg-black text-white" 
+      className="relative w-full bg-[#2C0E11] text-white" 
     >
       {/* Sticky Text Background */}
       <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-start pt-[25vh] md:pt-[30vh] overflow-hidden z-0">

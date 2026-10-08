@@ -45,7 +45,7 @@ export default function AboutVisionSection() {
   };
 
   return (
-    <section className="relative z-10 w-full bg-black text-white py-16 md:py-48 px-6 md:px-16 lg:px-24 border-none outline-none -mt-[1px] -mb-[1px] md:mt-0 md:mb-0">
+    <section className="relative z-10 w-full bg-[#2C0E11] text-white py-16 md:py-48 px-6 md:px-16 lg:px-24 border-none outline-none -mt-[1px] -mb-[1px] md:mt-0 md:mb-0">
       <style>
         {`
           @keyframes illuminateWhite {

@@ -33,7 +33,7 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="w-full bg-[#0a0a0a] text-white py-24 md:py-32 px-4 md:px-12 flex justify-center">
+    <section className="w-full bg-[#2C0E11] text-white py-24 md:py-32 px-4 md:px-12 flex justify-center">
       <div className="max-w-[1200px] w-full">
         
         {/* Title Row */}

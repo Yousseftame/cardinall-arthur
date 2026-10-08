@@ -41,7 +41,7 @@ export default function FooterSection() {
 
   return (
     <>
-    <footer className="w-full bg-[#0a0a0a] text-white pt-12 md:pt-16 pb-8 px-4 md:px-8 lg:px-12 w-full">
+    <footer className="w-full bg-[#2C0E11] text-white pt-12 md:pt-16 pb-8 px-4 md:px-8 lg:px-12 w-full">
       <div className="w-full flex flex-col">
         
         {/* Top Centered Section */}
@@ -148,7 +148,7 @@ export default function FooterSection() {
     </footer>
     
     {/* Primary Footer Reveal Block */}
-    <div ref={containerRef} className="w-full h-[150px] md:h-[220px] lg:h-[300px] overflow-hidden bg-[#0a0a0a]">
+    <div ref={containerRef} className="hidden w-full h-[150px] md:h-[220px] lg:h-[300px] overflow-hidden bg-[#2C0E11]">
       <motion.div style={{ y }} className="w-full h-full bg-primary flex items-center">
         <ScrollVelocity 
           texts={[BrandRow]} 

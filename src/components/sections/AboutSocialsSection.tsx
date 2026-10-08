@@ -14,7 +14,7 @@ const images = [
 
 export default function AboutSocialsSection() {
   return (
-    <section className="w-full bg-black text-white pt-8 pb-0 md:pt-12 md:pb-0 overflow-hidden flex flex-col items-center -mt-[1px] -mb-[1px] md:mt-0 md:mb-0 relative z-20">
+    <section className="w-full bg-[#2C0E11] text-white pt-8 pb-0 md:pt-12 md:pb-0 overflow-hidden flex flex-col items-center -mt-[1px] -mb-[1px] md:mt-0 md:mb-0 relative z-20">
       <div className="text-center mb-4 md:mb-8 px-4 w-full flex flex-col items-center">
         <h2 
           className="text-4xl md:text-5xl lg:text-[64px] mb-6 font-heading font-light tracking-tighter"

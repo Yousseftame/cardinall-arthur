@@ -66,7 +66,7 @@ export default function SearchOverlay() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-start pt-[15vh] md:pt-[25vh] px-6 bg-[#0a0a0a]/80 backdrop-blur-2xl"
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-start pt-[15vh] md:pt-[25vh] px-6 bg-[#2C0E11]/80 backdrop-blur-2xl"
         >
           {/* Subtle Ambient Glow */}
           <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[60vw] h-[30vh] bg-[#2C0E11]/40 rounded-full blur-[120px] pointer-events-none opacity-60"></div>

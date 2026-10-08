@@ -34,7 +34,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
 
   return (
     <div
-      className={`fixed inset-0 z-[10000] bg-[#0a0a0a] flex items-center justify-center transition-transform duration-[800ms] ease-[cubic-bezier(0.65,0,0.05,1)] ${
+      className={`fixed inset-0 z-[10000] bg-[#2C0E11] flex items-center justify-center transition-transform duration-[800ms] ease-[cubic-bezier(0.65,0,0.05,1)] ${
         phase === "fade" ? "-translate-y-full" : "translate-y-0"
       }`}
     >
@@ -56,7 +56,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
             phase === "text" ? "h-32 opacity-100" : "h-0 opacity-0"
           }`}
         >
-          <div className="flex items-center gap-4 sm:gap-6 md:gap-8 translate-y-1 pb-[6px]">
+          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 translate-y-1 pb-[6px]">
             <h1 
               className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading uppercase scale-y-[1.1] origin-bottom font-light tracking-tighter"
             >
@@ -65,7 +65,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
             <img 
               src="/logo-removebg-preview.png" 
               alt="Logo" 
-              className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto object-contain opacity-90"
+              className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto object-contain opacity-90 -translate-y-2 md:-translate-y-3"
             />
             <h1 
               className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading uppercase scale-y-[1.1] origin-bottom font-light tracking-tighter"

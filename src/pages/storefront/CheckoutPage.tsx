@@ -186,7 +186,7 @@ export default function CheckoutPage() {
                   className="w-[85%] h-[85%] object-contain"
                 />
               </div>
-              <div className="absolute -top-2.5 -right-2.5 min-w-[20px] h-[20px] px-1 bg-black text-white rounded-[8px] ring-2 ring-[#f5f5f5] flex items-center justify-center text-[11px] font-bold shadow-sm">
+              <div className="absolute -top-2.5 -right-2.5 min-w-[20px] h-[20px] px-1 bg-[#2C0E11] text-white rounded-[8px] ring-2 ring-[#f5f5f5] flex items-center justify-center text-[11px] font-bold shadow-sm">
                 {item.quantity}
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function CheckoutPage() {
               <svg className="w-[17px] h-[17px] text-gray-400 hover:text-gray-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <div className="absolute bottom-full right-1/2 translate-x-[50%] mb-2.5 w-max bg-[#1a1a1a] text-white text-[13px] font-medium leading-[1.4] text-center px-4 py-2.5 rounded-[10px] opacity-0 invisible group-hover/shipping:opacity-100 group-hover/shipping:visible transition-all duration-200 z-50 shadow-xl">
+              <div className="absolute bottom-full right-1/2 translate-x-[50%] mb-2.5 w-max bg-[#2C0E11] text-white text-[13px] font-medium leading-[1.4] text-center px-4 py-2.5 rounded-[10px] opacity-0 invisible group-hover/shipping:opacity-100 group-hover/shipping:visible transition-all duration-200 z-50 shadow-xl">
                 Standard shipping (1-3 business days)
                 <div className="absolute top-full right-1/2 translate-x-[50%] -mt-px border-[6px] border-transparent border-t-[#1a1a1a]" />
               </div>
@@ -250,7 +250,7 @@ export default function CheckoutPage() {
         </p>
         <Link 
           to="/marketplace" 
-          className="bg-[#1a1a1a] text-white px-8 py-3.5 rounded-md font-semibold hover:bg-black transition-colors shadow-sm"
+          className="bg-[#2C0E11] text-white px-8 py-3.5 rounded-md font-semibold hover:bg-[#2C0E11] transition-colors shadow-sm"
         >
           Continue Shopping
         </Link>
@@ -290,7 +290,7 @@ export default function CheckoutPage() {
                     <svg className="w-5 h-5 text-gray-500 hover:text-gray-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <div className="absolute bottom-full -right-3 mb-2.5 w-[220px] bg-[#1a1a1a] text-white text-[13px] font-medium leading-[1.4] text-center px-4 py-3.5 rounded-[10px] opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 z-50 shadow-xl">
+                    <div className="absolute bottom-full -right-3 mb-2.5 w-[220px] bg-[#2C0E11] text-white text-[13px] font-medium leading-[1.4] text-center px-4 py-3.5 rounded-[10px] opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 z-50 shadow-xl">
                       Used for your order confirmation and cart reminders
                       <div className="absolute top-full right-[16px] -mt-px border-[6px] border-transparent border-t-[#1a1a1a]" />
                     </div>
@@ -352,7 +352,7 @@ export default function CheckoutPage() {
                           <div className="h-1/3 bg-white flex items-center justify-center">
                              <div className="w-[3px] h-[3px] bg-[#c09300] rounded-full" />
                           </div>
-                          <div className="h-1/3 bg-black" />
+                          <div className="h-1/3 bg-[#2C0E11]" />
                         </div>
                       </div>
                     }
@@ -373,7 +373,7 @@ export default function CheckoutPage() {
                           <div className="h-1/3 bg-white flex items-center justify-center">
                              <div className="w-[3px] h-[3px] bg-[#c09300] rounded-full" />
                           </div>
-                          <div className="h-1/3 bg-black" />
+                          <div className="h-1/3 bg-[#2C0E11]" />
                         </div>
                       </div>
                     }
@@ -415,7 +415,7 @@ export default function CheckoutPage() {
                       <div className="bg-white border border-gray-200 rounded px-1.5 py-0.5 flex items-center justify-center h-[26px]">
                         <img src={visaImg} alt="Visa" className="h-[20px] object-contain" />
                       </div>
-                      <div className="bg-[#1a1a1a] rounded px-1.5 py-0.5 flex items-center justify-center h-[26px]">
+                      <div className="bg-[#2C0E11] rounded px-1.5 py-0.5 flex items-center justify-center h-[26px]">
                         <img src={mastercardImg} alt="Mastercard" className="h-4 object-contain" />
                       </div>
                       <div className="bg-white border border-gray-200 rounded px-1.5 py-0.5 flex items-center justify-center text-xs text-blue-600 h-[26px] font-medium leading-none">
@@ -474,7 +474,7 @@ export default function CheckoutPage() {
                       </div>
                     )}
                     {items.length > 0 && (
-                      <div className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-black text-white rounded-[7px] ring-2 ring-white flex items-center justify-center text-[10px] font-bold shadow-sm z-20">
+                      <div className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-[#2C0E11] text-white rounded-[7px] ring-2 ring-white flex items-center justify-center text-[10px] font-bold shadow-sm z-20">
                         {items.reduce((acc, item) => acc + item.quantity, 0)}
                       </div>
                     )}
@@ -519,7 +519,7 @@ export default function CheckoutPage() {
                 className={`w-full text-white rounded-md py-4 text-sm font-bold tracking-wider transition-colors flex items-center justify-center gap-2 ${
                   isSubmitting || paymentMethod === 'card' 
                     ? 'bg-[#5c5c5c] cursor-not-allowed' 
-                    : 'bg-[#1a1a1a] hover:bg-black'
+                    : 'bg-[#2C0E11] hover:bg-[#2C0E11]'
                 }`}
               >
                 {isSubmitting ? (

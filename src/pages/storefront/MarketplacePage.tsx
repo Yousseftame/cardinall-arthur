@@ -257,7 +257,7 @@ export default function MarketplacePage() {
     <>
       {/* Page Transition Overlays */}
       <motion.div
-        className="fixed inset-0 z-[80] bg-black"
+        className="fixed inset-0 z-[80] bg-[#2C0E11]"
         initial={{ y: 0 }}
         animate={{ y: '-100%' }}
         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
@@ -269,7 +269,7 @@ export default function MarketplacePage() {
         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.3 }}
       />
       <motion.div
-        className="fixed inset-0 z-[60] bg-black"
+        className="fixed inset-0 z-[60] bg-[#2C0E11]"
         initial={{ y: 0 }}
         animate={{ y: '-100%' }}
         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.5 }}
@@ -314,7 +314,7 @@ export default function MarketplacePage() {
         </div>
       </div>
 
-      <div className="bg-[#0a0a0a] min-h-screen pt-32 pb-20 overflow-x-hidden text-white">
+      <div className="bg-[#2C0E11] min-h-screen pt-32 pb-20 overflow-x-hidden text-white">
       
       {/* 1. Banner Carousel Section */}
       <section className="px-4 md:px-8 w-full max-w-[1920px] mx-auto mb-20 mt-4">
@@ -340,7 +340,7 @@ export default function MarketplacePage() {
               />
               
               {/* Overlays */}
-              <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-[#2C0E11]/30 pointer-events-none"></div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
 
               {/* Top Pill / Branding */}
@@ -348,7 +348,7 @@ export default function MarketplacePage() {
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.8 }}
-                className="absolute top-6 left-6 md:top-8 md:left-8 bg-[#0a0a0a]/80 border border-white/10 rounded-full px-5 py-2 md:px-6 md:py-2.5 shadow-xl flex items-center justify-center transform-gpu"
+                className="absolute top-6 left-6 md:top-8 md:left-8 bg-[#2C0E11]/80 border border-white/10 rounded-full px-5 py-2 md:px-6 md:py-2.5 shadow-xl flex items-center justify-center transform-gpu"
               >
                 <span className="font-heading font-bold text-white text-sm md:text-lg tracking-wider uppercase mt-0.5">
                   {BANNERS[currentIndex].pill}
@@ -536,7 +536,7 @@ export default function MarketplacePage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] overflow-y-auto [&::-webkit-scrollbar]:hidden"
+              className="fixed inset-0 bg-[#2C0E11]/60 backdrop-blur-md z-[100] overflow-y-auto [&::-webkit-scrollbar]:hidden"
               style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
               data-lenis-prevent
               onClick={() => setSelectedProduct(null)}
@@ -547,12 +547,12 @@ export default function MarketplacePage() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
                   transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                  className="bg-[#0a0a0a] w-full max-w-4xl rounded-[2.5rem] flex flex-col md:flex-row relative max-h-none md:max-h-[85vh] shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
+                  className="bg-[#2C0E11] w-full max-w-4xl rounded-[2.5rem] flex flex-col md:flex-row relative max-h-none md:max-h-[85vh] shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button 
                     onClick={() => setSelectedProduct(null)}
-                    className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-11 h-11 bg-black/10 md:bg-white/10 hover:bg-black/20 md:hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-black md:text-white transition-colors"
+                    className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-11 h-11 bg-[#2C0E11]/10 md:bg-white/10 hover:bg-[#2C0E11]/20 md:hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-black md:text-white transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>

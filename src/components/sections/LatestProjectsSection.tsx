@@ -5,7 +5,7 @@ import { DiaTextReveal } from '../ui/dia-text-reveal';
 
 export default function LatestProjectsSection() {
   return (
-    <section className="w-full bg-[#0a0a0a] text-white relative pt-10 md:pt-20 pb-20">
+    <section className="w-full bg-[#2C0E11] text-white relative pt-10 md:pt-20 pb-20">
       <div className="flex flex-col items-center justify-center -mb-4 md:-mb-12 relative z-10">
         <h2 className="font-heading text-4xl md:text-6xl uppercase leading-[0.9] text-center font-light tracking-tighter">
           <DiaTextReveal 

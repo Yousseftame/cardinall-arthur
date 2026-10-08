@@ -73,7 +73,7 @@ export default function ProductPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pt-32 pb-24">
+    <div className="min-h-screen bg-[#2C0E11] pt-32 pb-24">
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
         
         {/* Left: Image Gallery */}
@@ -479,7 +479,7 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
           className="absolute left-0 z-10 hidden md:block"
           style={{ top: cardW > 0 ? cardW * 0.6 : '38%', transform: 'translateX(calc(-100% - 8px)) translateY(-50%)' }}
         >
-          <div className="bg-[#0a0a0a] p-1.5 rounded-full">
+          <div className="bg-[#2C0E11] p-1.5 rounded-full">
             <button
               onClick={prev}
               disabled={activeIdx === 0}
@@ -601,7 +601,7 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
           className="absolute right-0 z-10 hidden md:block"
           style={{ top: cardW > 0 ? cardW * 0.6 : '38%', transform: 'translateX(calc(100% + 8px)) translateY(-50%)' }}
         >
-          <div className="bg-[#0a0a0a] p-1.5 rounded-full">
+          <div className="bg-[#2C0E11] p-1.5 rounded-full">
             <button
               onClick={next}
               disabled={activeIdx >= maxIdx}
@@ -621,7 +621,7 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] overflow-y-auto [&::-webkit-scrollbar]:hidden"
+              className="fixed inset-0 bg-[#2C0E11]/60 backdrop-blur-md z-[100] overflow-y-auto [&::-webkit-scrollbar]:hidden"
               style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
               data-lenis-prevent
               onClick={() => setSelectedProduct(null)}
@@ -632,12 +632,12 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
                   transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                  className="bg-[#0a0a0a] w-full max-w-4xl rounded-[2.5rem] flex flex-col md:flex-row relative max-h-none md:max-h-[85vh] shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
+                  className="bg-[#2C0E11] w-full max-w-4xl rounded-[2.5rem] flex flex-col md:flex-row relative max-h-none md:max-h-[85vh] shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button 
                     onClick={() => setSelectedProduct(null)}
-                    className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-11 h-11 bg-black/10 md:bg-white/10 hover:bg-black/20 md:hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-black md:text-white transition-colors"
+                    className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-11 h-11 bg-[#2C0E11]/10 md:bg-white/10 hover:bg-[#2C0E11]/20 md:hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-black md:text-white transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>

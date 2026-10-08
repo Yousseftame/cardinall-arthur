@@ -85,7 +85,7 @@ export default function AboutTimelineSection() {
   });
 
   return (
-    <section ref={containerRef} className="relative w-full bg-black text-white py-40 px-4 md:px-12 overflow-hidden">
+    <section ref={containerRef} className="relative w-full bg-[#2C0E11] text-white py-40 px-4 md:px-12 overflow-hidden">
       
       {/* Title */}
       <motion.div 

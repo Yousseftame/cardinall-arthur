@@ -38,7 +38,7 @@ export default function WelcomeModal() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-hidden cursor-pointer"
+          className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#2C0E11]/80 backdrop-blur-md overflow-hidden cursor-pointer"
         >
           <motion.div
             initial={{ opacity: 0 }}

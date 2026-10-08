@@ -73,7 +73,7 @@ export default function Navbar() {
               });
             }
           }} 
-          className="flex items-center gap-1.5 md:gap-3 group absolute left-1/2 -translate-x-1/2 w-max z-10 cursor-pointer"
+          className="flex items-center gap-1 md:gap-1.5 group absolute left-1/2 -translate-x-1/2 w-max z-10 cursor-pointer"
         >
           <span style={{ fontFamily: "'Pinyon Script', cursive" }} className="text-[18px] sm:text-[20px] md:text-[28px] text-black whitespace-nowrap mt-0.5 md:mt-1 drop-shadow-sm">
             Cardinal
@@ -96,14 +96,14 @@ export default function Navbar() {
 
           <Link to="/favorites" className="relative block p-1.5 md:p-2 text-[#1a1a1a]/70 hover:text-[#1a1a1a] transition-colors group">
             <Heart className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
-            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-[#1a1a1a] text-white text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
+            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-[#2C0E11] text-white text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
               {favoriteItems.length}
             </span>
           </Link>
           
           <div className="relative p-1.5 md:p-2 text-[#1a1a1a]/70 hover:text-[#1a1a1a] transition-colors cursor-pointer group" onClick={openCart}>
             <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
-            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-[#1a1a1a] text-white text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
+            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-[#2C0E11] text-white text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
               {items.length}
             </span>
           </div>
