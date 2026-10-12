@@ -13,9 +13,9 @@ export default function ProtectedRoute() {
     );
   }
 
-  // If not logged in, redirect to home page perfectly
+  // If not logged in, redirect to login page perfectly
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/auth/login" replace />;
   }
 
   // If logged in, allow them to view the child routes (admin panel)

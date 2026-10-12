@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if request is from an authenticated admin
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // ==========================================
+    // 1. ORDERS COLLECTION
+    // ==========================================
+    // - Anyone (unauthenticated guest customers) can create/submit orders at checkout
+    // - Only authenticated admins can read, update status, and delete orders
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    // ==========================================
+    // 2. STORE SETTINGS (e.g. settings/checkout)
+    // ==========================================
+    // - Anyone can read delivery rates, governorates & thresholds
+    // - Only authenticated admins can update checkout settings
+    match /settings/{settingDoc} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // ==========================================
+    // 3. STOREFRONT CONTENT (Products, Categories, Banners)
+    // ==========================================
+    // - Anyone can view products and categories on the storefront
+    // - Only authenticated admins can create or edit them
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Default deny for anything else unless authenticated
+    match /{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

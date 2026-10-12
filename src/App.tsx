@@ -19,6 +19,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 import CategoriesPage from "./pages/admin/CategoriesPage";
+import OrdersPage from "./pages/admin/OrdersPage";
+import CheckoutSettingsPage from "./pages/admin/CheckoutSettingsPage";
 
 // Initialize QueryClient
 const queryClient = new QueryClient();
@@ -77,8 +79,8 @@ function App() {
                 {/* Store Management */}
                 <Route path="categories" element={<CategoriesPage />} />
                 <Route path="products" element={<div className="text-white text-xl font-light tracking-widest uppercase">Products Management</div>} />
-                <Route path="orders" element={<div className="text-white text-xl font-light tracking-widest uppercase">Orders Management</div>} />
-                <Route path="checkout" element={<div className="text-white text-xl font-light tracking-widest uppercase">Checkout Settings</div>} />
+                <Route path="orders" element={<OrdersPage />} />
+                <Route path="checkout" element={<CheckoutSettingsPage />} />
                 
                 {/* Home Page */}
                 <Route path="hero" element={<div className="text-white text-xl font-light tracking-widest uppercase">Hero Section Editor</div>} />

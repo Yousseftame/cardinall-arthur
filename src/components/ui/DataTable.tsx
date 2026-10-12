@@ -161,16 +161,18 @@ export function TableAction({
 }: {
   label: string;
   onClick?: () => void;
-  tone?: "default" | "danger" | "primary";
+  tone?: "default" | "danger" | "primary" | "success";
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex h-8 items-center justify-center rounded-full px-4 text-xs font-bold transition-colors duration-200 shadow-sm",
+        "inline-flex h-8 items-center justify-center rounded-full px-4 text-xs font-bold transition-colors duration-200 shadow-sm cursor-pointer",
         tone === "danger"
           ? "bg-red-50 text-red-600 hover:bg-red-100"
+          : tone === "success"
+          ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200"
           : tone === "primary"
           ? "bg-[#2C0E11] text-white hover:bg-[#2C0E11]/90"
           : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
