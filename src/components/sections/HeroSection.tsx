@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import heroBg from '../../assets/hero-bg.avif';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 import { DiaTextReveal } from '../ui/dia-text-reveal';
 import { useSplashStore } from '../../store/splashStore';
 
@@ -20,15 +18,26 @@ export default function HeroSection() {
 
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileHeight, setMobileHeight] = useState<number | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [motionReady, setMotionReady] = useState(false);
   const isSplashVisible = useSplashStore(state => state.isSplashVisible);
   const [isLoaded, setIsLoaded] = useState(() => !useSplashStore.getState().isSplashVisible);
 
   useEffect(() => {
-    AOS.init({ once: true });
-
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    let lastWidth = window.innerWidth;
+    const checkMobile = () => {
+      const currentWidth = window.innerWidth;
+      const mobile = currentWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        // Lock to initial height on mobile; only update if screen width changed (orientation change)
+        setMobileHeight(prev => (prev === null || currentWidth !== lastWidth) ? Math.round(window.innerHeight * 0.82) : prev);
+      } else {
+        setMobileHeight(null);
+      }
+      lastWidth = currentWidth;
+    };
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
@@ -216,14 +225,15 @@ export default function HeroSection() {
       onMouseLeave={handleMouseLeave}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
-      className="relative h-[82dvh] md:h-[100dvh] w-full overflow-hidden bg-[#111] flex items-center justify-center cursor-default"
+      style={{ height: isMobile && mobileHeight ? `${mobileHeight}px` : undefined }}
+      className="relative h-[82svh] md:h-[100dvh] w-full overflow-hidden bg-[#111] flex items-center justify-center cursor-default touch-pan-y"
     >
       {/* Blurred Background Image */}
       <div className="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center pointer-events-none">
         <img
           src={heroBg}
           alt="Hero Background"
-          className={`absolute w-full h-full object-cover object-center opacity-90 scale-[1.05] pointer-events-none transition-all duration-[1500ms] ease-out ${isLoaded ? 'blur-[8px]' : 'blur-0'}`}
+          className={`absolute w-full h-full object-cover object-center opacity-90 scale-[1.05] pointer-events-none transition-[filter,opacity] duration-[1500ms] ease-out ${isLoaded ? 'blur-[8px]' : 'blur-0'}`}
         />
         {/* Dark overlay */}
         <div className={`absolute inset-0 bg-black/30 transition-opacity duration-[1500ms] ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'}`} />

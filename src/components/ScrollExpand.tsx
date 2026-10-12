@@ -151,6 +151,8 @@ const ScrollExpand: React.FC<ScrollExpandProps> = ({
     let stageH = 0;
     let running = false;
 
+    let lastWidth = typeof window !== 'undefined' ? window.innerWidth : 0;
+
     const measure = () => {
       const c = propsRef.current;
       stageH = c.useWindowScroll ? window.innerHeight : root.clientHeight;
@@ -202,7 +204,14 @@ const ScrollExpand: React.FC<ScrollExpandProps> = ({
     };
 
     const onResize = () => {
-      measure();
+      const currentWidth = window.innerWidth;
+      // On mobile devices, scrolling toggles the address bar which changes innerHeight but NOT innerWidth.
+      // Re-measuring track height during scroll causes sudden height shifts and teleportation glitches.
+      // Only re-measure track & stage heights if width changed (orientation change or window resize).
+      if (Math.abs(currentWidth - lastWidth) > 1) {
+        lastWidth = currentWidth;
+        measure();
+      }
       target = readProgress();
       current = target;
       applyProgress(current);
@@ -216,7 +225,20 @@ const ScrollExpand: React.FC<ScrollExpandProps> = ({
     const scroller = useWindowScroll ? window : root;
     scroller.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
-    const ro = new ResizeObserver(onResize);
+    
+    // Only observe width changes on root to avoid re-measuring heights when track style height changes
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const width = entry.contentRect.width;
+        if (width && Math.abs(width - lastWidth) > 1) {
+          lastWidth = width;
+          measure();
+          target = readProgress();
+          current = target;
+          applyProgress(current);
+        }
+      }
+    });
     ro.observe(root);
 
     return () => {
