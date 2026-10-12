@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
 import FAQSection from '../../components/sections/FAQSection';
+import ProductFeedbackSection from '../../components/sections/ProductFeedbackSection';
 import { useCartStore } from '../../store/cartStore';
 import { useFavoriteStore } from '../../store/favoriteStore';
 import PulseHeart from '../../components/PulseHeart';
@@ -326,6 +327,8 @@ export default function ProductPage() {
 
       </div>
 
+      <ProductFeedbackSection />
+
       {/* ── You May Also Like ── */}
       <YouMayAlsoLike currentId={product.id} />
 
@@ -393,7 +396,12 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
   }, [selectedProduct, activeImage]);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [cardW, setCardW] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(3);
+  const [visibleCount, setVisibleCount] = useState(() => {
+    if (typeof window === 'undefined') return 3;
+    if (window.innerWidth < 768) return 1;
+    if (window.innerWidth < 1024) return 2;
+    return 3;
+  });
   const isDragging = React.useRef(false);
   const didDrag = React.useRef(false); // stays true through the post-drag click
   const autoplayPauseRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -402,22 +410,28 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
   const GAP = 12;
   const maxIdx = Math.max(0, related.length - visibleCount);
 
-  // Measure container to compute exact card width
   React.useEffect(() => {
+    setActiveIdx(0);
+  }, [currentId]);
+
+  React.useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
     const measure = () => {
-      if (containerRef.current) {
-        const v = window.innerWidth < 768 ? 1 : (window.innerWidth < 1024 ? 2 : 3);
-        setVisibleCount(v);
-        const total = containerRef.current.offsetWidth;
-        setCardW((total - GAP * (v - 1)) / v);
-      }
+      const width = el.offsetWidth;
+      if (!width) return;
+      const v = window.innerWidth < 768 ? 1 : (window.innerWidth < 1024 ? 2 : 3);
+      setVisibleCount(v);
+      setCardW((width - GAP * (v - 1)) / v);
     };
+
     measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
-  // Auto-play — pauses when isDragging ref is true
   React.useEffect(() => {
     if (maxIdx <= 0) return;
     const timer = setInterval(() => {
@@ -492,23 +506,21 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
 
         {/* Draggable Track — only this clips overflow */}
         <div className="overflow-hidden" ref={containerRef}>
-          {cardW > 0 && (
             <motion.div
-              className="flex cursor-grab active:cursor-grabbing select-none"
+              className="grid w-full grid-flow-col auto-cols-[100%] md:auto-cols-[calc((100%-12px)/2)] lg:auto-cols-[calc((100%-24px)/3)] cursor-grab active:cursor-grabbing select-none"
               style={{ gap: GAP, touchAction: 'pan-y' }}
-              animate={{ x: -(activeIdx * (cardW + GAP)) }}
+              animate={{ x: cardW > 0 ? -(activeIdx * (cardW + GAP)) : 0 }}
               transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-              drag="x"
+              drag={cardW > 0 ? 'x' : false}
               dragConstraints={{ left: -(maxIdx * (cardW + GAP)), right: 0 }}
               dragElastic={0.08}
               onDragStart={() => { isDragging.current = true; didDrag.current = true; }}
               onDragEnd={handleDragEnd}
             >
-              {related.map((product) => (
+              {related.map((product, i) => (
                 <div
                   key={product.id}
-                  className="flex flex-col items-center group flex-shrink-0 relative"
-                  style={{ width: cardW }}
+                  className="flex flex-col items-center group relative min-w-0"
                 >
                   {/* Image Container */}
                   <div className="relative w-full aspect-[4/5] md:aspect-square mb-6 overflow-hidden bg-[#f8f7f3] rounded-[2rem] flex items-center justify-center pointer-events-none">
@@ -516,6 +528,8 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
                       src={product.image} 
                       alt={product.name} 
                       draggable={false}
+                      loading={i < 3 ? 'eager' : 'lazy'}
+                      fetchPriority={i < 3 ? 'high' : 'low'}
                       className="w-full h-full object-contain p-6 md:p-8 mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out cursor-pointer pointer-events-auto"
                       onClick={(e) => {
                         if (didDrag.current) {
@@ -593,7 +607,6 @@ function YouMayAlsoLike({ currentId }: { currentId: number }) {
                 </div>
               ))}
             </motion.div>
-          )}
         </div>
 
         {/* Right Arrow — outside the track, floating right */}

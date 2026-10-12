@@ -33,19 +33,19 @@ export default function Navbar() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
 
   return (
     <div 
-      className={`fixed top-0 left-1/2 -translate-x-1/2 z-50 transition-all duration-[1200ms] ease-[0.16,1,0.3,1] transform w-full px-4 sm:px-6 md:px-8 mt-4 md:mt-6 ${
+      className={`fixed top-0 left-1/2 -translate-x-1/2 z-50 transition-all duration-[1200ms] ease-[0.16,1,0.3,1] transform w-full px-4 sm:px-6 md:px-8 mt-4 md:mt-6 transform-gpu ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-[150%]'
       }`}
     >
       <div 
-        className={`relative flex items-center justify-between mx-auto px-5 md:px-8 py-3 transition-all duration-500 ease-out backdrop-blur-[24px] backdrop-saturate-[180%] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.08)] border border-white/40 rounded-full overflow-hidden bg-gradient-to-b from-white/70 via-white/40 to-white/20 ${
+        className={`relative flex items-center justify-between mx-auto px-5 md:px-8 py-3 transition-all duration-500 ease-out backdrop-blur-[24px] backdrop-saturate-[180%] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.08)] border border-white/40 rounded-full overflow-hidden bg-gradient-to-b from-white/70 via-white/40 to-white/20 transform-gpu ${
           isScrolled 
             ? 'w-[95%] md:w-[75vw] lg:w-[60vw]' 
             : 'w-[100%] md:w-[85vw] lg:w-[70vw]'
@@ -67,10 +67,8 @@ export default function Navbar() {
           onClick={(e) => {
             if (location.pathname === '/') {
               e.preventDefault();
-              // Ensures the click registers completely before triggering the smooth scroll
-              requestAnimationFrame(() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              });
+              // Smooth scroll to top when already on home page
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }
           }} 
           className="flex items-center gap-1 md:gap-1.5 group absolute left-1/2 -translate-x-1/2 w-max z-10 cursor-pointer"

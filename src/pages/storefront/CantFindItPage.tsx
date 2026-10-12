@@ -4,28 +4,27 @@ import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
 import SpecularButton from '../../components/SpecularButton';
 import communityImg from '../../assets/community1.webp';
 import FAQSection from '../../components/sections/FAQSection';
+import PageTransition from '../../components/layout/PageTransition';
 
 const textContainerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.9,
+      staggerChildren: 0.04,
+      delayChildren: 0.25,
     },
   },
 };
 
 const letterVariants: Variants = {
-  hidden: { opacity: 0, y: 100, filter: 'blur(12px)', scale: 0.95 },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
-    scale: 1,
     transition: {
-      duration: 1.6,
-      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+      duration: 0.75,
+      ease: [0.22, 1, 0.36, 1],
     },
   },
 };
@@ -58,44 +57,29 @@ export default function CantFindItPage() {
 
   return (
     <>
-      {/* Page Transition Overlays */}
-      <motion.div
-        className="fixed inset-0 z-[80] bg-[#2C0E11]"
-        initial={{ y: 0 }}
-        animate={{ y: '-100%' }}
-        transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
-      />
-      <motion.div
-        className="fixed inset-0 z-[70] bg-[#B28558]"
-        initial={{ y: 0 }}
-        animate={{ y: '-100%' }}
-        transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.3 }}
-      />
-      <motion.div
-        className="fixed inset-0 z-[60] bg-[#2C0E11]"
-        initial={{ y: 0 }}
-        animate={{ y: '-100%' }}
-        transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.5 }}
-      />
+      <PageTransition />
 
       {/* Hero Section */}
       <div ref={containerRef} className="relative w-full min-h-screen bg-[#06114f] overflow-hidden flex items-center justify-center">
         {/* Scroll Parallax Wrapper */}
         <motion.div 
-          className="absolute inset-0 w-full h-[120%] -top-[10%] origin-top"
+          className="absolute inset-0 w-full h-[115%] -top-[7%] origin-top pointer-events-none transform-gpu will-change-transform"
           style={{ y, scale: scrollScale }}
         >
-          {/* Background Image Entrance Animation */}
-          <motion.div 
-            className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${communityImg})` }}
-            initial={{ scale: 1.1 }}
+          {/* Hardware-Accelerated Hero Image */}
+          <motion.img 
+            src={communityImg} 
+            alt="Community Hero" 
+            fetchPriority="high"
+            decoding="async"
+            className="w-full h-full object-cover object-center select-none transform-gpu will-change-transform"
+            initial={{ scale: 1.08 }}
             animate={{ scale: 1 }}
-            transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.6 }}
+            transition={{ duration: 0.85, ease: [0.25, 1, 0.5, 1], delay: 0.15 }}
           />
         </motion.div>
         
-        {/* Blue overlay */}
+        {/* Original Electric Blue Overlays */}
         <div className="absolute inset-0 bg-[#071871]/40 mix-blend-overlay pointer-events-none" />
         <div className="absolute inset-0 bg-blue-900/20 mix-blend-multiply pointer-events-none" />
 
@@ -118,7 +102,7 @@ export default function CantFindItPage() {
       </div>
 
       {/* Main Content Form */}
-      <div className="min-h-screen bg-[#2C0E11] text-white pt-32 pb-24 md:pt-40 flex items-center overflow-hidden">
+      <div className="min-h-screen bg-transparent text-white pt-32 pb-24 md:pt-40 flex items-center overflow-hidden">
         <div className="w-full max-w-[1400px] mx-auto px-4 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 xl:gap-32 items-center">
           
           {/* Left Side: Typography */}

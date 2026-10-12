@@ -1,8 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import Lenis from 'lenis';
-import 'lenis/dist/lenis.css'; // Modern lenis provides default styles
 
 import Navbar from '../components/layout/Navbar';
 import CartSidebar from '../components/layout/CartSidebar';
@@ -11,49 +9,44 @@ import SearchOverlay from '../components/layout/SearchOverlay';
 import SplashScreen from '../components/layout/SplashScreen';
 import WelcomeModal from '../components/layout/WelcomeModal';
 import FooterSection from '../components/sections/FooterSection';
+import { preloadHeroImages } from '../utils/preloadAssets';
+
+// Enforce manual scroll restoration so browser never restores or maintains previous scroll offset
+if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+  window.history.scrollRestoration = 'manual';
+}
 
 export default function MasterLayout() {
   const [isSplashComplete, setIsSplashComplete] = useState(false);
   const location = useLocation();
-  const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    // Initialize Lenis for buttery smooth scrolling
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-    });
-
-    lenisRef.current = lenis;
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    // Cleanup on unmount
-    return () => {
-      lenis.destroy();
-      lenisRef.current = null;
-    };
+    // Preload hero images in background for instant reveals
+    preloadHeroImages();
   }, []);
 
-  // Scroll to top on every route change, through Lenis so it's respected
-  useEffect(() => {
-    if (lenisRef.current) {
-      lenisRef.current.scrollTo(0, { immediate: true });
-    } else {
-      // Fallback if Lenis hasn't initialized yet
-      window.scrollTo(0, 0);
+  // Synchronously reset scroll BEFORE the browser paints the new route.
+  // This completely eliminates any 1-frame flash of the previous page's scroll position (e.g. Client Feedback).
+  useLayoutEffect(() => {
+    if (location.state?.scrollTo || location.state?.scrollToProducts) {
+      return;
     }
+
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, [location.pathname]);
+
+  // Handle browser back/forward buttons (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   return (
     <>
@@ -63,20 +56,22 @@ export default function MasterLayout() {
         )}
       </AnimatePresence>
 
-      <div className="min-h-screen flex flex-col bg-background font-sans text-foreground">
+      <div className="min-h-screen flex flex-col relative bg-transparent font-sans text-foreground">
+        <div className="luxury-stage" aria-hidden="true" />
         <Navbar />
-      <CartSidebar />
-      <MenuSidebar />
-      <SearchOverlay />
-      <WelcomeModal />
-      
-      <main className="flex-grow">
-        {/* Outlet renders the matched child route component */}
-        <Outlet />
-      </main>
+        <CartSidebar />
+        <MenuSidebar />
+        <SearchOverlay />
+        <WelcomeModal />
 
-      <FooterSection />
-    </div>
+        <main className="relative z-[1] flex-grow">
+          <Outlet />
+        </main>
+
+        <div className="relative z-[1]">
+          <FooterSection />
+        </div>
+      </div>
     </>
   );
 }

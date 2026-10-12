@@ -1,7 +1,7 @@
 
 import { X } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useMenuStore } from "../../store/menuStore";
 
 const NAV_LINKS = [
@@ -23,24 +23,29 @@ const SOCIAL_LINKS = [
 ];
 
 const linkVariants: Variants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 8 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: 0.08 + i * 0.05, duration: 0.35, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { delay: 0.04 + i * 0.025, duration: 0.25, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
 
 export default function MenuSidebar() {
   const { isMenuOpen, closeMenu } = useMenuStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleNavigation = (href: string) => {
     closeMenu();
-    // Allow animation to finish before navigating
-    setTimeout(() => {
-      navigate(href);
-    }, 400);
+    if (href === location.pathname) {
+      if (href === '/') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      return;
+    }
+
+    navigate(href);
   };
 
   return (
@@ -48,19 +53,19 @@ export default function MenuSidebar() {
       {isMenuOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-40 bg-[#2C0E11]/60 backdrop-blur-md"
+            className="fixed inset-0 z-[60] bg-[#2C0E11]/75 backdrop-blur-[2px] transform-gpu will-change-opacity"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             onClick={closeMenu}
           />
           <motion.aside
-            className="fixed top-0 left-0 z-50 flex h-full w-full max-w-[480px] flex-col bg-[#f8f7f3] text-[#1a1a1a] shadow-2xl"
+            className="fixed top-0 left-0 z-[70] flex h-full w-full max-w-[480px] flex-col bg-[#f8f7f3] text-[#1a1a1a] shadow-2xl transform-gpu will-change-transform"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
           >
             {/* Elegant Header */}
             <div className="flex items-center justify-between px-12 pt-10 pb-6">
