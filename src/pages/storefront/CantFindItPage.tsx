@@ -1,10 +1,12 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion, type Variants, useScroll, useTransform } from 'framer-motion';
 import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
 import SpecularButton from '../../components/SpecularButton';
 import communityImg from '../../assets/community1.webp';
 import FAQSection from '../../components/sections/FAQSection';
 import PageTransition from '../../components/layout/PageTransition';
+import { submitCantFindRequest } from '../../services/cantFind.service';
+import toast from 'react-hot-toast';
 
 const textContainerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -44,8 +46,34 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
+const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+const brandToastStyle = {
+  style: {
+    background: 'rgba(44, 14, 17, 0.95)',
+    color: '#ffffff',
+    border: '1px solid rgba(201, 168, 106, 0.4)',
+    borderRadius: '100px',
+    padding: '14px 24px',
+    fontSize: '14px',
+    letterSpacing: '0.02em',
+  },
+  iconTheme: {
+    primary: '#C9A86A',
+    secondary: '#2C0E11',
+  },
+};
+
 export default function CantFindItPage() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    desiredNotes: '',
+    designerInspiration: '',
+    details: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -54,6 +82,69 @@ export default function CantFindItPage() {
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   const scrollScale = useTransform(scrollYProgress, [0, 1], [1.15, 1]);
+
+  const validateEmail = (email: string) => EMAIL_REGEX.test(String(email).toLowerCase());
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const desiredNotes = formData.desiredNotes.trim();
+    const details = formData.details.trim();
+    const designerInspiration = formData.designerInspiration.trim();
+
+    if (!name || !email || !desiredNotes || !details) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
+
+    if (name.length < 2) {
+      toast.error('Please enter a valid name (at least 2 characters).');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      toast.error('Please enter a valid email format.');
+      return;
+    }
+
+    if (desiredNotes.length < 3) {
+      toast.error('Please describe the notes you are looking for.');
+      return;
+    }
+
+    if (details.length < 10) {
+      toast.error('Please share a bit more detail about your request.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await submitCantFindRequest({
+        name,
+        email,
+        desiredNotes,
+        designerInspiration,
+        details,
+      });
+
+      toast.success('Your scent request has been submitted. We will craft something special for you.', brandToastStyle);
+
+      setFormData({
+        name: '',
+        email: '',
+        desiredNotes: '',
+        designerInspiration: '',
+        details: '',
+      });
+    } catch (err) {
+      console.error('Failed to submit scent request:', err);
+      toast.error('Failed to submit request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -141,6 +232,8 @@ export default function CantFindItPage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-10%" }}
+              onSubmit={handleSubmit}
+              noValidate
               className="flex flex-col gap-10 md:gap-14 w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl mt-8 lg:mt-0"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14">
@@ -149,8 +242,10 @@ export default function CantFindItPage() {
                     type="text" 
                     placeholder="Your Name*" 
                     required
-                    className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg"
-                    
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    disabled={isSubmitting}
+                    className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg disabled:opacity-60"
                   />
                 </motion.div>
                 <motion.div variants={itemVariants} className="relative group">
@@ -158,8 +253,10 @@ export default function CantFindItPage() {
                     type="email" 
                     placeholder="Your Email*" 
                     required
-                    className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg"
-                    
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    disabled={isSubmitting}
+                    className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg disabled:opacity-60"
                   />
                 </motion.div>
               </div>
@@ -169,8 +266,10 @@ export default function CantFindItPage() {
                   type="text" 
                   placeholder="Desired Notes (e.g. Vanilla, Bergamot, Oud)*" 
                   required
-                  className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg"
-                  
+                  value={formData.desiredNotes}
+                  onChange={(e) => setFormData(prev => ({ ...prev, desiredNotes: e.target.value }))}
+                  disabled={isSubmitting}
+                  className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg disabled:opacity-60"
                 />
               </motion.div>
 
@@ -178,8 +277,10 @@ export default function CantFindItPage() {
                 <input 
                   type="text" 
                   placeholder="Designer Inspiration (Optional)" 
-                  className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg"
-                  
+                  value={formData.designerInspiration}
+                  onChange={(e) => setFormData(prev => ({ ...prev, designerInspiration: e.target.value }))}
+                  disabled={isSubmitting}
+                  className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg disabled:opacity-60"
                 />
               </motion.div>
 
@@ -188,8 +289,10 @@ export default function CantFindItPage() {
                   placeholder="Additional Details or Story Behind the Request*" 
                   required
                   rows={3}
-                  className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg resize-y"
-                  
+                  value={formData.details}
+                  onChange={(e) => setFormData(prev => ({ ...prev, details: e.target.value }))}
+                  disabled={isSubmitting}
+                  className="w-full bg-transparent border-b border-white focus:border-white focus:outline-none py-3 md:py-4 text-white placeholder-white transition-colors text-base md:text-lg resize-y disabled:opacity-60"
                 ></textarea>
               </motion.div>
 
@@ -201,11 +304,16 @@ export default function CantFindItPage() {
                   tintOpacity={0}
                   blur={12}
                   baseColor="#52525b"
-                  className="!px-7 !py-3 md:!px-8 md:!py-3.5 text-xs tracking-wide font-medium uppercase !bg-gradient-to-br !from-white/10 !via-transparent !to-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),inset_0_-1px_1px_rgba(255,255,255,0.1),0_4px_24px_-8px_rgba(0,0,0,0.5)] hover:!from-white/15 hover:!via-white/5 hover:!to-white/10 transition-all duration-300 w-fit"
+                  disabled={isSubmitting}
+                  className="!px-7 !py-3 md:!px-8 md:!py-3.5 text-xs tracking-wide font-medium uppercase !bg-gradient-to-br !from-white/10 !via-transparent !to-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),inset_0_-1px_1px_rgba(255,255,255,0.1),0_4px_24px_-8px_rgba(0,0,0,0.5)] hover:!from-white/15 hover:!via-white/5 hover:!to-white/10 transition-all duration-300 w-fit cursor-pointer disabled:opacity-50"
                 >
                   <div className="flex items-center justify-center gap-2.5 text-white">
-                    <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
-                    Submit Request
+                    {isSubmitting ? (
+                      <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                    )}
+                    <span>{isSubmitting ? 'Submitting...' : 'Submit Request'}</span>
                   </div>
                 </SpecularButton>
               </motion.div>

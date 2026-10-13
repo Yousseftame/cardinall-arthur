@@ -46,9 +46,8 @@ const BANNERS = [
   }
 ];
 
-const CATEGORIES = ['ALL', 'NEW ARRIVAL', 'MENS', 'WOMENS', 'WINTER'];
-
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useFavoriteStore } from '../../store/favoriteStore';
 import { PRODUCTS } from '../../data/products';
 import FAQSection from '../../components/sections/FAQSection';
@@ -56,6 +55,8 @@ import { Eye, ShoppingCart, X, Share2, Copy } from 'lucide-react';
 import PulseHeart from '../../components/PulseHeart';
 import { useCartStore } from '../../store/cartStore';
 import toast from 'react-hot-toast';
+import { getCategories } from '../../services/categories.service';
+
 
 const swipeConfidenceThreshold = 10000;
 const swipePower = (offset: number, velocity: number) => {
@@ -89,6 +90,29 @@ export default function MarketplacePage() {
   
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Categories load only on marketplace visit (shared cache with admin)
+  const { data: categoryRecords = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+    staleTime: 1000 * 60 * 2,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+
+  const categories = [
+    'ALL',
+    ...categoryRecords
+      .filter((c) => c.status === 'active')
+      .map((c) => c.name.trim().toUpperCase())
+      .filter(Boolean),
+  ];
+
+  useEffect(() => {
+    if (activeCategory !== 'ALL' && !categories.includes(activeCategory)) {
+      setActiveCategory('ALL');
+    }
+  }, [categories, activeCategory]);
 
   useEffect(() => {
     if (location.state?.scrollToProducts) {
@@ -404,7 +428,7 @@ export default function MarketplacePage() {
           
           {/* Category Filter */}
           <div className="flex items-center gap-6 md:gap-8 overflow-x-auto scrollbar-hide w-full" >
-            {CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}

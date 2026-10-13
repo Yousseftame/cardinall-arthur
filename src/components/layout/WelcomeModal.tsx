@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import emailsentImg from '../../assets/emailsent.avif';
+import { subscribeNewsletter } from '../../services/newsletter.service';
+import toast from 'react-hot-toast';
+
+const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export default function WelcomeModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const hasSeen = localStorage.getItem('hasSeenWelcome');
@@ -19,13 +24,32 @@ export default function WelcomeModal() {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    const trimmed = email.trim();
+
+    if (!trimmed) {
+      toast.error('Please enter your email address.');
+      return;
+    }
+
+    if (!EMAIL_REGEX.test(trimmed.toLowerCase())) {
+      toast.error('Please enter a valid email format.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await subscribeNewsletter({ email: trimmed, source: 'welcome' });
       setSubscribed(true);
       setTimeout(() => {
         setIsOpen(false);
-      }, 2500);
+      }, 2800);
+    } catch (err) {
+      console.error('Newsletter subscribe failed:', err);
+      toast.error('Failed to subscribe. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -69,20 +93,26 @@ export default function WelcomeModal() {
                       <p><strong className="text-black font-bold">And we give back.</strong> Every purchase helps build the community.</p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="w-full relative flex items-center border-b-[1.5px] border-[#1a1a1a]/40 pb-2 mb-6 group focus-within:border-[#1a1a1a] transition-colors">
+                    <form onSubmit={handleSubmit} noValidate className="w-full relative flex items-center border-b-[1.5px] border-[#1a1a1a]/40 pb-2 mb-6 group focus-within:border-[#1a1a1a] transition-colors">
                       <input
                         type="email"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Your email address"
-                        className="w-full bg-transparent text-[#1a1a1a] placeholder:text-[#1a1a1a]/40 focus:outline-none font-medium text-sm md:text-base"
+                        disabled={isSubmitting}
+                        className="w-full bg-transparent text-[#1a1a1a] placeholder:text-[#1a1a1a]/40 focus:outline-none font-medium text-sm md:text-base disabled:opacity-60"
                       />
                       <button 
                         type="submit"
-                        className="ml-4 text-[#1a1a1a]/40 group-focus-within:text-[#1a1a1a] hover:text-[#E63946] transition-colors"
+                        disabled={isSubmitting}
+                        className="ml-4 text-[#1a1a1a]/40 group-focus-within:text-[#1a1a1a] hover:text-[#2C0E11] transition-colors disabled:opacity-50"
                       >
-                        <ArrowRight strokeWidth={2} className="w-5 h-5" />
+                        {isSubmitting ? (
+                          <span className="w-5 h-5 border-2 border-[#2C0E11]/20 border-t-[#2C0E11] rounded-full animate-spin block" />
+                        ) : (
+                          <ArrowRight strokeWidth={2} className="w-5 h-5" />
+                        )}
                       </button>
                     </form>
                     
@@ -105,19 +135,32 @@ export default function WelcomeModal() {
                 ) : (
                   <motion.div
                     key="success"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-start justify-center text-left py-6 pb-12 w-full"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="flex flex-col items-start justify-center text-left py-4 pb-10 w-full"
                   >
-                    <div className="w-12 h-12 rounded-sm bg-[#E63946] flex items-center justify-center mb-6">
-                      <Check strokeWidth={3} className="w-6 h-6 text-white" />
+                    <div className="flex items-center gap-2 mb-5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#2C0E11]" />
+                      <span className="text-[10px] md:text-xs font-bold tracking-[0.18em] uppercase text-[#2C0E11]/70">
+                        Cardinal Arthur
+                      </span>
                     </div>
-                    <h2 className="font-heading text-xl md:text-2xl text-black font-bold tracking-tight mb-3">
+
+                    <h2 className="font-heading text-2xl md:text-3xl text-[#2C0E11] font-medium tracking-tight mb-3 leading-none">
                       You're on the list.
                     </h2>
-                    <p className="text-[#1a1a1a]/80 text-xs md:text-sm font-medium">
-                      Keep an eye on your inbox for something special.
+
+                    <div className="w-10 h-px bg-[#2C0E11]/25 mb-4" />
+
+                    <p className="text-[#1a1a1a]/75 text-xs md:text-sm font-medium leading-relaxed max-w-[280px]">
+                      Welcome to the inner circle. Watch your inbox for exclusive drops and private offers.
                     </p>
+
+                    <div className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] font-semibold text-[#C9A86A]">
+                      <span className="w-1 h-1 rounded-full bg-[#C9A86A]" />
+                      Subscription confirmed
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { useQuery } from '@tanstack/react-query';
 import { createOrder, generateOrderNumber } from '../../services/orders.service';
 import { getCheckoutSettings } from '../../services/checkoutSettings.service';
+import { savePaidCustomer } from '../../services/paidCustomers.service';
 import type { CreateOrderInput } from '../../types/order';
 import { Copy, Check, CreditCard } from 'lucide-react';
 import HoldButton from '../../components/HoldButton';
@@ -113,11 +114,13 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const subtotal = getCartTotal();
 
-  // Load checkout settings from Firestore (cached)
+  // Load checkout settings from Firestore
   const { data: checkoutSettings } = useQuery({
     queryKey: ['checkout-settings'],
     queryFn: getCheckoutSettings,
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 5, // 5 seconds fresh
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -139,23 +142,60 @@ export default function CheckoutPage() {
   } | null>(null);
   const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
 
-  // Dynamic governorates list
-  const governoratesList = checkoutSettings?.governorates?.filter(g => g.active) || [
-    { id: 'cairo', name: 'Cairo', shippingFee: 60, active: true },
-    { id: 'giza', name: 'Giza', shippingFee: 80, active: true },
-    { id: 'alexandria', name: 'Alexandria', shippingFee: 90, active: true },
-    { id: 'qalyubia', name: 'Qalyubia', shippingFee: 80, active: true },
-    { id: 'sharqia', name: 'Sharqia', shippingFee: 90, active: true },
-    { id: 'dakahlia', name: 'Dakahlia', shippingFee: 90, active: true },
-    { id: 'red-sea', name: 'Red Sea', shippingFee: 130, active: true },
-  ];
+  // 1. Default Shipping Fee from Admin Settings
+  const defaultShippingFee = typeof checkoutSettings?.standardShippingFee === 'number'
+    ? checkoutSettings.standardShippingFee
+    : 80;
 
-  const matchedGov = governoratesList.find(g => g.name.toLowerCase() === selectedGovernorate.toLowerCase());
-  const baseShippingFee = matchedGov ? matchedGov.shippingFee : (checkoutSettings?.standardShippingFee ?? 80);
-  const freeThreshold = checkoutSettings?.freeShippingThreshold ?? 2000;
+  // Full governorates list from Admin Settings
+  const allGovernorates = checkoutSettings?.governorates && checkoutSettings.governorates.length > 0
+    ? checkoutSettings.governorates
+    : [
+        { id: 'cairo', name: 'Cairo', shippingFee: 60, active: true },
+        { id: 'giza', name: 'Giza', shippingFee: 80, active: true },
+        { id: 'alexandria', name: 'Alexandria', shippingFee: 90, active: true },
+        { id: 'qalyubia', name: 'Qalyubia', shippingFee: 80, active: true },
+        { id: 'sharqia', name: 'Sharqia', shippingFee: 90, active: true },
+        { id: 'dakahlia', name: 'Dakahlia', shippingFee: 90, active: true },
+        { id: 'red-sea', name: 'Red Sea', shippingFee: 130, active: true },
+      ];
+
+  // Active governorates based on "Delivery Status"
+  const activeGovernorates = allGovernorates.filter(g => g.active);
+  const hasActiveGovernorates = activeGovernorates.length > 0;
+
+  // Scenario:
+  // - If there are available governorates (Delivery Status = Available), display them with their rates.
+  // - If ALL of them are disabled, the "Default Shipping Fee" is considered and displays for all governorates.
+  const displayGovernorates = hasActiveGovernorates
+    ? activeGovernorates
+    : allGovernorates.map(g => ({ ...g, shippingFee: defaultShippingFee }));
+
+  const matchedGov = displayGovernorates.find(g => g.name.toLowerCase() === selectedGovernorate.toLowerCase());
+  const baseShippingFee = hasActiveGovernorates
+    ? (matchedGov ? matchedGov.shippingFee : displayGovernorates[0]?.shippingFee ?? defaultShippingFee)
+    : defaultShippingFee;
+
+  // 2. Free Shipping Minimum Threshold (0 means disabled)
+  const freeThreshold = typeof checkoutSettings?.freeShippingThreshold === 'number'
+    ? checkoutSettings.freeShippingThreshold
+    : 0;
   const isFreeShipping = freeThreshold > 0 && subtotal >= freeThreshold;
   const shipping = subtotal > 0 ? (isFreeShipping ? 0 : baseShippingFee) : 0;
   const total = subtotal + shipping;
+
+  // 3. Estimated Delivery Time
+  const deliveryTime = checkoutSettings?.deliveryTimeEstimate?.trim() || "1 to 3 business days";
+
+  // Auto-sync selected governorate if it's no longer available in displayGovernorates
+  useEffect(() => {
+    if (displayGovernorates.length > 0) {
+      const match = displayGovernorates.some(g => g.name.toLowerCase() === selectedGovernorate.toLowerCase());
+      if (!match) {
+        setSelectedGovernorate(displayGovernorates[0].name);
+      }
+    }
+  }, [displayGovernorates, selectedGovernorate]);
 
   const firstItem = items[0];
 
@@ -273,6 +313,30 @@ export default function CheckoutPage() {
 
       const created = await createOrder(orderPayload);
 
+      // Save paid customer contact (name, email, phone only)
+      try {
+        await savePaidCustomer({
+          name: `${firstName} ${lastName}`.trim() || firstName,
+          email,
+          phone,
+        });
+      } catch (e) {
+        console.warn('Failed to save paid customer:', e);
+      }
+
+      // Store pending feedback for when customer returns to Home page
+      try {
+        localStorage.setItem('pending_checkout_feedback', JSON.stringify({
+          orderNumber: created.orderNumber,
+          customerName: `${firstName} ${lastName}`.trim() || firstName,
+          email,
+          phone,
+          placedAt: Date.now(),
+        }));
+      } catch (e) {
+        console.warn('Failed to save pending feedback:', e);
+      }
+
       toast.success('Order placed successfully!', {
         style: {
           background: '#1a1a1a',
@@ -343,14 +407,14 @@ export default function CheckoutPage() {
         </div>
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-1.5 text-gray-600">
-            Shipping ({selectedGovernorate})
+            <span>Shipping ({selectedGovernorate})</span>
             <div className="relative flex items-center group/shipping cursor-help">
               <svg className="w-[17px] h-[17px] text-gray-400 hover:text-gray-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <div className="absolute bottom-full right-1/2 translate-x-[50%] mb-2.5 w-max bg-[#2C0E11] text-white text-[13px] font-medium leading-[1.4] text-center px-4 py-2.5 rounded-[10px] opacity-0 invisible group-hover/shipping:opacity-100 group-hover/shipping:visible transition-all duration-200 z-50 shadow-xl">
-                {checkoutSettings?.deliveryTimeEstimate || "Standard shipping (1-3 business days)"}
-                <div className="absolute top-full right-1/2 translate-x-[50%] -mt-px border-[6px] border-transparent border-t-[#1a1a1a]" />
+              <div className="absolute bottom-full right-1/2 translate-x-[50%] mb-2.5 w-max bg-[#2C0E11] text-white text-[13px] font-medium leading-[1.4] text-center px-4 py-2.5 rounded-[10px] opacity-0 invisible group-hover/shipping:opacity-100 group-hover/shipping:visible transition-all duration-200 z-50 shadow-xl pointer-events-none">
+                Standard delivery ({deliveryTime})
+                <div className="absolute top-full right-1/2 translate-x-[50%] -mt-px border-[6px] border-transparent border-t-[#2C0E11]" />
               </div>
             </div>
           </div>
@@ -440,10 +504,16 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="w-full">
+          <div className="w-full space-y-2.5">
+            <Link 
+              to="/" 
+              className="block w-full bg-[#2C0E11] text-white py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold hover:bg-[#2C0E11]/90 active:scale-[0.99] transition-all shadow-sm text-center cursor-pointer"
+            >
+              Return to Home
+            </Link>
             <Link 
               to="/marketplace" 
-              className="block w-full bg-[#2C0E11] text-white py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold hover:bg-[#2C0E11]/90 active:scale-[0.99] transition-all shadow-sm text-center cursor-pointer"
+              className="block w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-xl text-xs sm:text-sm font-medium hover:bg-gray-200 active:scale-[0.99] transition-all text-center cursor-pointer"
             >
               Continue Shopping
             </Link>
@@ -510,7 +580,7 @@ export default function CheckoutPage() {
                   value={selectedGovernorate}
                   onChange={(e: any) => setSelectedGovernorate(e.target.value)}
                 >
-                  {governoratesList.map((gov) => (
+                  {displayGovernorates.map((gov) => (
                     <option key={gov.id} value={gov.name}>
                       {gov.name} ({gov.shippingFee} EGP)
                     </option>
@@ -595,10 +665,26 @@ export default function CheckoutPage() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Shipping method</h2>
               <div className="bg-[#f4f8fd] border border-blue-500 rounded-md p-4 flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-gray-900 font-medium">Shipping (1-3 Working Days)</div>
-                  <div className="text-xs text-gray-500 mt-0.5">1 to 3 business days</div>
+                  <div className="text-sm text-gray-900 font-medium flex items-center gap-2">
+                    <span>Shipping ({deliveryTime})</span>
+                    {isFreeShipping && (
+                      <span className="inline-block text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                        Free Shipping
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">{deliveryTime}</div>
                 </div>
-                <div className="text-sm font-medium text-gray-900">{shipping.toFixed(2)} EGP</div>
+                <div>
+                  {isFreeShipping ? (
+                    <div className="flex items-center gap-2">
+                      <span className="line-through text-xs text-gray-400 font-normal">{baseShippingFee.toFixed(2)} EGP</span>
+                      <span className="text-sm font-bold text-emerald-700">FREE</span>
+                    </div>
+                  ) : (
+                    <div className="text-sm font-medium text-gray-900">{shipping.toFixed(2)} EGP</div>
+                  )}
+                </div>
               </div>
             </section>
 

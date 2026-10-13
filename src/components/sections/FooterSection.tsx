@@ -2,8 +2,10 @@ import { ArrowUpRight } from 'lucide-react';
 import SpecularButton from '../SpecularButton';
 import { DiaTextReveal } from '../ui/dia-text-reveal';
 import { motion, type Variants, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import ScrollVelocity from '../ScrollVelocity';
+import { subscribeNewsletter } from '../../services/newsletter.service';
+import toast from 'react-hot-toast';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -21,6 +23,24 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
+const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+const brandToastStyle = {
+  style: {
+    background: 'rgba(44, 14, 17, 0.95)',
+    color: '#ffffff',
+    border: '1px solid rgba(201, 168, 106, 0.4)',
+    borderRadius: '100px',
+    padding: '14px 24px',
+    fontSize: '14px',
+    letterSpacing: '0.02em',
+  },
+  iconTheme: {
+    primary: '#C9A86A',
+    secondary: '#2C0E11',
+  },
+};
+
 const BrandRow = (
   <div className="flex items-center whitespace-nowrap text-black/90 font-heading font-normal text-[5rem] md:text-[8rem] lg:text-[11rem] xl:text-[13rem] uppercase tracking-wide leading-[0.8] py-4">
     <span>CARDINAL</span>
@@ -32,12 +52,42 @@ const BrandRow = (
 
 export default function FooterSection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end end"]
   });
 
   const y = useTransform(scrollYProgress, [0, 1], ["-100%", "0%"]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim();
+
+    if (!trimmed) {
+      toast.error('Please enter your email address.');
+      return;
+    }
+
+    if (!EMAIL_REGEX.test(trimmed.toLowerCase())) {
+      toast.error('Please enter a valid email format.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await subscribeNewsletter({ email: trimmed, source: 'footer' });
+      toast.success('You are subscribed. Welcome to Cardinal Arthur.', brandToastStyle);
+      setEmail('');
+    } catch (err) {
+      console.error('Newsletter subscribe failed:', err);
+      toast.error('Failed to subscribe. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -100,12 +150,19 @@ export default function FooterSection() {
             >
               Sign up for our newsletter to get latest insights and updates
             </motion.p>
-            <motion.form variants={itemVariants} className="flex items-center w-full gap-4 max-w-lg border-b border-white pb-3 justify-between">
+            <motion.form 
+              variants={itemVariants} 
+              onSubmit={handleSubmit}
+              noValidate
+              className="flex items-center w-full gap-4 max-w-lg border-b border-white pb-3 justify-between"
+            >
               <input 
                 type="email" 
                 placeholder="Enter email address" 
-                className="bg-transparent border-none focus:outline-none text-white placeholder-white w-full text-sm"
-                
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
+                className="bg-transparent border-none focus:outline-none text-white placeholder-white w-full text-sm disabled:opacity-60"
                 required
               />
               <SpecularButton 
@@ -115,11 +172,16 @@ export default function FooterSection() {
                 tintOpacity={0}
                 blur={12}
                 baseColor="#52525b"
-                className="!px-5 !py-2.5 text-xs tracking-wide font-medium uppercase !bg-gradient-to-br !from-white/10 !via-transparent !to-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),inset_0_-1px_1px_rgba(255,255,255,0.1),0_4px_24px_-8px_rgba(0,0,0,0.5)] hover:!from-white/15 hover:!via-white/5 hover:!to-white/10 transition-all duration-300 w-fit shrink-0"
+                disabled={isSubmitting}
+                className="!px-5 !py-2.5 text-xs tracking-wide font-medium uppercase !bg-gradient-to-br !from-white/10 !via-transparent !to-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),inset_0_-1px_1px_rgba(255,255,255,0.1),0_4px_24px_-8px_rgba(0,0,0,0.5)] hover:!from-white/15 hover:!via-white/5 hover:!to-white/10 transition-all duration-300 w-fit shrink-0 cursor-pointer disabled:opacity-50"
               >
                 <div className="flex items-center justify-center gap-2 text-white font-sans">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
-                  Subscribe
+                  {isSubmitting ? (
+                    <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                  )}
+                  <span>{isSubmitting ? 'Sending...' : 'Subscribe'}</span>
                 </div>
               </SpecularButton>
             </motion.form>

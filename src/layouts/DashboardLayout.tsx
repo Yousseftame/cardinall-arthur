@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink as RouterNavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useAdminBadgeCount } from '../hooks/useAdminBadgeCount';
+import { ADMIN_BADGE_STORES } from '../lib/adminBadges';
 import { 
   LogOut, LayoutDashboard, ShoppingBag, Tags, Image as ImageIcon, 
   CreditCard, MessageSquare, HelpCircle, Phone, 
   Home, Clock, Eye, Users, Heart, FileText,
-  Search, ShieldCheck, ChevronsLeft, Menu, PanelLeft, Globe
+  Search, ShieldCheck, ChevronsLeft, Menu, PanelLeft, Globe, UserCheck, Mail
 } from 'lucide-react';
 
 const SIDEBAR_EASE = "duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
@@ -27,6 +29,15 @@ const navEntries: NavEntry[] = [
   { type: 'link', href: '/admin/orders', icon: CreditCard, label: 'Orders' },
   { type: 'link', href: '/admin/checkout', icon: ShieldCheck, label: 'Checkout Settings' },
   { type: 'divider' },
+  { type: 'heading', label: 'Customer Service' },
+  { type: 'link', href: '/admin/feedback', icon: MessageSquare, label: 'Feedback' },
+  { type: 'link', href: '/admin/cant-find', icon: Search, label: 'Can\'t Find It' },
+  { type: 'link', href: '/admin/contact', icon: Phone, label: 'Contact Us' },
+  { type: 'divider' },
+  { type: 'heading', label: 'Media Buyer' },
+  { type: 'link', href: '/admin/customers', icon: UserCheck, label: 'Paid Customers' },
+  { type: 'link', href: '/admin/newsletter', icon: Mail, label: 'Newsletter' },
+  { type: 'divider' },
   { type: 'heading', label: 'Home Page' },
   { type: 'link', href: '/admin/hero', icon: Home, label: 'Hero Section' },
   { type: 'link', href: '/admin/projects', icon: LayoutDashboard, label: 'Latest Projects' },
@@ -39,10 +50,7 @@ const navEntries: NavEntry[] = [
   { type: 'link', href: '/admin/vision', icon: Eye, label: 'Vision' },
   { type: 'link', href: '/admin/socials', icon: Heart, label: 'On Socials' },
   { type: 'divider' },
-  { type: 'heading', label: 'Customer Service' },
-  { type: 'link', href: '/admin/feedback', icon: MessageSquare, label: 'Feedback' },
-  { type: 'link', href: '/admin/cant-find', icon: Search, label: 'Can\'t Find It' },
-  { type: 'link', href: '/admin/contact', icon: Phone, label: 'Contact Us' },
+  { type: 'heading', label: 'Site Content' },
   { type: 'link', href: '/admin/faq', icon: HelpCircle, label: 'FAQ' },
   { type: 'link', href: '/admin/terms', icon: FileText, label: 'Terms & Conditions' },
 ];
@@ -55,6 +63,11 @@ export default function DashboardLayout() {
   
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Badges: localStorage + React Query cache only — never fetch Firebase from the layout
+  const newFeedbackCount = useAdminBadgeCount('admin-feedbacks', ADMIN_BADGE_STORES.feedbacks);
+  const newContactCount = useAdminBadgeCount('admin-contact-messages', ADMIN_BADGE_STORES.contact);
+  const newCantFindCount = useAdminBadgeCount('admin-cant-find', ADMIN_BADGE_STORES.cantFind);
 
   const handleSignOut = async () => {
     await logout();
@@ -170,12 +183,22 @@ export default function DashboardLayout() {
               );
             }
 
+            let badgeCount: number | undefined;
+            if (entry.href === '/admin/feedback') {
+              badgeCount = newFeedbackCount;
+            } else if (entry.href === '/admin/contact') {
+              badgeCount = newContactCount;
+            } else if (entry.href === '/admin/cant-find') {
+              badgeCount = newCantFindCount;
+            }
+
             return (
               <NavLink
                 key={entry.href}
                 item={entry}
                 collapsed={collapsed}
                 active={location.pathname === entry.href}
+                badgeCount={badgeCount}
                 onClick={onMobileClose}
               />
             );
@@ -302,11 +325,13 @@ function NavLink({
   item,
   collapsed,
   active,
+  badgeCount,
   onClick,
 }: {
   item: Extract<NavEntry, { type: 'link' }>;
   collapsed: boolean;
   active: boolean;
+  badgeCount?: number;
   onClick: () => void;
 }) {
   const Icon = item.icon;
@@ -320,9 +345,26 @@ function NavLink({
     >
       <span className="relative shrink-0 flex items-center justify-center">
         <Icon className="h-[20px] w-[20px]" strokeWidth={active ? 2.5 : 1.8} />
+        {badgeCount !== undefined && badgeCount > 0 && (
+          <span 
+            className={cn(
+              "absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#2C0E11] text-[10px] font-bold text-white shadow-xs transition-transform duration-200",
+              collapsed ? "scale-100" : "scale-0 lg:hidden"
+            )}
+          >
+            {badgeCount > 99 ? '99+' : badgeCount}
+          </span>
+        )}
       </span>
-      <SidebarLabel collapsed={collapsed}>
-        {item.label}
+      <SidebarLabel collapsed={collapsed} className="flex-1 min-w-0">
+        <div className="flex items-center justify-between w-full">
+          <span className="truncate">{item.label}</span>
+          {badgeCount !== undefined && badgeCount > 0 && (
+            <span className="ml-2 shrink-0 inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#2C0E11] text-white shadow-xs">
+              {badgeCount}
+            </span>
+          )}
+        </div>
       </SidebarLabel>
     </RouterNavLink>
   );
@@ -353,9 +395,11 @@ function navItemClass({
 
 function SidebarLabel({
   collapsed,
+  className,
   children,
 }: {
   collapsed: boolean;
+  className?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -363,7 +407,8 @@ function SidebarLabel({
       className={cn(
         "grid min-w-0 transition-[grid-template-columns,opacity]",
         SIDEBAR_EASE,
-        collapsed ? "lg:grid-cols-[0fr] lg:opacity-0" : "grid-cols-[1fr] opacity-100"
+        collapsed ? "lg:grid-cols-[0fr] lg:opacity-0" : "grid-cols-[1fr] opacity-100",
+        className
       )}
     >
       <span className="overflow-hidden whitespace-nowrap">{children}</span>

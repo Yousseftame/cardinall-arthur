@@ -29,9 +29,12 @@ import {
   AlertTriangle,
   Copy,
   Check,
-  Send
+  Send,
+  Printer,
+  FileText
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { adminListQueryOptions } from '../../lib/adminQuery';
 
 const STORE_ADMIN_PHONE = "01011151366";
 
@@ -168,10 +171,11 @@ export default function OrdersPage() {
     };
   }, [selectedOrder, orderToDelete, whatsAppOrder]);
 
-  // TanStack Query for optimized Firestore reads (cached for 3 minutes)
+  // TanStack Query — this page only; no layout/global prefetch
   const { data: orders = [], isLoading, isFetching, refetch } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: () => getOrders(100),
+    ...adminListQueryOptions,
     staleTime: 1000 * 60 * 3,
   });
 
@@ -268,8 +272,19 @@ export default function OrdersPage() {
       id: 'orderNumber',
       header: 'Order #',
       cell: (row) => (
-        <div className="flex flex-col">
-          <span className="font-bold text-[#2C0E11] font-mono tracking-tight">{row.orderNumber}</span>
+        <div className="flex flex-col gap-0.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-bold text-[#2C0E11] font-mono tracking-tight">{row.orderNumber}</span>
+            {row.notes && (
+              <span 
+                title={`Customer Note: "${row.notes}"`}
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200/80 cursor-help shrink-0 shadow-2xs"
+              >
+                <FileText className="w-2.5 h-2.5 text-rose-600" />
+                Note
+              </span>
+            )}
+          </div>
           <span className="text-[11px] text-gray-500">
             {new Date(row.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
@@ -423,11 +438,12 @@ export default function OrdersPage() {
 
               {/* Refresh Button */}
               <button 
-                onClick={() => refetch()} 
-                title="Refresh orders"
-                className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors ${isFetching ? 'animate-spin' : ''}`}
+                onClick={() => refetch()}
+                disabled={isFetching}
+                title="Refresh this page only"
+                className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors disabled:opacity-60"
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
               </button>
             </div>
 
@@ -547,6 +563,18 @@ export default function OrdersPage() {
                     <p>{row.shippingAddress.street ? `Street: ${row.shippingAddress.street}` : ''} {row.shippingAddress.building ? `· Bldg: ${row.shippingAddress.building}` : ''} {row.shippingAddress.apartment ? `· Apt: ${row.shippingAddress.apartment}` : ''}</p>
                     <p className="text-gray-500">{row.shippingAddress.area}, {row.shippingAddress.governorate} {row.shippingAddress.postalCode ? `(${row.shippingAddress.postalCode})` : ''}</p>
                   </div>
+                  {/* Customer Note */}
+                  {row.notes && (
+                    <div className="pt-2 text-xs leading-relaxed border-t border-gray-200 mt-2">
+                      <span className="font-bold text-rose-700 text-xs uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                        <FileText className="w-3.5 h-3.5 text-rose-600" />
+                        Customer Note
+                      </span>
+                      <p className="font-medium text-gray-900 pl-2.5 border-l-2 border-rose-500 select-text break-words">
+                        {row.notes}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -601,8 +629,8 @@ export default function OrdersPage() {
             </div>
 
             {/* Bottom Actions Bar */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-200/60">
+              <div className="flex flex-wrap items-center gap-2">
                 <TableAction 
                   label="View Full Invoice" 
                   tone="primary" 
@@ -629,12 +657,6 @@ export default function OrdersPage() {
                   onClick={() => setOrderToDelete(row)} 
                 />
               </div>
-
-              {row.notes && (
-                <span className="text-xs text-gray-500 italic max-w-md truncate">
-                  Note: "{row.notes}"
-                </span>
-              )}
             </div>
 
           </div>
@@ -647,17 +669,17 @@ export default function OrdersPage() {
           onClick={(e) => {
             if (e.target === e.currentTarget) setSelectedOrder(null);
           }}
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
         >
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+          <div className="relative w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-[#FCFBF8]">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 bg-[#FCFBF8] shrink-0">
               <div>
-                <span className="text-xs uppercase tracking-widest text-gray-500 font-bold font-mono">Order Details</span>
-                <h3 className="text-xl font-bold text-[#2C0E11] flex items-center gap-3">
+                <span className="text-[10px] sm:text-xs uppercase tracking-widest text-gray-500 font-bold font-mono">Order Details</span>
+                <h3 className="text-lg sm:text-xl font-bold text-[#2C0E11] flex items-center gap-2 sm:gap-3">
                   <span>{selectedOrder.orderNumber}</span>
-                  <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold border ${STATUS_CONFIG[selectedOrder.status].bg} ${STATUS_CONFIG[selectedOrder.status].text}`}>
+                  <span className={`text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-bold border ${STATUS_CONFIG[selectedOrder.status].bg} ${STATUS_CONFIG[selectedOrder.status].text}`}>
                     {STATUS_CONFIG[selectedOrder.status].label}
                   </span>
                 </h3>
@@ -671,30 +693,30 @@ export default function OrdersPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1 custom-scrollbar">
               
               {/* Order Meta */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-[#F4F4F4]">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-[#F4F4F4]">
                 <div>
-                  <span className="text-[11px] text-gray-500 uppercase font-semibold">Date</span>
+                  <span className="text-[10px] sm:text-[11px] text-gray-500 uppercase font-semibold">Date</span>
                   <p className="text-xs font-bold text-gray-900 mt-0.5">
                     {new Date(selectedOrder.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <div>
-                  <span className="text-[11px] text-gray-500 uppercase font-semibold">Payment</span>
-                  <p className="text-xs font-bold text-gray-900 mt-0.5 uppercase">
+                  <span className="text-[10px] sm:text-[11px] text-gray-500 uppercase font-semibold">Payment</span>
+                  <p className="text-xs font-bold text-gray-900 mt-0.5 uppercase truncate">
                     {selectedOrder.paymentMethod} ({selectedOrder.paymentStatus})
                   </p>
                 </div>
                 <div>
-                  <span className="text-[11px] text-gray-500 uppercase font-semibold">Total</span>
+                  <span className="text-[10px] sm:text-[11px] text-gray-500 uppercase font-semibold">Total</span>
                   <p className="text-xs font-bold text-[#2C0E11] mt-0.5">
                     {selectedOrder.pricing.total.toFixed(2)} EGP
                   </p>
                 </div>
                 <div>
-                  <span className="text-[11px] text-gray-500 uppercase font-semibold">Items</span>
+                  <span className="text-[10px] sm:text-[11px] text-gray-500 uppercase font-semibold">Items</span>
                   <p className="text-xs font-bold text-gray-900 mt-0.5">
                     {selectedOrder.items.reduce((s, i) => s + i.quantity, 0)} units
                   </p>
@@ -702,40 +724,63 @@ export default function OrdersPage() {
               </div>
 
               {/* Customer & Shipping */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Customer</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 sm:mb-2">Customer</h4>
                   <p className="font-semibold text-gray-900 text-sm">{selectedOrder.customer.firstName} {selectedOrder.customer.lastName}</p>
                   <p className="text-xs text-gray-600 mt-1">{selectedOrder.customer.email}</p>
                   <p className="text-xs text-gray-600 mt-0.5">{selectedOrder.customer.phone}</p>
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Delivery Address</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5 sm:mb-2">Delivery Address</h4>
                   <p className="text-xs text-gray-800 font-medium leading-relaxed">{selectedOrder.shippingAddress.fullAddress}</p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {selectedOrder.shippingAddress.area}, {selectedOrder.shippingAddress.governorate}
+                    {selectedOrder.shippingAddress.area ? `${selectedOrder.shippingAddress.area}, ` : ''}{selectedOrder.shippingAddress.governorate}
                   </p>
                 </div>
+                {selectedOrder.notes && (
+                  <div className="sm:col-span-2 pt-3 border-t border-gray-100">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-rose-600 mb-1.5 sm:mb-2 flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-rose-600" />
+                      Customer Note
+                    </h4>
+                    <p className="text-xs sm:text-sm text-gray-900 font-medium leading-relaxed pl-3 border-l-2 border-rose-500 select-text break-words">
+                      {selectedOrder.notes}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Items List */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Purchased Items</h4>
-                <div className="border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2.5 sm:mb-3">Purchased Items</h4>
+                <div className="border border-gray-200 rounded-2xl overflow-hidden divide-y divide-gray-100">
                   {selectedOrder.items.map((item, i) => (
-                    <div key={i} className="p-3.5 flex items-center justify-between gap-4 bg-white">
-                      <div className="flex items-center gap-3">
-                        <img 
-                          src={item.imageUrl} 
-                          alt="" 
-                          className="w-12 h-12 rounded-lg object-contain border border-gray-100 bg-gray-50" 
-                        />
-                        <div>
-                          <p className="text-sm font-semibold text-gray-900">{item.name}</p>
-                          <p className="text-xs text-gray-500">Qty: {item.quantity} × {item.price.toFixed(2)} EGP</p>
+                    <div key={i} className="p-3 sm:p-3.5 flex items-center justify-between gap-3 sm:gap-4 bg-white">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+                          {item.imageUrl ? (
+                            <img 
+                              src={item.imageUrl} 
+                              alt={item.name} 
+                              onError={(e) => {
+                                (e.currentTarget as HTMLElement).style.display = 'none';
+                                const fb = e.currentTarget.parentElement?.querySelector('.order-item-fallback') as HTMLElement;
+                                if (fb) fb.classList.remove('hidden');
+                              }}
+                              className="w-full h-full object-cover" 
+                            />
+                          ) : null}
+                          <div className={`order-item-fallback ${item.imageUrl ? 'hidden' : 'flex'} items-center justify-center w-full h-full text-gray-400`}>
+                            <ShoppingBag className="w-5 h-5" />
+                          </div>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">{item.name}</p>
+                          <p className="text-[11px] sm:text-xs text-gray-500">Qty: {item.quantity} × {item.price.toFixed(2)} EGP</p>
                         </div>
                       </div>
-                      <span className="text-sm font-bold text-gray-900">
+                      <span className="text-xs sm:text-sm font-bold text-gray-900 shrink-0">
                         {item.subtotal.toFixed(2)} EGP
                       </span>
                     </div>
@@ -744,7 +789,7 @@ export default function OrdersPage() {
               </div>
 
               {/* Financial Breakdown */}
-              <div className="bg-gray-50 p-4 rounded-xl space-y-2 text-sm border border-gray-200/60">
+              <div className="bg-gray-50 p-3.5 sm:p-4 rounded-2xl space-y-2 text-sm border border-gray-200/60">
                 <div className="flex justify-between text-gray-600 text-xs">
                   <span>Subtotal</span>
                   <span>{selectedOrder.pricing.subtotal.toFixed(2)} EGP</span>
@@ -753,7 +798,7 @@ export default function OrdersPage() {
                   <span>Shipping Fee</span>
                   <span>{selectedOrder.pricing.shippingFee.toFixed(2)} EGP</span>
                 </div>
-                <div className="flex justify-between font-bold text-base text-[#2C0E11] pt-2 border-t border-gray-200">
+                <div className="flex justify-between font-bold text-sm sm:text-base text-[#2C0E11] pt-2 border-t border-gray-200">
                   <span>Final Total</span>
                   <span>{selectedOrder.pricing.total.toFixed(2)} EGP</span>
                 </div>
@@ -761,15 +806,19 @@ export default function OrdersPage() {
 
             </div>
 
-            {/* Modal Footer with Actions */}
-            <div className="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-              <div className="flex items-center gap-3 flex-wrap">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold text-gray-600">Status:</span>
+            {/* Modal Footer with Actions - Fully Responsive & Mobile-Optimized */}
+            <div className="p-3 sm:p-4 border-t border-gray-100 bg-[#FAF9F6] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
+              
+              {/* Selectors: Status & Payment */}
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3.5 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
+                  <span className="text-[10px] sm:text-xs font-bold sm:font-semibold text-gray-500 sm:text-gray-600 uppercase tracking-wider sm:normal-case">
+                    Status:
+                  </span>
                   <select
                     value={selectedOrder.status}
                     onChange={(e) => updateStatusMutation.mutate({ orderId: selectedOrder.id, status: e.target.value as OrderStatus })}
-                    className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-800 outline-none focus:border-[#2C0E11] cursor-pointer"
+                    className="w-full sm:w-auto text-xs font-semibold px-2.5 py-2 sm:py-1.5 rounded-xl sm:rounded-lg border border-gray-300 bg-white text-gray-800 outline-none focus:border-[#2C0E11] focus:ring-1 focus:ring-[#2C0E11] cursor-pointer shadow-xs transition-all"
                   >
                     <option value="pending">Pending</option>
                     <option value="processing">Processing</option>
@@ -779,12 +828,14 @@ export default function OrdersPage() {
                   </select>
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold text-gray-600">Payment:</span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
+                  <span className="text-[10px] sm:text-xs font-bold sm:font-semibold text-gray-500 sm:text-gray-600 uppercase tracking-wider sm:normal-case">
+                    Payment:
+                  </span>
                   <select
                     value={selectedOrder.paymentStatus}
                     onChange={(e) => updatePaymentMutation.mutate({ orderId: selectedOrder.id, paymentStatus: e.target.value as PaymentStatus })}
-                    className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-800 outline-none focus:border-[#2C0E11] cursor-pointer"
+                    className="w-full sm:w-auto text-xs font-semibold px-2.5 py-2 sm:py-1.5 rounded-xl sm:rounded-lg border border-gray-300 bg-white text-gray-800 outline-none focus:border-[#2C0E11] focus:ring-1 focus:ring-[#2C0E11] cursor-pointer shadow-xs transition-all"
                   >
                     <option value="pending">Pending</option>
                     <option value="paid">Paid</option>
@@ -793,30 +844,39 @@ export default function OrdersPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              {/* Action Buttons: WhatsApp, Print, Close */}
+              <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-2 w-full sm:w-auto pt-2 sm:pt-0 border-t border-gray-200/60 sm:border-t-0">
                 <button
+                  type="button"
                   onClick={() => {
                     setWhatsAppOrder(selectedOrder);
                     setWhatsAppRecipientType('customer');
                   }}
-                  className="px-4 py-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="w-full sm:w-auto py-2.5 sm:py-2 px-2.5 sm:px-3.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl sm:rounded-lg hover:bg-emerald-100 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                 >
-                  <WhatsAppIcon className="w-3.5 h-3.5 text-emerald-600" />
+                  <WhatsAppIcon className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                   <span>WhatsApp</span>
                 </button>
+
                 <button
+                  type="button"
                   onClick={() => window.print()}
-                  className="px-4 py-2 text-xs font-bold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                  className="w-full sm:w-auto py-2.5 sm:py-2 px-2.5 sm:px-3.5 text-xs font-bold text-gray-700 bg-white border border-gray-300 rounded-xl sm:rounded-lg hover:bg-gray-100 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                 >
-                  Print Invoice
+                  <Printer className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                  <span className="hidden sm:inline">Print Invoice</span>
+                  <span className="sm:hidden">Print</span>
                 </button>
+
                 <button
+                  type="button"
                   onClick={() => setSelectedOrder(null)}
-                  className="px-5 py-2 text-xs font-bold text-white bg-[#2C0E11] rounded-lg hover:bg-[#2C0E11]/90 transition-colors cursor-pointer"
+                  className="w-full sm:w-auto py-2.5 sm:py-2 px-3 sm:px-5 text-xs font-bold text-white bg-[#2C0E11] rounded-xl sm:rounded-lg hover:bg-[#2C0E11]/90 active:scale-[0.98] transition-all flex items-center justify-center cursor-pointer shadow-xs"
                 >
-                  Close
+                  <span>Close</span>
                 </button>
               </div>
+
             </div>
 
           </div>

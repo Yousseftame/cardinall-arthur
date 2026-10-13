@@ -16,19 +16,19 @@ import {
   Save, 
   RefreshCw, 
   MapPin, 
-  Mail, 
-  Phone, 
   Clock, 
   Sparkles
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { adminListQueryOptions } from '../../lib/adminQuery';
 
 export default function CheckoutSettingsPage() {
   const queryClient = useQueryClient();
 
-  const { data: initialSettings, isLoading, refetch } = useQuery({
+  const { data: initialSettings, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['admin-checkout-settings'],
     queryFn: getCheckoutSettings,
+    ...adminListQueryOptions,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -44,6 +44,7 @@ export default function CheckoutSettingsPage() {
     mutationFn: (newSettings: CheckoutSettings) => updateCheckoutSettings(newSettings),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-checkout-settings'] });
+      queryClient.invalidateQueries({ queryKey: ['checkout-settings'] });
       toast.success('Checkout settings saved successfully!');
     },
     onError: (err: any) => {
@@ -154,10 +155,11 @@ export default function CheckoutSettingsPage() {
           <button
             type="button"
             onClick={() => refetch()}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors shadow-xs"
-            title="Reload settings"
+            disabled={isFetching}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors shadow-xs disabled:opacity-60"
+            title="Refresh this page only"
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
           </button>
           <button
             type="submit"
@@ -220,8 +222,8 @@ export default function CheckoutSettingsPage() {
               <input
                 type="number"
                 min="0"
-                value={formData.standardShippingFee}
-                onChange={(e) => setFormData({ ...formData, standardShippingFee: Number(e.target.value) })}
+                value={formData.standardShippingFee ?? 0}
+                onChange={(e) => setFormData({ ...formData, standardShippingFee: Math.max(0, Number(e.target.value) || 0) })}
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-semibold text-gray-900 outline-none focus:border-[#2C0E11] focus:bg-white transition-all"
                 required
               />
@@ -240,8 +242,8 @@ export default function CheckoutSettingsPage() {
               <input
                 type="number"
                 min="0"
-                value={formData.freeShippingThreshold}
-                onChange={(e) => setFormData({ ...formData, freeShippingThreshold: Number(e.target.value) })}
+                value={formData.freeShippingThreshold ?? 0}
+                onChange={(e) => setFormData({ ...formData, freeShippingThreshold: Math.max(0, Number(e.target.value) || 0) })}
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-semibold text-gray-900 outline-none focus:border-[#2C0E11] focus:bg-white transition-all"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">
@@ -258,7 +260,7 @@ export default function CheckoutSettingsPage() {
             <div className="relative">
               <input
                 type="text"
-                value={formData.deliveryTimeEstimate}
+                value={formData.deliveryTimeEstimate ?? ''}
                 onChange={(e) => setFormData({ ...formData, deliveryTimeEstimate: e.target.value })}
                 placeholder="1 to 3 business days"
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-semibold text-gray-900 outline-none focus:border-[#2C0E11] focus:bg-white transition-all"
@@ -362,7 +364,8 @@ export default function CheckoutSettingsPage() {
         />
       </div>
 
-      {/* Section 4: Store Support Contact */}
+      {/* Section 4: Store Support Contact (Hidden for now as requested) */}
+      {/* 
       <div className="rounded-[24px] bg-white p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.02)] space-y-6">
         <div className="flex items-center gap-2.5 pb-4 border-b border-gray-100">
           <div className="w-9 h-9 rounded-full bg-[#2C0E11]/8 flex items-center justify-center text-[#2C0E11]">
@@ -408,6 +411,7 @@ export default function CheckoutSettingsPage() {
           </div>
         </div>
       </div>
+      */}
 
       {/* Save Button Floating Bar at Bottom */}
       <div className="sticky bottom-6 z-20 flex justify-end">

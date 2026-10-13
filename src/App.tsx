@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import MasterLayout from "./layouts/MasterLayout";
@@ -18,12 +19,35 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
-import CategoriesPage from "./pages/admin/CategoriesPage";
-import OrdersPage from "./pages/admin/OrdersPage";
-import CheckoutSettingsPage from "./pages/admin/CheckoutSettingsPage";
+// Admin pages: lazy-loaded so unused routes never download or fetch data
+const CategoriesPage = lazy(() => import("./pages/admin/CategoriesPage"));
+const OrdersPage = lazy(() => import("./pages/admin/OrdersPage"));
+const CheckoutSettingsPage = lazy(() => import("./pages/admin/CheckoutSettingsPage"));
+const FeedbackPage = lazy(() => import("./pages/admin/FeedbackPage"));
+const ContactMessagesPage = lazy(() => import("./pages/admin/ContactMessagesPage"));
+const CantFindRequestsPage = lazy(() => import("./pages/admin/CantFindRequestsPage"));
+const PaidCustomersPage = lazy(() => import("./pages/admin/PaidCustomersPage"));
+const NewsletterPage = lazy(() => import("./pages/admin/NewsletterPage"));
 
-// Initialize QueryClient
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 2,
+      gcTime: 1000 * 60 * 10,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      retry: 1,
+    },
+  },
+});
+
+function AdminPageFallback() {
+  return (
+    <div className="flex items-center justify-center py-24 text-sm text-gray-500 font-medium tracking-wide">
+      Loading...
+    </div>
+  );
+}
 
 function App() {
   return (
@@ -46,7 +70,7 @@ function App() {
             },
             success: {
               iconTheme: {
-                primary: '#c7ea46', // Matching the lime green cart badge
+                primary: '#c7ea46',
                 secondary: '#0a0a0a',
               },
             },
@@ -76,28 +100,26 @@ function App() {
               <Route element={<DashboardLayout />}>
                 <Route index element={<div className="text-gray-500 text-2xl font-light tracking-widest uppercase">Admin Dashboard Home</div>} />
                 
-                {/* Store Management */}
-                <Route path="categories" element={<CategoriesPage />} />
+                <Route path="categories" element={<Suspense fallback={<AdminPageFallback />}><CategoriesPage /></Suspense>} />
                 <Route path="products" element={<div className="text-white text-xl font-light tracking-widest uppercase">Products Management</div>} />
-                <Route path="orders" element={<OrdersPage />} />
-                <Route path="checkout" element={<CheckoutSettingsPage />} />
+                <Route path="orders" element={<Suspense fallback={<AdminPageFallback />}><OrdersPage /></Suspense>} />
+                <Route path="customers" element={<Suspense fallback={<AdminPageFallback />}><PaidCustomersPage /></Suspense>} />
+                <Route path="newsletter" element={<Suspense fallback={<AdminPageFallback />}><NewsletterPage /></Suspense>} />
+                <Route path="checkout" element={<Suspense fallback={<AdminPageFallback />}><CheckoutSettingsPage /></Suspense>} />
                 
-                {/* Home Page */}
                 <Route path="hero" element={<div className="text-white text-xl font-light tracking-widest uppercase">Hero Section Editor</div>} />
                 <Route path="projects" element={<div className="text-white text-xl font-light tracking-widest uppercase">Latest Projects Editor</div>} />
                 <Route path="partners" element={<div className="text-white text-xl font-light tracking-widest uppercase">Trusted Partners Editor</div>} />
                 <Route path="banners" element={<div className="text-white text-xl font-light tracking-widest uppercase">Banners Management</div>} />
                 
-                {/* About Page */}
                 <Route path="about-intro" element={<div className="text-white text-xl font-light tracking-widest uppercase">About Us Section Editor</div>} />
                 <Route path="timeline" element={<div className="text-white text-xl font-light tracking-widest uppercase">Timeline Section Editor</div>} />
                 <Route path="vision" element={<div className="text-white text-xl font-light tracking-widest uppercase">Vision Section Editor</div>} />
                 <Route path="socials" element={<div className="text-white text-xl font-light tracking-widest uppercase">On Socials Editor</div>} />
                 
-                {/* Customer Service */}
-                <Route path="feedback" element={<div className="text-white text-xl font-light tracking-widest uppercase">Client Feedback</div>} />
-                <Route path="cant-find" element={<div className="text-white text-xl font-light tracking-widest uppercase">Can't Find It Requests</div>} />
-                <Route path="contact" element={<div className="text-white text-xl font-light tracking-widest uppercase">Contact Us Messages</div>} />
+                <Route path="feedback" element={<Suspense fallback={<AdminPageFallback />}><FeedbackPage /></Suspense>} />
+                <Route path="cant-find" element={<Suspense fallback={<AdminPageFallback />}><CantFindRequestsPage /></Suspense>} />
+                <Route path="contact" element={<Suspense fallback={<AdminPageFallback />}><ContactMessagesPage /></Suspense>} />
                 <Route path="faq" element={<div className="text-white text-xl font-light tracking-widest uppercase">FAQ Editor</div>} />
                 <Route path="terms" element={<div className="text-white text-xl font-light tracking-widest uppercase">Terms & Conditions Editor</div>} />
               </Route>
