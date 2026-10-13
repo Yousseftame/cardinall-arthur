@@ -78,7 +78,7 @@ export default function DashboardLayout() {
   const onMobileClose = () => setMobileOpen(false);
 
   return (
-    <div className="flex h-screen bg-[#F4F4F4] text-gray-800 font-sans overflow-hidden">
+    <div className="flex h-dvh max-h-dvh bg-[#F4F4F4] text-gray-800 font-sans overflow-hidden">
       
       {/* Mobile Backdrop */}
       <div
@@ -90,13 +90,13 @@ export default function DashboardLayout() {
         aria-hidden
       />
 
-      {/* Sidebar */}
+      {/* Sidebar — logo + footer fixed; only nav scrolls */}
       <aside
         className={cn(
-          "fixed inset-y-0 start-0 z-50 flex h-screen shrink-0 flex-col overflow-x-hidden overflow-y-auto scrollbar-hide bg-[#F4F4F4] py-6 transition-[width,transform,padding] lg:sticky lg:top-0",
+          "fixed inset-y-0 start-0 z-50 flex h-dvh max-h-dvh shrink-0 flex-col overflow-hidden bg-[#F4F4F4] pt-6 transition-[width,transform,padding] lg:sticky lg:top-0",
           SIDEBAR_EASE,
           collapsed ? "lg:w-[76px] lg:px-3" : "lg:w-[320px] lg:px-5",
-          "w-[320px] px-5",
+          "w-[min(320px,85vw)] px-5",
           mobileOpen
             ? "translate-x-0"
             : "-translate-x-full lg:translate-x-0"
@@ -105,7 +105,7 @@ export default function DashboardLayout() {
         {/* Logo Container */}
         <div
           className={cn(
-            "mb-8 flex items-center shrink-0",
+            "mb-6 flex items-center shrink-0",
             collapsed ? "lg:h-11 lg:justify-center" : "h-12 px-3 justify-center"
           )}
         >
@@ -152,8 +152,11 @@ export default function DashboardLayout() {
           </div>
         </div>
 
-        {/* Navigation List */}
-        <nav className="flex flex-1 flex-col gap-1">
+        {/* Navigation List — independent scroll so bottom links stay reachable */}
+        <nav
+          className="sidebar-nav flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-y-contain pb-3"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           {navEntries.map((entry, index) => {
             if (entry.type === "divider") {
               return (
@@ -205,8 +208,11 @@ export default function DashboardLayout() {
           })}
         </nav>
 
-        {/* Bottom Actions */}
-        <div className="mt-4 flex flex-col gap-1 shrink-0">
+        {/* Bottom Actions — pinned above browser chrome / home indicator */}
+        <div
+          className="mt-2 flex flex-col gap-1 shrink-0 border-t border-[#2C0E11]/10 pt-3 px-0"
+          style={{ paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom, 0px))' }}
+        >
           <button
             type="button"
             onClick={onToggle}
@@ -315,6 +321,18 @@ export default function DashboardLayout() {
         .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+        .sidebar-nav {
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior-y: contain;
+          touch-action: pan-y;
+        }
+        .sidebar-nav::-webkit-scrollbar {
+          width: 4px;
+        }
+        .sidebar-nav::-webkit-scrollbar-thumb {
+          background: rgba(44, 14, 17, 0.18);
+          border-radius: 999px;
         }
       `}</style>
     </div>
