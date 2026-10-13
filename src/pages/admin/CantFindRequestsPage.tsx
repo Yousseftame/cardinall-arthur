@@ -351,24 +351,35 @@ export default function CantFindRequestsPage() {
           )
         }
         toolbar={
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-            <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name, email, notes, or inspiration..."
-                className="h-10 sm:h-11 w-full rounded-full bg-[#F4F4F4] pr-4 pl-11 text-sm font-medium text-gray-900 outline-none placeholder:text-gray-400 focus:bg-gray-100 transition-colors border-none"
-              />
+          <div className="flex flex-row items-center justify-between gap-3 max-md:flex-col max-md:items-stretch">
+            <div className="flex items-center gap-2 flex-1 min-w-0 w-full">
+              <div className="relative flex-1 min-w-0">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by name, email, notes, or inspiration..."
+                  className="h-10 sm:h-11 w-full rounded-full bg-[#F4F4F4] pr-4 pl-11 text-sm font-medium text-gray-900 outline-none placeholder:text-gray-400 focus:bg-gray-100 transition-colors border-none"
+                />
+              </div>
+              <button 
+                type="button"
+                onClick={() => refetch()}
+                disabled={isFetching}
+                className="flex md:hidden h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer disabled:opacity-60"
+                title="Refresh this page only"
+              >
+                <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+              </button>
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="flex items-center bg-[#F4F4F4] p-1 rounded-full text-xs font-semibold">
+            <div className="flex items-center gap-2 shrink-0 w-full md:w-auto">
+              <div className="flex items-center bg-[#F4F4F4] p-1 rounded-full text-xs font-semibold overflow-x-auto scrollbar-hide min-w-0 flex-1 md:flex-none">
                 <button
                   type="button"
                   onClick={() => setStatusFilter('all')}
-                  className={`px-3 py-1.5 rounded-full transition-all cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-full transition-all cursor-pointer whitespace-nowrap ${
                     statusFilter === 'all'
                       ? 'bg-white text-[#2C0E11] shadow-xs'
                       : 'text-gray-500 hover:text-gray-900'
@@ -379,7 +390,7 @@ export default function CantFindRequestsPage() {
                 <button
                   type="button"
                   onClick={() => setStatusFilter('new')}
-                  className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                     statusFilter === 'new'
                       ? 'bg-white text-[#2C0E11] shadow-xs'
                       : 'text-gray-500 hover:text-gray-900'
@@ -391,7 +402,7 @@ export default function CantFindRequestsPage() {
                 <button
                   type="button"
                   onClick={() => setStatusFilter('seen')}
-                  className={`px-3 py-1.5 rounded-full transition-all cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-full transition-all cursor-pointer whitespace-nowrap ${
                     statusFilter === 'seen'
                       ? 'bg-white text-[#2C0E11] shadow-xs'
                       : 'text-gray-500 hover:text-gray-900'
@@ -406,7 +417,7 @@ export default function CantFindRequestsPage() {
                   type="button"
                   onClick={() => markAllSeenMutation.mutate()}
                   disabled={markAllSeenMutation.isPending}
-                  className="flex h-10 sm:h-11 items-center gap-1.5 px-3.5 rounded-full bg-[#F4F4F4] text-xs font-semibold text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer"
+                  className="flex h-10 sm:h-11 items-center gap-1.5 px-3.5 rounded-full bg-[#F4F4F4] text-xs font-semibold text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer shrink-0"
                   title="Mark all new requests as seen"
                 >
                   <CheckCheck className="w-3.5 h-3.5 text-[#2C0E11]" />
@@ -418,7 +429,7 @@ export default function CantFindRequestsPage() {
                 type="button"
                 onClick={() => refetch()}
                 disabled={isFetching}
-                className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer disabled:opacity-60"
+                className="hidden md:flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer disabled:opacity-60"
                 title="Refresh this page only"
               >
                 <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />

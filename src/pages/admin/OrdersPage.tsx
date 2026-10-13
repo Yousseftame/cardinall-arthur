@@ -400,12 +400,9 @@ export default function OrdersPage() {
         rowKey={(row) => row.id}
         empty={isLoading ? "Loading orders from database..." : "No orders found."}
         toolbar={
-          <div className="flex flex-col gap-4">
-            
-            {/* Top Toolbar: Search & Refresh */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              {/* Search Bar */}
-              <div className="relative flex-1 max-w-md">
+          <div className="flex flex-row items-center justify-between gap-3 max-md:flex-col max-md:items-stretch">
+            <div className="flex items-center gap-2 flex-1 min-w-0 max-w-md w-full">
+              <div className="relative flex-1 min-w-0">
                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <input
                   type="search"
@@ -415,9 +412,18 @@ export default function OrdersPage() {
                   className="h-10 sm:h-11 w-full rounded-full bg-[#F4F4F4] pr-4 pl-11 text-sm font-medium text-gray-900 outline-none placeholder:text-gray-400 focus:bg-gray-100 transition-colors border-none"
                 />
               </div>
+              <button 
+                onClick={() => refetch()}
+                disabled={isFetching}
+                title="Refresh this page only"
+                className="flex md:hidden h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors disabled:opacity-60"
+              >
+                <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
 
-              {/* Status Tabs */}
-              <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-1">
+            <div className="flex items-center gap-2 min-w-0 w-full md:w-auto">
+              <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-1 flex-1 md:flex-none">
                 {(['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'] as const).map((st) => (
                   <button
                     key={st}
@@ -435,18 +441,15 @@ export default function OrdersPage() {
                   </button>
                 ))}
               </div>
-
-              {/* Refresh Button */}
               <button 
                 onClick={() => refetch()}
                 disabled={isFetching}
                 title="Refresh this page only"
-                className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors disabled:opacity-60"
+                className="hidden md:flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors disabled:opacity-60"
               >
                 <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
               </button>
             </div>
-
           </div>
         }
         actions={(row) => (

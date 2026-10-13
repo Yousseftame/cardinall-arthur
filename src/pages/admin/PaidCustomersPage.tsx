@@ -156,19 +156,30 @@ export default function PaidCustomersPage() {
           )
         }
         toolbar={
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-            <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name, email, or phone..."
-                className="h-10 sm:h-11 w-full rounded-full bg-[#F4F4F4] pr-4 pl-11 text-sm font-medium text-gray-900 outline-none placeholder:text-gray-400 focus:bg-gray-100 transition-colors border-none"
-              />
+          <div className="flex flex-row items-center justify-between gap-3 max-md:flex-col max-md:items-stretch">
+            <div className="flex items-center gap-2 flex-1 min-w-0 w-full">
+              <div className="relative flex-1 min-w-0">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by name, email, or phone..."
+                  className="h-10 sm:h-11 w-full rounded-full bg-[#F4F4F4] pr-4 pl-11 text-sm font-medium text-gray-900 outline-none placeholder:text-gray-400 focus:bg-gray-100 transition-colors border-none"
+                />
+              </div>
+              <button 
+                type="button"
+                onClick={() => refetch()}
+                disabled={isFetching}
+                className="flex md:hidden h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer disabled:opacity-60"
+                title="Refresh this page only"
+              >
+                <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+              </button>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0 w-full md:w-auto max-md:justify-end">
               <button
                 type="button"
                 onClick={handleExport}
@@ -179,12 +190,11 @@ export default function PaidCustomersPage() {
                 <Download className={`h-4 w-4 ${isExporting ? 'animate-pulse' : ''}`} />
                 <span>{isExporting ? 'Exporting...' : 'Export Excel'}</span>
               </button>
-
               <button 
                 type="button"
                 onClick={() => refetch()}
                 disabled={isFetching}
-                className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer disabled:opacity-60"
+                className="hidden md:flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer disabled:opacity-60"
                 title="Refresh this page only"
               >
                 <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
