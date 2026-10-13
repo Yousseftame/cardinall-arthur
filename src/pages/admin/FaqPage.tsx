@@ -218,7 +218,7 @@ export default function FaqPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            {filteredFaqs.map((faq, index) => {
+            {filteredFaqs.map((faq) => {
               const absoluteIndex = faqs.findIndex((f) => f.id === faq.id);
               const isFirst = absoluteIndex === 0;
               const isLast = absoluteIndex === faqs.length - 1;
