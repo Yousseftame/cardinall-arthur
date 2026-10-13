@@ -1,4 +1,5 @@
 import { ArrowUpRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import SpecularButton from '../SpecularButton';
 import { DiaTextReveal } from '../ui/dia-text-reveal';
 import { motion, type Variants, useScroll, useTransform } from 'framer-motion';
@@ -134,10 +135,20 @@ export default function FooterSection() {
 
           {/* Nav Links */}
           <div className="lg:col-span-2 lg:col-start-4 xl:col-start-5 flex flex-col gap-3">
-            {['HOME', 'ABOUT', 'SERVICE', 'PROJECT'].map((link) => (
-              <motion.a variants={itemVariants} href={`#${link.toLowerCase()}`} key={link} className="font-serif text-xl md:text-[22px] font-light uppercase tracking-tighter hover:text-primary transition-colors w-fit">
-                {link}
-              </motion.a>
+            {[
+              { label: 'HOME', to: '/' },
+              { label: 'ABOUT', to: '/about' },
+              { label: 'FAQ', to: '/faq' },
+              { label: 'TERMS', to: '/terms' },
+            ].map((link) => (
+              <motion.div key={link.label} variants={itemVariants}>
+                <Link
+                  to={link.to}
+                  className="font-serif text-xl md:text-[22px] font-light uppercase tracking-tighter hover:text-primary transition-colors w-fit block"
+                >
+                  {link.label}
+                </Link>
+              </motion.div>
             ))}
           </div>
 
@@ -196,9 +207,8 @@ export default function FooterSection() {
           </div>
           
           <div className="flex items-center gap-6 md:gap-8">
-            <a href="#" className="hover:text-primary transition-colors">License</a>
-            <a href="#" className="hover:text-primary transition-colors">Changelog</a>
-            <a href="#" className="hover:text-primary transition-colors">Style Guide</a>
+            <Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link>
+            <Link to="/terms" className="hover:text-primary transition-colors">Terms & Conditions</Link>
           </div>
 
           <div className="flex items-center text-white font-sans tracking-wide">

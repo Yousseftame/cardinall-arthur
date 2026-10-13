@@ -20,7 +20,7 @@ function cn(...classes: (string | boolean | undefined | null)[]) {
 type NavEntry = 
   | { type: 'heading'; label: string }
   | { type: 'divider' }
-  | { type: 'link'; href: string; icon: React.ElementType; label: string };
+  | { type: 'link'; href: string; icon: React.ElementType; label: string; disabled?: boolean };
 
 const navEntries: NavEntry[] = [
   { type: 'heading', label: 'Store Management' },
@@ -39,10 +39,10 @@ const navEntries: NavEntry[] = [
   { type: 'link', href: '/admin/newsletter', icon: Mail, label: 'Newsletter' },
   { type: 'divider' },
   { type: 'heading', label: 'Home Page' },
-  { type: 'link', href: '/admin/hero', icon: Home, label: 'Hero Section' },
-  { type: 'link', href: '/admin/projects', icon: LayoutDashboard, label: 'Latest Projects' },
-  { type: 'link', href: '/admin/partners', icon: Users, label: 'Trusted Partners' },
-  { type: 'link', href: '/admin/banners', icon: ImageIcon, label: 'Banners' },
+  { type: 'link', href: '/admin/hero', icon: Home, label: 'Hero Section', disabled: true },
+  { type: 'link', href: '/admin/projects', icon: LayoutDashboard, label: 'Latest Projects', disabled: true },
+  { type: 'link', href: '/admin/partners', icon: Users, label: 'Trusted Partners', disabled: true },
+  { type: 'link', href: '/admin/banners', icon: ImageIcon, label: 'Banners', disabled: true },
   { type: 'divider' },
   { type: 'heading', label: 'About Page' },
   { type: 'link', href: '/admin/about-intro', icon: FileText, label: 'About Us Intro' },
@@ -335,17 +335,13 @@ function NavLink({
   onClick: () => void;
 }) {
   const Icon = item.icon;
+  const disabled = Boolean(item.disabled);
 
-  return (
-    <RouterNavLink
-      to={item.href}
-      title={item.label}
-      onClick={onClick}
-      className={navItemClass({ collapsed, active })}
-    >
+  const content = (
+    <>
       <span className="relative shrink-0 flex items-center justify-center">
-        <Icon className="h-[20px] w-[20px]" strokeWidth={active ? 2.5 : 1.8} />
-        {badgeCount !== undefined && badgeCount > 0 && (
+        <Icon className="h-[20px] w-[20px]" strokeWidth={active && !disabled ? 2.5 : 1.8} />
+        {badgeCount !== undefined && badgeCount > 0 && !disabled && (
           <span 
             className={cn(
               "absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#2C0E11] text-[10px] font-bold text-white shadow-xs transition-transform duration-200",
@@ -355,17 +351,50 @@ function NavLink({
             {badgeCount > 99 ? '99+' : badgeCount}
           </span>
         )}
+        {disabled && collapsed && (
+          <span
+            className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-[#2C0E11] ring-2 ring-[#F4F4F4]"
+            title="Hold"
+          />
+        )}
       </span>
       <SidebarLabel collapsed={collapsed} className="flex-1 min-w-0">
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-between w-full gap-2">
           <span className="truncate">{item.label}</span>
-          {badgeCount !== undefined && badgeCount > 0 && (
+          {disabled ? (
+            <span className="ml-auto shrink-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide rounded-full bg-[#2C0E11] text-white">
+              Hold
+            </span>
+          ) : badgeCount !== undefined && badgeCount > 0 ? (
             <span className="ml-2 shrink-0 inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#2C0E11] text-white shadow-xs">
               {badgeCount}
             </span>
-          )}
+          ) : null}
         </div>
       </SidebarLabel>
+    </>
+  );
+
+  if (disabled) {
+    return (
+      <div
+        title={`${item.label} — on hold`}
+        aria-disabled="true"
+        className={cn(navItemClass({ collapsed, disabled: true }), "cursor-not-allowed select-none")}
+      >
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <RouterNavLink
+      to={item.href}
+      title={item.label}
+      onClick={onClick}
+      className={navItemClass({ collapsed, active })}
+    >
+      {content}
     </RouterNavLink>
   );
 }
@@ -374,10 +403,12 @@ function navItemClass({
   collapsed,
   active = false,
   danger = false,
+  disabled = false,
 }: {
   collapsed: boolean;
   active?: boolean;
   danger?: boolean;
+  disabled?: boolean;
 }) {
   return cn(
     "flex items-center text-[15px] font-medium transition-[width,height,background-color,color,box-shadow,gap,border-radius]",
@@ -385,11 +416,13 @@ function navItemClass({
     collapsed
       ? "gap-3 px-3 py-3 lg:mx-auto lg:h-11 lg:w-11 lg:justify-center lg:gap-0 lg:rounded-2xl lg:px-0 lg:py-0"
       : "w-full gap-3 rounded-2xl px-3 py-3",
-    danger
-      ? "text-red-500 hover:bg-red-50 hover:text-red-600"
-      : active
-        ? "bg-white font-semibold text-[#2C0E11] shadow-[0_8px_24px_rgba(44,14,17,0.08)]"
-        : "text-[#6B7280] hover:bg-white/70 hover:text-[#2C0E11]"
+    disabled
+      ? "text-[#9CA3AF] opacity-70 pointer-events-none"
+      : danger
+        ? "text-red-500 hover:bg-red-50 hover:text-red-600"
+        : active
+          ? "bg-white font-semibold text-[#2C0E11] shadow-[0_8px_24px_rgba(44,14,17,0.08)]"
+          : "text-[#6B7280] hover:bg-white/70 hover:text-[#2C0E11]"
   );
 }
 

@@ -293,8 +293,8 @@ export default function HeroSection() {
           {isLoaded && (
             <DiaTextReveal
               text="Cardinal Arthur"
-              textColor="#ffffff"
-              colors={["#ffffff", "#ffffff", "transparent"]}
+              textColor="#C9A86A"
+              colors={["#C9A86A", "#C9A86A", "transparent"]}
               duration={1.8}
               delay={1.5}
               once={true}

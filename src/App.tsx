@@ -12,6 +12,8 @@ import CantFindItPage from "./pages/storefront/CantFindItPage";
 import NotFoundPage from "./pages/storefront/NotFoundPage";
 import CheckoutPage from "./pages/storefront/CheckoutPage";
 import FavoritesPage from "./pages/storefront/FavoritesPage";
+import FAQPage from "./pages/storefront/FAQPage";
+import TermsPage from "./pages/storefront/TermsPage";
 
 import LoginPage from "./pages/auth/LoginPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
@@ -21,6 +23,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Admin pages: lazy-loaded so unused routes never download or fetch data
 const CategoriesPage = lazy(() => import("./pages/admin/CategoriesPage"));
+const ProductsPage = lazy(() => import("./pages/admin/ProductsPage"));
 const OrdersPage = lazy(() => import("./pages/admin/OrdersPage"));
 const CheckoutSettingsPage = lazy(() => import("./pages/admin/CheckoutSettingsPage"));
 const FeedbackPage = lazy(() => import("./pages/admin/FeedbackPage"));
@@ -28,6 +31,8 @@ const ContactMessagesPage = lazy(() => import("./pages/admin/ContactMessagesPage
 const CantFindRequestsPage = lazy(() => import("./pages/admin/CantFindRequestsPage"));
 const PaidCustomersPage = lazy(() => import("./pages/admin/PaidCustomersPage"));
 const NewsletterPage = lazy(() => import("./pages/admin/NewsletterPage"));
+const FaqPage = lazy(() => import("./pages/admin/FaqPage"));
+const TermsAdminPage = lazy(() => import("./pages/admin/TermsPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -93,6 +98,8 @@ function App() {
               <Route path="cant-find-it" element={<CantFindItPage />} />
               <Route path="checkout" element={<CheckoutPage />} />
               <Route path="favorites" element={<FavoritesPage />} />
+              <Route path="faq" element={<FAQPage />} />
+              <Route path="terms" element={<TermsPage />} />
             </Route>
 
             {/* 2. Admin Dashboard Layout (Protected) */}
@@ -101,7 +108,7 @@ function App() {
                 <Route index element={<div className="text-gray-500 text-2xl font-light tracking-widest uppercase">Admin Dashboard Home</div>} />
                 
                 <Route path="categories" element={<Suspense fallback={<AdminPageFallback />}><CategoriesPage /></Suspense>} />
-                <Route path="products" element={<div className="text-white text-xl font-light tracking-widest uppercase">Products Management</div>} />
+                <Route path="products" element={<Suspense fallback={<AdminPageFallback />}><ProductsPage /></Suspense>} />
                 <Route path="orders" element={<Suspense fallback={<AdminPageFallback />}><OrdersPage /></Suspense>} />
                 <Route path="customers" element={<Suspense fallback={<AdminPageFallback />}><PaidCustomersPage /></Suspense>} />
                 <Route path="newsletter" element={<Suspense fallback={<AdminPageFallback />}><NewsletterPage /></Suspense>} />
@@ -120,8 +127,8 @@ function App() {
                 <Route path="feedback" element={<Suspense fallback={<AdminPageFallback />}><FeedbackPage /></Suspense>} />
                 <Route path="cant-find" element={<Suspense fallback={<AdminPageFallback />}><CantFindRequestsPage /></Suspense>} />
                 <Route path="contact" element={<Suspense fallback={<AdminPageFallback />}><ContactMessagesPage /></Suspense>} />
-                <Route path="faq" element={<div className="text-white text-xl font-light tracking-widest uppercase">FAQ Editor</div>} />
-                <Route path="terms" element={<div className="text-white text-xl font-light tracking-widest uppercase">Terms & Conditions Editor</div>} />
+                <Route path="faq" element={<Suspense fallback={<AdminPageFallback />}><FaqPage /></Suspense>} />
+                <Route path="terms" element={<Suspense fallback={<AdminPageFallback />}><TermsAdminPage /></Suspense>} />
               </Route>
             </Route>
 

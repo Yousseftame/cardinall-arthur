@@ -31,7 +31,8 @@ import {
   Check,
   Send,
   Printer,
-  FileText
+  FileText,
+  BadgeCheck,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { adminListQueryOptions } from '../../lib/adminQuery';
@@ -255,16 +256,18 @@ export default function OrdersPage() {
     });
   }, [orders, statusFilter, searchTerm]);
 
-  // Key KPI stats
+  // Key KPI stats — revenue only counts paymentStatus === 'paid'
   const stats = useMemo(() => {
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(o => o.status === 'pending').length;
     const completedOrders = orders.filter(o => o.status === 'delivered').length;
+    const paidOrders = orders.filter(o => o.paymentStatus === 'paid').length;
+    const failedOrders = orders.filter(o => o.paymentStatus === 'failed').length;
     const totalRevenue = orders
-      .filter(o => o.status !== 'cancelled')
+      .filter(o => o.paymentStatus === 'paid')
       .reduce((sum, o) => sum + (o.pricing?.total || 0), 0);
 
-    return { totalOrders, pendingOrders, completedOrders, totalRevenue };
+    return { totalOrders, pendingOrders, completedOrders, paidOrders, failedOrders, totalRevenue };
   }, [orders]);
 
   const columns: Column<Order>[] = [
@@ -370,7 +373,7 @@ export default function OrdersPage() {
     <div className="flex flex-col gap-8 animate-in fade-in duration-500">
       
       {/* KPI Stats Section */}
-      <StatGrid className="grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+      <StatGrid className="!grid-cols-1 sm:!grid-cols-2 xl:!grid-cols-3">
         <StatCard
           label="Total Orders"
           value={stats.totalOrders.toString()}
@@ -385,6 +388,16 @@ export default function OrdersPage() {
           label="Delivered Orders"
           value={stats.completedOrders.toString()}
           icon={CheckCircle2}
+        />
+        <StatCard
+          label="Paid Orders"
+          value={stats.paidOrders.toString()}
+          icon={BadgeCheck}
+        />
+        <StatCard
+          label="Failed Orders"
+          value={stats.failedOrders.toString()}
+          icon={XCircle}
         />
         <StatCard
           label="Gross Revenue"
