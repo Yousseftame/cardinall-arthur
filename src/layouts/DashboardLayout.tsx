@@ -7,7 +7,8 @@ import {
   LogOut, LayoutDashboard, ShoppingBag, Tags, Image as ImageIcon, 
   CreditCard, MessageSquare, HelpCircle, Phone, 
   Home, Clock, Eye, Users, Heart, FileText,
-  Search, ShieldCheck, ChevronsLeft, Menu, PanelLeft, Globe, UserCheck, Mail
+  Search, ShieldCheck, ChevronsLeft, Menu, PanelLeft, Globe, UserCheck, Mail,
+  LayoutGrid,
 } from 'lucide-react';
 
 const SIDEBAR_EASE = "duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
@@ -23,6 +24,8 @@ type NavEntry =
   | { type: 'link'; href: string; icon: React.ElementType; label: string; disabled?: boolean };
 
 const navEntries: NavEntry[] = [
+  { type: 'link', href: '/admin', icon: LayoutDashboard, label: 'Dashboard Overview' },
+  { type: 'divider' },
   { type: 'heading', label: 'Store Management' },
   { type: 'link', href: '/admin/categories', icon: Tags, label: 'Categories' },
   { type: 'link', href: '/admin/products', icon: ShoppingBag, label: 'Products' },
@@ -40,7 +43,7 @@ const navEntries: NavEntry[] = [
   { type: 'divider' },
   { type: 'heading', label: 'Home Page' },
   { type: 'link', href: '/admin/hero', icon: Home, label: 'Hero Section', disabled: true },
-  { type: 'link', href: '/admin/projects', icon: LayoutDashboard, label: 'Latest Projects', disabled: true },
+  { type: 'link', href: '/admin/projects', icon: LayoutGrid, label: 'Latest Projects', disabled: true },
   { type: 'link', href: '/admin/partners', icon: Users, label: 'Trusted Partners', disabled: true },
   { type: 'link', href: '/admin/banners', icon: ImageIcon, label: 'Banners', disabled: true },
   { type: 'divider' },

@@ -33,6 +33,7 @@ const PaidCustomersPage = lazy(() => import("./pages/admin/PaidCustomersPage"));
 const NewsletterPage = lazy(() => import("./pages/admin/NewsletterPage"));
 const FaqPage = lazy(() => import("./pages/admin/FaqPage"));
 const TermsAdminPage = lazy(() => import("./pages/admin/TermsPage"));
+const DashboardHomePage = lazy(() => import("./pages/admin/DashboardHomePage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -105,7 +106,7 @@ function App() {
             {/* 2. Admin Dashboard Layout (Protected) */}
             <Route path="/admin" element={<ProtectedRoute />}>
               <Route element={<DashboardLayout />}>
-                <Route index element={<div className="text-gray-500 text-2xl font-light tracking-widest uppercase">Admin Dashboard Home</div>} />
+                <Route index element={<Suspense fallback={<AdminPageFallback />}><DashboardHomePage /></Suspense>} />
                 
                 <Route path="categories" element={<Suspense fallback={<AdminPageFallback />}><CategoriesPage /></Suspense>} />
                 <Route path="products" element={<Suspense fallback={<AdminPageFallback />}><ProductsPage /></Suspense>} />
