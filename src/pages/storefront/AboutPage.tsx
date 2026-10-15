@@ -92,12 +92,9 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* First content section: same FAFAFA → near-black fade + grain as home Products */}
-      <div className="site-atmosphere site-atmosphere--fade">
+      {/* Solid deep bg via MasterLayout — no fade gradient (home only) */}
+      <div className="bg-transparent">
         <AboutSection />
-      </div>
-
-      <div className="site-atmosphere site-atmosphere--deep">
         <AboutPhilosophySection />
         {/* <WorkProcessSection /> */}
         <AboutTimelineSection />
