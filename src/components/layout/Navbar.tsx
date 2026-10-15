@@ -15,19 +15,28 @@ export default function Navbar() {
   const { openMenu } = useMenuStore();
   const { openSearch } = useSearchStore();
   const isSplashVisible = useSplashStore(state => state.isSplashVisible);
+  const isHeroIntroComplete = useSplashStore(state => state.isHeroIntroComplete);
   const { items: favoriteItems } = useFavoriteStore();
   
   const location = useLocation();
+  const isHome = location.pathname === '/';
 
-  
   useEffect(() => {
-    if (!isSplashVisible) {
-      const timer = setTimeout(() => {
-        setIsLoaded(true);
-      }, 2000);
-      return () => clearTimeout(timer);
+    if (isSplashVisible) {
+      setIsLoaded(false);
+      return;
     }
-  }, [isSplashVisible]);
+
+    // Home: wait until hero image finishes expanding
+    if (isHome) {
+      if (isHeroIntroComplete) setIsLoaded(true);
+      return;
+    }
+
+    // Other pages: show shortly after splash
+    const timer = setTimeout(() => setIsLoaded(true), 300);
+    return () => clearTimeout(timer);
+  }, [isSplashVisible, isHome, isHeroIntroComplete]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,12 +49,17 @@ export default function Navbar() {
 
   return (
     <div 
-      className={`fixed top-0 left-1/2 -translate-x-1/2 z-50 transition-all duration-[1200ms] ease-[0.16,1,0.3,1] transform w-full px-4 sm:px-6 md:px-8 mt-4 md:mt-6 transform-gpu ${
-        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-[150%]'
+      className={`fixed top-0 left-1/2 -translate-x-1/2 z-50 w-full px-4 sm:px-6 md:px-8 mt-4 md:mt-6 transform-gpu backface-hidden transition-transform duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        isLoaded ? 'translate-y-0 pointer-events-auto' : '-translate-y-[160%] pointer-events-none'
       }`}
+      aria-hidden={!isLoaded}
     >
+      {/*
+        Avoid opacity transitions on a backdrop-filter parent —
+        that combo causes a transparent compositing glitch over the page.
+      */}
       <div 
-        className={`relative flex items-center justify-between mx-auto px-5 md:px-8 py-3 transition-all duration-500 ease-out backdrop-blur-[24px] backdrop-saturate-[180%] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.08)] border border-white/40 rounded-full overflow-hidden bg-gradient-to-b from-white/70 via-white/40 to-white/20 transform-gpu ${
+        className={`relative isolate flex items-center justify-between mx-auto px-5 md:px-8 py-3 transition-[width] duration-500 ease-out backdrop-blur-[24px] backdrop-saturate-[180%] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.08)] border border-white/40 rounded-full overflow-hidden bg-gradient-to-b from-white/70 via-white/40 to-white/20 transform-gpu backface-hidden ${
           isScrolled 
             ? 'w-[95%] md:w-[75vw] lg:w-[60vw]' 
             : 'w-[100%] md:w-[85vw] lg:w-[70vw]'
