@@ -5,7 +5,7 @@ import ProductsSection from "../../components/sections/ProductsSection";
 // import ServicesSection from "../../components/sections/ServicesSection";
 import LatestProjectsSection from "../../components/sections/LatestProjectsSection";
 import ClientFeedbackSection from "../../components/sections/ClientFeedbackSection";
-import BreakSection from "../../components/sections/BreakSection";
+// import BreakSection from "../../components/sections/BreakSection";
 import TrustedPartnersSection from "../../components/sections/TrustedPartnersSection";
 import LetsTalkSection from "../../components/sections/LetsTalkSection";
 import CheckoutFeedbackModal from "../../components/modals/CheckoutFeedbackModal";
@@ -88,13 +88,21 @@ export default function HomePage() {
   return (
     <div>
       <HeroSection />
-      <ProductsSection />
-      <LatestProjectsSection />
-      {/* <ServicesSection /> */}
-      <ClientFeedbackSection />
-      <BreakSection />
-      <TrustedPartnersSection />
-      <LetsTalkSection />
+
+      {/* Products: full FAFAFA → 2B3133 fade + noise */}
+      <div className="site-atmosphere site-atmosphere--fade">
+        <ProductsSection />
+      </div>
+
+      {/* Rest of home continues on the deep end color + same noise */}
+      <div className="site-atmosphere site-atmosphere--deep">
+        <LatestProjectsSection />
+        {/* <ServicesSection /> */}
+        <ClientFeedbackSection />
+        {/* <BreakSection /> */}
+        <TrustedPartnersSection />
+        <LetsTalkSection />
+      </div>
 
       {/* Checkout Experience Feedback Modal */}
       <CheckoutFeedbackModal

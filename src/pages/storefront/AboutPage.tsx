@@ -92,15 +92,20 @@ export default function AboutPage() {
         </div>
       </div>
 
-      <AboutSection />
-      <AboutPhilosophySection />
-      {/* <WorkProcessSection /> */}
-      <AboutTimelineSection />
-      <AboutVisionSection />
-      {/* <AboutFoundersSection /> */}
-      <AboutSocialsSection />
+      {/* First content section: same FAFAFA → near-black fade + grain as home Products */}
+      <div className="site-atmosphere site-atmosphere--fade">
+        <AboutSection />
+      </div>
 
-      <FAQSection />
+      <div className="site-atmosphere site-atmosphere--deep">
+        <AboutPhilosophySection />
+        {/* <WorkProcessSection /> */}
+        <AboutTimelineSection />
+        <AboutVisionSection />
+        {/* <AboutFoundersSection /> */}
+        <AboutSocialsSection />
+        <FAQSection />
+      </div>
     </>
   );
 }

@@ -53,7 +53,7 @@ export default function MenuSidebar() {
       {isMenuOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-[60] bg-[#2C0E11]/75 backdrop-blur-[2px] transform-gpu will-change-opacity"
+            className="fixed inset-0 z-[60] bg-[#0E1011]/75 backdrop-blur-[2px] transform-gpu will-change-opacity"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

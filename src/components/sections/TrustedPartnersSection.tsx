@@ -49,7 +49,7 @@ function PartnerCard({ children }: { children: React.ReactNode }) {
       />
       
       {/* Inner Card Surface */}
-      <div className="relative z-10 w-full h-full bg-[#2C0E11] rounded-[11px] overflow-hidden flex items-center justify-center">
+      <div className="relative z-10 w-full h-full bg-[#0E1011] rounded-[11px] overflow-hidden flex items-center justify-center">
         
         {/* Inner Spotlight (Illuminates the background behind the logo) */}
         <div 

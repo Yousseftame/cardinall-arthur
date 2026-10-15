@@ -84,8 +84,29 @@ const imageVariants = {
   })
 };
 
+/** Banner carousel — same drag/swipe feel as product gallery, softer crossfade */
+const bannerVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 72 : -72,
+    opacity: 0,
+    scale: 1.02,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? 72 : -72,
+    opacity: 0,
+    scale: 0.98,
+  }),
+};
+
 export default function MarketplacePage() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [bannerDirection, setBannerDirection] = useState(0);
+  const isBannerDragging = useRef(false);
   const [activeCategory, setActiveCategory] = useState('ALL');
   
   const navigate = useNavigate();
@@ -214,9 +235,22 @@ export default function MarketplacePage() {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   const scrollScale = useTransform(scrollYProgress, [0, 1], [1.15, 1]);
 
-  // Auto-advance banner every 5 seconds, resets on manual interaction
+  const paginateBanner = (dir: number) => {
+    setBannerDirection(dir);
+    setCurrentIndex((prev) => (prev + dir + BANNERS.length) % BANNERS.length);
+  };
+
+  const goToBanner = (index: number) => {
+    if (index === currentIndex) return;
+    setBannerDirection(index > currentIndex ? 1 : -1);
+    setCurrentIndex(index);
+  };
+
+  // Auto-advance banner; resets on index change (dots / drag / swipe)
   useEffect(() => {
+    if (isBannerDragging.current) return;
     const timer = setInterval(() => {
+      setBannerDirection(1);
       setCurrentIndex((prev) => (prev + 1) % BANNERS.length);
     }, 6000);
     return () => clearInterval(timer);
@@ -324,39 +358,57 @@ export default function MarketplacePage() {
 
       <div className="bg-transparent min-h-screen pt-32 pb-20 overflow-x-hidden text-white">
       
-      {/* 1. Banner Carousel Section */}
+      {/* 1. Banner Carousel Section — autoplay + dots + drag/swipe */}
       <section className="px-4 md:px-8 w-full max-w-[1920px] mx-auto mb-20 mt-4">
         <div 
-          className="relative w-full h-[50vh] min-h-[400px] md:h-[500px] lg:h-[550px] rounded-[24px] md:rounded-[32px] overflow-hidden flex flex-col items-center justify-center border border-white/10 shadow-2xl"
+          className="relative w-full h-[50vh] min-h-[400px] md:h-[500px] lg:h-[550px] rounded-[24px] md:rounded-[32px] overflow-hidden flex flex-col items-center justify-center border border-white/10 shadow-2xl touch-pan-y cursor-grab active:cursor-grabbing select-none"
         >
-          <AnimatePresence>
+          <AnimatePresence initial={false} custom={bannerDirection}>
             <motion.div
               key={currentIndex}
-              initial={{ opacity: 0, scale: 1.02 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              transition={{ duration: 1.5, ease: [0.4, 0, 0.2, 1] }}
+              custom={bannerDirection}
+              variants={bannerVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragStart={() => {
+                isBannerDragging.current = true;
+              }}
+              onDragEnd={(_e, { offset, velocity }) => {
+                isBannerDragging.current = false;
+                const swipe = swipePower(offset.x, velocity.x);
+                if (swipe < -swipeConfidenceThreshold || offset.x < -50) {
+                  paginateBanner(1);
+                } else if (swipe > swipeConfidenceThreshold || offset.x > 50) {
+                  paginateBanner(-1);
+                }
+              }}
               className="absolute inset-0 w-full h-full transform-gpu"
-              style={{ willChange: 'opacity, transform' }}
+              style={{ willChange: 'opacity, transform', touchAction: 'pan-y' }}
             >
               {/* Background Image */}
               <img 
                 src={BANNERS[currentIndex].image} 
                 alt="Banner Background" 
-                className="absolute inset-0 w-full h-full object-cover object-center transform-gpu"
+                draggable={false}
+                className="absolute inset-0 w-full h-full object-cover object-center transform-gpu pointer-events-none"
                 loading="eager"
               />
               
               {/* Overlays */}
-              <div className="absolute inset-0 bg-[#2C0E11]/30 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-[#0E1011]/30 pointer-events-none"></div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
 
               {/* Top Pill / Branding */}
               <motion.div 
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-                className="absolute top-6 left-6 md:top-8 md:left-8 bg-[#2C0E11]/80 border border-white/10 rounded-full px-5 py-2 md:px-6 md:py-2.5 shadow-xl flex items-center justify-center transform-gpu"
+                transition={{ delay: 0.25, duration: 0.7 }}
+                className="absolute top-6 left-6 md:top-8 md:left-8 bg-[#0E1011]/80 border border-white/10 rounded-full px-5 py-2 md:px-6 md:py-2.5 shadow-xl flex items-center justify-center transform-gpu pointer-events-none"
               >
                 <span className="font-heading font-bold text-white text-sm md:text-lg tracking-wider uppercase mt-0.5">
                   {BANNERS[currentIndex].pill}
@@ -371,10 +423,10 @@ export default function MarketplacePage() {
                 >
                   {BANNERS[currentIndex].title.map((line, i) => (
                     <motion.span 
-                      key={i}
+                      key={`${currentIndex}-${i}`}
                       initial={{ y: 40, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.3 + i * 0.15, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ delay: 0.2 + i * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                       className="transform-gpu"
                       style={{ willChange: 'opacity, transform' }}
                     >
@@ -388,7 +440,7 @@ export default function MarketplacePage() {
               <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.8 }}
+                transition={{ delay: 0.55, duration: 0.7 }}
                 className="absolute bottom-10 md:bottom-12 left-0 right-0 z-10 px-4 flex justify-center pointer-events-none transform-gpu"
                 style={{ willChange: 'opacity, transform' }}
               >
@@ -403,8 +455,9 @@ export default function MarketplacePage() {
             {BANNERS.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setCurrentIndex(i)}
-                className={`transition-all duration-500 rounded-full ${
+                type="button"
+                onClick={() => goToBanner(i)}
+                className={`transition-all duration-500 rounded-full cursor-pointer ${
                   i === currentIndex ? 'w-8 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/60'
                 }`}
                 aria-label={`Go to slide ${i + 1}`}
@@ -544,7 +597,7 @@ export default function MarketplacePage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-[#2C0E11]/60 backdrop-blur-md z-[100] overflow-y-auto [&::-webkit-scrollbar]:hidden"
+              className="fixed inset-0 bg-[#0E1011]/60 backdrop-blur-md z-[100] overflow-y-auto [&::-webkit-scrollbar]:hidden"
               style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
               data-lenis-prevent
               onClick={() => setSelectedProduct(null)}
@@ -555,12 +608,12 @@ export default function MarketplacePage() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
                   transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                  className="bg-[#2C0E11] w-full max-w-4xl rounded-[2.5rem] flex flex-col md:flex-row relative max-h-none md:max-h-[85vh] shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
+                  className="bg-[#0E1011] w-full max-w-4xl rounded-[2.5rem] flex flex-col md:flex-row relative max-h-none md:max-h-[85vh] shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button 
                     onClick={() => setSelectedProduct(null)}
-                    className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-11 h-11 bg-[#2C0E11]/10 md:bg-white/10 hover:bg-[#2C0E11]/20 md:hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-black md:text-white transition-colors"
+                    className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-11 h-11 bg-[#0E1011]/10 md:bg-white/10 hover:bg-[#0E1011]/20 md:hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-black md:text-white transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>

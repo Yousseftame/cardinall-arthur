@@ -56,7 +56,7 @@ export default function MasterLayout() {
         )}
       </AnimatePresence>
 
-      <div className="min-h-screen flex flex-col relative bg-transparent font-sans text-foreground">
+      <div className="site-atmosphere site-atmosphere--deep min-h-screen flex flex-col relative font-sans text-foreground">
         <div className="luxury-stage" aria-hidden="true" />
         <Navbar />
         <CartSidebar />

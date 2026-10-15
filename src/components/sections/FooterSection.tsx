@@ -92,7 +92,7 @@ export default function FooterSection() {
 
   return (
     <>
-    <footer className="w-full bg-transparent text-white pt-12 md:pt-16 pb-8 px-4 md:px-8 lg:px-12 w-full">
+    <footer className="w-full bg-transparent text-white pt-12 md:pt-16 pb-8 px-4 md:px-8 lg:px-12 -mt-px">
       <div className="w-full flex flex-col">
         
         {/* Top Centered Section */}
@@ -201,7 +201,7 @@ export default function FooterSection() {
         </motion.div>
 
         {/* Bottom Section */}
-        <div className="pt-8 border-t border-[#222] flex flex-col lg:flex-row justify-between items-center gap-6 lg:gap-0 text-xs md:text-sm font-mono text-white">
+        <div className="pt-8 border-t border-white/10 flex flex-col lg:flex-row justify-between items-center gap-6 lg:gap-0 text-xs md:text-sm font-mono text-white">
           <div className="flex items-center">
             <span className="text-primary mr-1 font-sans text-base">©</span> 2025 Cardinal®.
           </div>

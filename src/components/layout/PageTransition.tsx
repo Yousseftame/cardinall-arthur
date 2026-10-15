@@ -21,11 +21,11 @@ export default function PageTransition({ onComplete }: PageTransitionProps) {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
-      {/* Layer 1: Sangria / Burgundy */}
+      {/* Layer 1: Near black */}
       <div className="curtain-layer curtain-layer-1" />
-      {/* Layer 2: Caramel / Gold */}
+      {/* Layer 2: Charcoal */}
       <div className="curtain-layer curtain-layer-2" />
-      {/* Layer 3: Sangria / Burgundy */}
+      {/* Layer 3: Near black */}
       <div className="curtain-layer curtain-layer-3" />
     </div>
   );

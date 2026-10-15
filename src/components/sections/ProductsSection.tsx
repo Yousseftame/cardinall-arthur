@@ -170,7 +170,7 @@ export default function ProductsSection() {
   }, [selectedProduct, activeImage]);
 
   return (
-    <section className="w-full bg-[#f8f7f3] text-[#1a1a1a] py-24 md:py-32 overflow-hidden">
+    <section className="w-full bg-transparent text-[#1a1a1a] py-24 md:py-32 overflow-hidden">
       
       <div className="w-full">
         {/* Header */}
@@ -221,7 +221,7 @@ export default function ProductsSection() {
                     src={product.image} 
                     alt={product.name} 
                     draggable={false}
-                    className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out cursor-pointer pointer-events-auto"
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 ease-out cursor-pointer pointer-events-auto"
                     onClick={() => {
                       if (isDragged.current) return;
                       navigate(`/product/${product.id}`);
@@ -267,7 +267,7 @@ export default function ProductsSection() {
                 
                 {/* Details */}
                 <h3 
-                  className="text-base mb-1 group-hover:text-black/60 transition-colors font-medium cursor-pointer"
+                  className="text-base mb-1 text-white/90 group-hover:text-white transition-colors font-medium cursor-pointer"
                   onClick={() => {
                     if (isDragged.current) return;
                     navigate(`/product/${product.id}`);
@@ -275,7 +275,7 @@ export default function ProductsSection() {
                 >
                   {product.name}
                 </h3>
-                <p className="text-[#6a6a6a] text-sm tracking-wide">
+                <p className="text-white/50 text-sm tracking-wide">
                   {product.price}
                 </p>
               </div>
@@ -286,7 +286,7 @@ export default function ProductsSection() {
 
         {/* Explore Button */}
         <div className="flex justify-center mt-20">
-          <Link to="/marketplace" className="font-heading uppercase text-sm font-semibold tracking-widest border-b border-black pb-1 hover:text-gray-500 hover:border-gray-500 transition-colors duration-300">
+          <Link to="/marketplace" className="font-heading uppercase text-sm font-semibold tracking-widest text-white/90 border-b border-white/70 pb-1 hover:text-white hover:border-white transition-colors duration-300">
             EXPLORE SHOP
           </Link>
         </div>
@@ -301,7 +301,7 @@ export default function ProductsSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-[#2C0E11]/40 backdrop-blur-sm z-50 overflow-y-auto [&::-webkit-scrollbar]:hidden"
+              className="fixed inset-0 bg-[#0E1011]/40 backdrop-blur-sm z-50 overflow-y-auto [&::-webkit-scrollbar]:hidden"
               style={{ msOverflowStyle: 'none', scrollbarWidth: 'none' }}
               data-lenis-prevent
               onClick={() => setSelectedProduct(null)}
@@ -312,12 +312,12 @@ export default function ProductsSection() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
                   transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                  className="bg-[#2C0E11] w-full max-w-4xl rounded-[2.5rem] flex flex-col md:flex-row relative max-h-none md:max-h-[85vh] shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
+                  className="bg-[#0E1011] w-full max-w-4xl rounded-[2.5rem] flex flex-col md:flex-row relative max-h-none md:max-h-[85vh] shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button 
                     onClick={() => setSelectedProduct(null)}
-                    className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-11 h-11 bg-[#2C0E11]/10 md:bg-white/10 hover:bg-[#2C0E11]/20 md:hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-black md:text-white transition-colors"
+                    className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-11 h-11 bg-[#0E1011]/10 md:bg-white/10 hover:bg-[#0E1011]/20 md:hover:bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center text-black md:text-white transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>

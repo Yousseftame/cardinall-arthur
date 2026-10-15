@@ -34,11 +34,16 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
 
   return (
     <div
-      className={`fixed inset-0 z-[10000] bg-[#2C0E11] flex items-center justify-center transition-transform duration-[800ms] ease-[cubic-bezier(0.65,0,0.05,1)] ${
+      className={`fixed inset-0 z-[10000] flex items-center justify-center transition-transform duration-[800ms] ease-[cubic-bezier(0.65,0,0.05,1)] ${
         phase === "fade" ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      <div className="relative flex flex-col items-center justify-center w-full max-w-5xl h-64">
+      {/* Atmosphere fill — outer stays absolute; inner can be relative for grain */}
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div className="site-atmosphere site-atmosphere--fade h-full w-full" />
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-5xl h-64">
         {/* The Central Line/Dot */}
         <div
           className={`absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-primary transition-all duration-[800ms] ease-[cubic-bezier(0.85,0,0.15,1)] z-10 ${
