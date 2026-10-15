@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { AnimatePresence, motion, type Variants, useScroll, useTransform, useMotionValue, useAnimationFrame } from 'framer-motion';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { AnimatePresence, motion, animate, type Variants, useScroll, useTransform, useMotionValue, useAnimationFrame } from 'framer-motion';
 import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
 import marketplace2 from '../../assets/marketplace2.webp';
 import banner2 from '../../assets/banner2.webp';
@@ -84,29 +84,16 @@ const imageVariants = {
   })
 };
 
-/** Banner carousel — same drag/swipe feel as product gallery, softer crossfade */
-const bannerVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 72 : -72,
-    opacity: 0,
-    scale: 1.02,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-  },
-  exit: (direction: number) => ({
-    x: direction < 0 ? 72 : -72,
-    opacity: 0,
-    scale: 0.98,
-  }),
-};
+/** Whole-frame banner slide — transform-only spring (no opacity/blur/scale) */
+const BANNER_GAP = 16;
+const BANNER_SPRING = { type: 'spring' as const, stiffness: 280, damping: 32, mass: 0.85 };
 
 export default function MarketplacePage() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [bannerDirection, setBannerDirection] = useState(0);
   const isBannerDragging = useRef(false);
+  const bannerViewportRef = useRef<HTMLDivElement>(null);
+  const [bannerWidth, setBannerWidth] = useState(0);
+  const bannerX = useMotionValue(0);
   const [activeCategory, setActiveCategory] = useState('ALL');
   
   const navigate = useNavigate();
@@ -235,22 +222,39 @@ export default function MarketplacePage() {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   const scrollScale = useTransform(scrollYProgress, [0, 1], [1.15, 1]);
 
+  // Measure before paint so the track never lays out with unknown slide widths
+  useLayoutEffect(() => {
+    const el = bannerViewportRef.current;
+    if (!el) return;
+    const measure = () => setBannerWidth(el.offsetWidth);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const bannerOffset = bannerWidth > 0 ? -currentIndex * (bannerWidth + BANNER_GAP) : 0;
+
+  // Drive the track with a motion value so cancelled drags always spring home
+  useEffect(() => {
+    if (isBannerDragging.current) return;
+    const controls = animate(bannerX, bannerOffset, BANNER_SPRING);
+    return () => controls.stop();
+  }, [bannerOffset, bannerX]);
+
   const paginateBanner = (dir: number) => {
-    setBannerDirection(dir);
     setCurrentIndex((prev) => (prev + dir + BANNERS.length) % BANNERS.length);
   };
 
   const goToBanner = (index: number) => {
     if (index === currentIndex) return;
-    setBannerDirection(index > currentIndex ? 1 : -1);
     setCurrentIndex(index);
   };
 
-  // Auto-advance banner; resets on index change (dots / drag / swipe)
+  // Auto-advance; pause while dragging
   useEffect(() => {
-    if (isBannerDragging.current) return;
     const timer = setInterval(() => {
-      setBannerDirection(1);
+      if (isBannerDragging.current) return;
       setCurrentIndex((prev) => (prev + 1) % BANNERS.length);
     }, 6000);
     return () => clearInterval(timer);
@@ -358,113 +362,98 @@ export default function MarketplacePage() {
 
       <div className="bg-transparent min-h-screen pt-32 pb-20 overflow-x-hidden text-white">
       
-      {/* 1. Banner Carousel Section — autoplay + dots + drag/swipe */}
+      {/* 1. Banner Carousel — whole framed cards slide on a transform-only spring track */}
       <section className="px-4 md:px-8 w-full max-w-[1920px] mx-auto mb-20 mt-4">
-        <div 
-          className="relative w-full h-[50vh] min-h-[400px] md:h-[500px] lg:h-[550px] rounded-[24px] md:rounded-[32px] overflow-hidden flex flex-col items-center justify-center border border-white/10 shadow-2xl touch-pan-y cursor-grab active:cursor-grabbing select-none"
+        <div
+          ref={bannerViewportRef}
+          className="relative w-full overflow-hidden touch-pan-y select-none"
         >
-          <AnimatePresence initial={false} custom={bannerDirection}>
-            <motion.div
-              key={currentIndex}
-              custom={bannerDirection}
-              variants={bannerVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.2}
-              onDragStart={() => {
-                isBannerDragging.current = true;
-              }}
-              onDragEnd={(_e, { offset, velocity }) => {
-                isBannerDragging.current = false;
-                const swipe = swipePower(offset.x, velocity.x);
-                if (swipe < -swipeConfidenceThreshold || offset.x < -50) {
-                  paginateBanner(1);
-                } else if (swipe > swipeConfidenceThreshold || offset.x > 50) {
-                  paginateBanner(-1);
-                }
-              }}
-              className="absolute inset-0 w-full h-full transform-gpu"
-              style={{ willChange: 'opacity, transform', touchAction: 'pan-y' }}
-            >
-              {/* Background Image */}
-              <img 
-                src={BANNERS[currentIndex].image} 
-                alt="Banner Background" 
-                draggable={false}
-                className="absolute inset-0 w-full h-full object-cover object-center transform-gpu pointer-events-none"
-                loading="eager"
-              />
-              
-              {/* Overlays */}
-              <div className="absolute inset-0 bg-[#0E1011]/30 pointer-events-none"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
-
-              {/* Top Pill / Branding */}
-              <motion.div 
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.25, duration: 0.7 }}
-                className="absolute top-6 left-6 md:top-8 md:left-8 bg-[#0E1011]/80 border border-white/10 rounded-full px-5 py-2 md:px-6 md:py-2.5 shadow-xl flex items-center justify-center transform-gpu pointer-events-none"
+          <motion.div
+            className="flex will-change-transform cursor-grab active:cursor-grabbing"
+            style={{ x: bannerX, gap: BANNER_GAP, touchAction: 'pan-y' }}
+            drag={bannerWidth > 0 ? 'x' : false}
+            dragConstraints={{
+              left: -(BANNERS.length - 1) * (bannerWidth + BANNER_GAP),
+              right: 0,
+            }}
+            dragElastic={0.14}
+            dragMomentum={false}
+            onDragStart={() => {
+              isBannerDragging.current = true;
+            }}
+            onDragEnd={(_e, { offset, velocity }) => {
+              isBannerDragging.current = false;
+              const swipe = swipePower(offset.x, velocity.x);
+              if (swipe < -swipeConfidenceThreshold || offset.x < -bannerWidth * 0.18) {
+                paginateBanner(1);
+              } else if (swipe > swipeConfidenceThreshold || offset.x > bannerWidth * 0.18) {
+                paginateBanner(-1);
+              } else {
+                animate(bannerX, bannerOffset, BANNER_SPRING);
+              }
+            }}
+          >
+            {BANNERS.map((banner) => (
+              <div
+                key={banner.id}
+                className="relative h-[50vh] min-h-[400px] md:h-[500px] lg:h-[550px] rounded-[24px] md:rounded-[32px] overflow-hidden border border-white/10 shadow-2xl transform-gpu"
+                style={{
+                  flex: bannerWidth > 0 ? `0 0 ${bannerWidth}px` : '0 0 100%',
+                  width: bannerWidth > 0 ? bannerWidth : '100%',
+                }}
               >
-                <span className="font-heading font-bold text-white text-sm md:text-lg tracking-wider uppercase mt-0.5">
-                  {BANNERS[currentIndex].pill}
-                </span>
-              </motion.div>
+                <img
+                  src={banner.image}
+                  alt=""
+                  draggable={false}
+                  decoding="async"
+                  className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+                  loading="eager"
+                />
 
-              {/* Main Typography */}
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center w-full px-4 transform -skew-x-[12deg] pointer-events-none">
-                <h1 
-                  className="font-heading text-white uppercase text-5xl md:text-7xl lg:text-[84px] xl:text-[96px] leading-[0.85] flex flex-col items-center scale-x-105 font-light tracking-tighter"
-                  style={{ textShadow: "0 10px 20px rgba(0,0,0,0.6)" }}
-                >
-                  {BANNERS[currentIndex].title.map((line, i) => (
-                    <motion.span 
-                      key={`${currentIndex}-${i}`}
-                      initial={{ y: 40, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.2 + i * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                      className="transform-gpu"
-                      style={{ willChange: 'opacity, transform' }}
-                    >
-                      {line}
-                    </motion.span>
-                  ))}
-                </h1>
+                <div className="absolute inset-0 bg-[#0E1011]/30 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+
+                <div className="absolute top-6 left-6 md:top-8 md:left-8 bg-[#0E1011]/80 border border-white/10 rounded-full px-5 py-2 md:px-6 md:py-2.5 shadow-xl flex items-center justify-center pointer-events-none">
+                  <span className="font-heading font-bold text-white text-sm md:text-lg tracking-wider uppercase mt-0.5">
+                    {banner.pill}
+                  </span>
+                </div>
+
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center w-full px-4 -skew-x-[12deg] pointer-events-none">
+                  <h2
+                    className="font-heading text-white uppercase text-5xl md:text-7xl lg:text-[84px] xl:text-[96px] leading-[0.85] flex flex-col items-center scale-x-105 font-light tracking-tighter"
+                    style={{ textShadow: '0 10px 20px rgba(0,0,0,0.6)' }}
+                  >
+                    {banner.title.map((line) => (
+                      <span key={line}>{line}</span>
+                    ))}
+                  </h2>
+                </div>
+
+                <div className="absolute bottom-10 md:bottom-12 left-0 right-0 z-10 px-4 flex justify-center pointer-events-none">
+                  <p className="text-white/80 font-light text-sm md:text-base lg:text-lg max-w-xl text-center drop-shadow-lg">
+                    {banner.subtitle}
+                  </p>
+                </div>
               </div>
+            ))}
+          </motion.div>
 
-              {/* Subtitle */}
-              <motion.div 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.55, duration: 0.7 }}
-                className="absolute bottom-10 md:bottom-12 left-0 right-0 z-10 px-4 flex justify-center pointer-events-none transform-gpu"
-                style={{ willChange: 'opacity, transform' }}
-              >
-                <p className="text-white/80 font-light text-sm md:text-base lg:text-lg max-w-xl text-center drop-shadow-lg" >
-                  {BANNERS[currentIndex].subtitle}
-                </p>
-              </motion.div>
-            </motion.div>
-          </AnimatePresence>
-          {/* Carousel Indicators */}
-          <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20">
+          {/* Dots stay fixed over the viewport while cards slide underneath */}
+          <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20 pointer-events-auto">
             {BANNERS.map((_, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => goToBanner(i)}
-                className={`transition-all duration-500 rounded-full cursor-pointer ${
+                className={`transition-[width,background-color] duration-300 ease-out rounded-full cursor-pointer ${
                   i === currentIndex ? 'w-8 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/60'
                 }`}
                 aria-label={`Go to slide ${i + 1}`}
               />
             ))}
           </div>
-
         </div>
       </section>
 
