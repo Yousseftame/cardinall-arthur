@@ -373,8 +373,8 @@ export default function ProductPage() {
 }
 
 /* ─── You May Also Like Component ─────────────────────────── */
-function YouMayAlsoLike({ currentId }: { currentId: number }) {
-  const related = PRODUCTS.filter((p) => p.id !== currentId);
+function YouMayAlsoLike({ currentId }: { currentId: string | number }) {
+  const related = PRODUCTS.filter((p) => String(p.id) !== String(currentId));
   const [activeIdx, setActiveIdx] = useState(0);
   const navigate = useNavigate();
   const { addItem, openCart } = useCartStore();

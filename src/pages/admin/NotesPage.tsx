@@ -369,7 +369,9 @@ export default function NotesPage() {
       <ConfirmationModal
         isOpen={!!toDelete}
         onClose={() => setToDelete(null)}
-        onConfirm={() => toDelete && deleteMutation.mutate(toDelete.id)}
+        onConfirm={() => {
+          if (toDelete) deleteMutation.mutate(toDelete.id);
+        }}
         title="Delete Note"
         description={
           <span>
