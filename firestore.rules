@@ -3,36 +3,29 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if request is from an authenticated admin
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // ==========================================
-    // 1. ORDERS COLLECTION
-    // ==========================================
-    // - Anyone (unauthenticated guest customers) can create/submit orders at checkout
-    // - Only authenticated admins can read, update status, and delete orders
+    // ====================================================
+    // 1. ORDERS — guests can place orders; admins manage them
+    // ====================================================
     match /orders/{orderId} {
       allow create: if true;
       allow read, update, delete: if isAuthenticated();
     }
 
-    // ==========================================
-    // 2. STORE SETTINGS (e.g. settings/checkout)
-    // ==========================================
-    // - Anyone can read delivery rates, governorates & thresholds
-    // - Only authenticated admins can update checkout settings
+    // ====================================================
+    // 2. SETTINGS — checkout, about intro, vision (public read)
+    // ====================================================
     match /settings/{settingDoc} {
       allow read: if true;
       allow write: if isAuthenticated();
     }
 
-    // ==========================================
-    // 3. STOREFRONT CONTENT (Products, Categories, Banners)
-    // ==========================================
-    // - Anyone can view products and categories on the storefront
-    // - Only authenticated admins can create or edit them
+    // ====================================================
+    // 3. CATALOG — products, categories, banners
+    // ====================================================
     match /products/{productId} {
       allow read: if true;
       allow write: if isAuthenticated();
@@ -48,7 +41,55 @@ service cloud.firestore {
       allow write: if isAuthenticated();
     }
 
-    // Default deny for anything else unless authenticated
+    // ====================================================
+    // 4. PUBLIC CMS — storefront reads; admin writes
+    // ====================================================
+    match /perfume_notes/{noteId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /timeline/{itemId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /terms/{termId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /faqs/{faqId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // ====================================================
+    // 5. GUEST INBOUND — anyone can submit; only admins manage
+    // ====================================================
+    match /contact_messages/{messageId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    match /cant_find_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    match /newsletter_subscribers/{subscriberId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    match /feedbacks/{feedbackId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    // ====================================================
+    // 6. EVERYTHING ELSE (e.g. paid_customers) — admin only
+    // ====================================================
     match /{document=**} {
       allow read, write: if isAuthenticated();
     }

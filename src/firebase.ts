@@ -1,24 +1,24 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-/// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Cardinal Arthur — Firebase web app config
 const firebaseConfig = {
-  apiKey: "AIzaSyCWI11gm4qabi2yW00FCKt2tcvkwgFkhic",
-  authDomain: "arthur-c9566.firebaseapp.com",
-  projectId: "arthur-c9566",
-  storageBucket: "arthur-c9566.firebasestorage.app",
-  messagingSenderId: "668800565608",
-  appId: "1:668800565608:web:308e0ab6a2c6dfe46c96dd",
-  measurementId: "G-YBERZ43F6F"
+  apiKey: "AIzaSyBZAmDLR2yK5GiNr9aN-XSbc-crfKigRFQ",
+  authDomain: "cardinal-arthur.firebaseapp.com",
+  projectId: "cardinal-arthur",
+  storageBucket: "cardinal-arthur.firebasestorage.app",
+  messagingSenderId: "16373253332",
+  appId: "1:16373253332:web:275eea5925f677435e2741",
+  measurementId: "G-2WHLR947W1",
 };
 
-// Initialize Firebase
 export const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+/** Analytics only in the browser when supported (avoids init issues in some environments). */
+export const analyticsPromise = isSupported().then((ok) =>
+  ok ? getAnalytics(app) : null
+);
