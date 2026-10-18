@@ -18,8 +18,8 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 /** Soft settle into the mid frame */
 const EASE_ARRIVE = [0.22, 1, 0.36, 1] as const;
-/** Calmer expand — less snap than expo-out */
-const EASE_EXPAND = [0.4, 0, 0.2, 1] as const;
+/** Longer cinematic expand to full */
+const EASE_EXPAND = [0.19, 1, 0.22, 1] as const;
 
 export default function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
@@ -91,8 +91,8 @@ export default function HeroSection() {
       await imageControls.start({
         scale: 1,
         transition: {
-          delay: 0.4,
-          duration: 1.85,
+          delay: 0.18,
+          duration: 1.45,
           ease: EASE_EXPAND,
         },
       });

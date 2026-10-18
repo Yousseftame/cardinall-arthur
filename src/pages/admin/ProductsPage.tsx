@@ -41,6 +41,8 @@ import {
   X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { resolveNoteLabel } from '../../data/perfumeNotes';
+import { usePerfumeNotes } from '../../hooks/usePerfumeNotes';
 
 const PRODUCTS_QUERY_KEY = ['products'] as const;
 const CATEGORIES_QUERY_KEY = ['categories'] as const;
@@ -85,6 +87,11 @@ function StatusTogglePill({
 
 export default function ProductsPage() {
   const queryClient = useQueryClient();
+  const { notes: perfumeNotes } = usePerfumeNotes();
+  const noteCatalog = useMemo(
+    () => perfumeNotes.map((n) => ({ id: n.slug, label: n.label })),
+    [perfumeNotes]
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | ProductStatus>('all');
   const [formMode, setFormMode] = useState<'create' | 'edit' | null>(null);
@@ -241,12 +248,20 @@ export default function ProductsPage() {
           p.name.toLowerCase().includes(q) ||
           p.slug.toLowerCase().includes(q) ||
           p.categoryName.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
+          p.description.toLowerCase().includes(q) ||
+          (p.notes || []).some(
+            (noteId) =>
+              noteId.includes(q) ||
+              resolveNoteLabel(noteId, noteCatalog).toLowerCase().includes(q)
+          )
       );
     }
 
-    return result;
-  }, [products, searchQuery, statusFilter]);
+    // Newest products first in the admin table
+    return [...result].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }, [products, searchQuery, statusFilter, noteCatalog]);
 
   const columns: Column<ProductRecord>[] = [
     {
@@ -294,6 +309,33 @@ export default function ProductsPage() {
           {row.categoryName || '—'}
         </span>
       ),
+    },
+    {
+      id: 'notes',
+      header: 'Notes',
+      cell: (row) => {
+        const notes = row.notes || [];
+        if (notes.length === 0) {
+          return <span className="text-xs text-gray-400 italic">None</span>;
+        }
+        const shown = notes.slice(0, 2);
+        const rest = notes.length - shown.length;
+        return (
+          <div className="flex flex-wrap gap-1 max-w-[160px]">
+            {shown.map((id) => (
+              <span
+                key={id}
+                className="inline-flex px-2 py-0.5 rounded-full bg-[#2C0E11]/6 text-[10px] font-semibold text-[#2C0E11]"
+              >
+                {resolveNoteLabel(id, noteCatalog)}
+              </span>
+            ))}
+            {rest > 0 && (
+              <span className="text-[10px] font-semibold text-gray-400 self-center">+{rest}</span>
+            )}
+          </div>
+        );
+      },
     },
     {
       id: 'price',
@@ -527,6 +569,7 @@ export default function ProductsPage() {
                 categoryId: editingProduct.categoryId,
                 categoryName: editingProduct.categoryName,
                 imageKeys: editingProduct.imageKeys,
+                notes: editingProduct.notes || [],
                 status: editingProduct.status,
                 slug: editingProduct.slug,
               }
@@ -626,6 +669,24 @@ export default function ProductsPage() {
               <p className="text-sm text-gray-600 leading-relaxed">
                 {activeViewProduct.description}
               </p>
+
+              {(activeViewProduct.notes || []).length > 0 && (
+                <div className="space-y-2">
+                  <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                    Scent Notes
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {activeViewProduct.notes.map((id) => (
+                      <span
+                        key={id}
+                        className="inline-flex px-2.5 py-1 rounded-full bg-[#2C0E11]/8 text-xs font-semibold text-[#2C0E11]"
+                      >
+                        {resolveNoteLabel(id, noteCatalog)}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Simple info rows */}
               <div className="rounded-2xl border border-gray-100 divide-y divide-gray-100 overflow-hidden">

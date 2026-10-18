@@ -23,6 +23,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Admin pages: lazy-loaded so unused routes never download or fetch data
 const CategoriesPage = lazy(() => import("./pages/admin/CategoriesPage"));
+const NotesPage = lazy(() => import("./pages/admin/NotesPage"));
 const ProductsPage = lazy(() => import("./pages/admin/ProductsPage"));
 const OrdersPage = lazy(() => import("./pages/admin/OrdersPage"));
 const CheckoutSettingsPage = lazy(() => import("./pages/admin/CheckoutSettingsPage"));
@@ -109,6 +110,7 @@ function App() {
                 <Route index element={<Suspense fallback={<AdminPageFallback />}><DashboardHomePage /></Suspense>} />
                 
                 <Route path="categories" element={<Suspense fallback={<AdminPageFallback />}><CategoriesPage /></Suspense>} />
+                <Route path="notes" element={<Suspense fallback={<AdminPageFallback />}><NotesPage /></Suspense>} />
                 <Route path="products" element={<Suspense fallback={<AdminPageFallback />}><ProductsPage /></Suspense>} />
                 <Route path="orders" element={<Suspense fallback={<AdminPageFallback />}><OrdersPage /></Suspense>} />
                 <Route path="customers" element={<Suspense fallback={<AdminPageFallback />}><PaidCustomersPage /></Suspense>} />

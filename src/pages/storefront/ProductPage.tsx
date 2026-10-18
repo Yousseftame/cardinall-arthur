@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PRODUCTS } from '../../data/products';
 import { ArrowLeft, ArrowRight, Share2, Copy, Eye, ShoppingCart, X } from 'lucide-react';
@@ -10,6 +10,13 @@ import ProductFeedbackSection from '../../components/sections/ProductFeedbackSec
 import { useCartStore } from '../../store/cartStore';
 import { useFavoriteStore } from '../../store/favoriteStore';
 import PulseHeart from '../../components/PulseHeart';
+import { useProducts } from '../../hooks/useProducts';
+import NoteChips from '../../components/perfume/NoteChips';
+import {
+  formatProductPrice,
+  getProductGallerySrcs,
+  getProductImageSrc,
+} from '../../services/products.service';
 
 const swipeConfidenceThreshold = 10000;
 const swipePower = (offset: number, velocity: number) => {
@@ -39,10 +46,28 @@ const imageVariants = {
 
 export default function ProductPage() {
   const { id } = useParams();
-  const product = PRODUCTS.find((p) => p.id === Number(id)) || PRODUCTS[0];
-  
-  // Since we only have two images (image and hoverImage) in mock data, let's just make a simple gallery.
-  const gallery = [product.image, product.hoverImage, product.image, product.hoverImage]; // Mock 4 thumbnails
+  const { data: catalog = [] } = useProducts();
+  const catalogProduct = useMemo(
+    () => catalog.find((p) => p.slug === id || p.id === id),
+    [catalog, id]
+  );
+  const mockProduct = PRODUCTS.find((p) => p.id === Number(id)) || PRODUCTS[0];
+
+  const product = catalogProduct
+    ? {
+        id: catalogProduct.id,
+        name: catalogProduct.name,
+        desc: catalogProduct.description,
+        price: formatProductPrice(catalogProduct.price),
+        image: getProductImageSrc(catalogProduct),
+        hoverImage: getProductGallerySrcs(catalogProduct)[1] || getProductImageSrc(catalogProduct),
+      }
+    : mockProduct;
+
+  // Catalog gallery when available; otherwise mock dual-image loop
+  const gallery = catalogProduct
+    ? getProductGallerySrcs(catalogProduct)
+    : [product.image, product.hoverImage, product.image, product.hoverImage];
   const [activeImage, setActiveImage] = useState(0);
   const [direction, setDirection] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -68,7 +93,7 @@ export default function ProductPage() {
       price: parseFloat(product.price.replace(/[^0-9.-]+/g, "")),
       imageUrl: product.image,
       description: product.desc,
-      stock: 99,
+      stock: catalogProduct?.stock ?? 99,
     });
     openCart();
   };
@@ -237,11 +262,20 @@ export default function ProductPage() {
           </div>
 
           <p 
-            className="text-white/70 text-lg md:text-xl leading-relaxed mb-12 max-w-xl font-medium"
+            className="text-white/70 text-lg md:text-xl leading-relaxed mb-8 max-w-xl font-medium"
             
           >
             {product.desc}
           </p>
+
+          {catalogProduct?.notes && catalogProduct.notes.length > 0 && (
+            <div className="mb-12 max-w-xl">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-white/40 font-medium mb-3">
+                Scent Notes
+              </p>
+              <NoteChips noteIds={catalogProduct.notes} size="md" />
+            </div>
+          )}
 
           {/* Shipping Accordion */}
           <div className="mt-4 mb-10 w-full border-b border-white/20">

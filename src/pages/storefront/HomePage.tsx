@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import HeroSection from "../../components/sections/HeroSection";
 import ProductsSection from "../../components/sections/ProductsSection";
+import MakeYourPerfumeSection from "../../components/sections/MakeYourPerfumeSection";
 // import ServicesSection from "../../components/sections/ServicesSection";
 import LatestProjectsSection from "../../components/sections/LatestProjectsSection";
 import ClientFeedbackSection from "../../components/sections/ClientFeedbackSection";
@@ -96,6 +97,7 @@ export default function HomePage() {
 
       {/* Rest of home continues on the deep end color + same noise */}
       <div className="site-atmosphere site-atmosphere--deep">
+        <MakeYourPerfumeSection />
         <LatestProjectsSection />
         {/* <ServicesSection /> */}
         <ClientFeedbackSection />

@@ -1,19 +1,28 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, ChevronUp, Package, X } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { ChevronDown, ChevronUp, Package, Pencil, Plus, Trash2, X } from 'lucide-react';
 import {
   PRODUCT_BOTTLE_SIZE,
   slugifyProductName,
   type ProductStatus,
 } from '../../services/products.service';
 import type { CategoryRecord } from '../../services/categories.service';
+import { createNote, deleteNote, updateNote, type NoteRecord } from '../../services/notes.service';
 import {
   DEFAULT_PRODUCT_IMAGE_KEY,
   MAX_PRODUCT_GALLERY_IMAGES,
   PRODUCT_IMAGES,
   resolveProductImage,
 } from '../../data/productImages';
+import {
+  MAX_PRODUCT_NOTES,
+  resolveNoteLabel,
+  slugifyNoteLabel,
+} from '../../data/perfumeNotes';
+import { NOTES_QUERY_KEY, usePerfumeNotes } from '../../hooks/usePerfumeNotes';
 import { cn } from '../../lib/utils';
+import toast from 'react-hot-toast';
 
 export interface ProductFormValues {
   name: string;
@@ -24,6 +33,8 @@ export interface ProductFormValues {
   categoryName: string;
   /** Ordered gallery keys (1–N). First = primary. */
   imageKeys: string[];
+  /** Catalog scent note ids. */
+  notes: string[];
   status: ProductStatus;
   slug: string;
 }
@@ -46,6 +57,7 @@ const emptyValues: ProductFormValues = {
   categoryId: '',
   categoryName: '',
   imageKeys: [DEFAULT_PRODUCT_IMAGE_KEY],
+  notes: [],
   status: 'active',
   slug: '',
 };
@@ -59,12 +71,24 @@ export default function ProductFormModal({
   onClose,
   onSubmit,
 }: ProductFormModalProps) {
+  const queryClient = useQueryClient();
+  const { activePickerNotes, notes: allNotes } = usePerfumeNotes();
   const [values, setValues] = useState<ProductFormValues>(emptyValues);
   const [priceInput, setPriceInput] = useState('');
   const [stockInput, setStockInput] = useState('0');
   const [slugTouched, setSlugTouched] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [error, setError] = useState('');
+  const [customNoteInput, setCustomNoteInput] = useState('');
+  const [addingNote, setAddingNote] = useState(false);
+  const [editingNote, setEditingNote] = useState<NoteRecord | null>(null);
+  const [editNoteLabel, setEditNoteLabel] = useState('');
+  const [noteActionLoading, setNoteActionLoading] = useState(false);
+
+  const noteCatalog = useMemo(
+    () => allNotes.map((n) => ({ id: n.slug, label: n.label })),
+    [allNotes]
+  );
 
   const activeCategories = useMemo(
     () => categories.filter((c) => c.status === 'active'),
@@ -96,10 +120,13 @@ export default function ProductFormModal({
         ? initialValues.imageKeys
         : [DEFAULT_PRODUCT_IMAGE_KEY];
 
+    const initialNotes = Array.isArray(initialValues?.notes) ? initialValues.notes : [];
+
     const next: ProductFormValues = {
       ...emptyValues,
       ...initialValues,
       imageKeys: initialGallery.slice(0, MAX_PRODUCT_GALLERY_IMAGES),
+      notes: initialNotes.slice(0, MAX_PRODUCT_NOTES),
       status: initialValues?.status || 'active',
     };
 
@@ -187,6 +214,10 @@ export default function ProductFormModal({
       setError('Add at least one gallery image.');
       return;
     }
+    if (!values.notes.length) {
+      setError('Select at least one scent note.');
+      return;
+    }
 
     setError('');
     await onSubmit({
@@ -196,12 +227,127 @@ export default function ProductFormModal({
       price,
       stock,
       imageKeys: values.imageKeys.slice(0, MAX_PRODUCT_GALLERY_IMAGES),
+      notes: values.notes.slice(0, MAX_PRODUCT_NOTES),
       slug: values.slug.trim() || slugifyProductName(name),
       categoryName:
         values.categoryName ||
         categories.find((c) => c.id === values.categoryId)?.name ||
         '',
     });
+  };
+
+  const toggleNote = (noteId: string) => {
+    setValues((prev) => {
+      const exists = prev.notes.includes(noteId);
+      if (exists) {
+        return { ...prev, notes: prev.notes.filter((id) => id !== noteId) };
+      }
+      if (prev.notes.length >= MAX_PRODUCT_NOTES) return prev;
+      return { ...prev, notes: [...prev.notes, noteId] };
+    });
+  };
+
+  const handleAddCustomNote = async () => {
+    const label = customNoteInput.trim();
+    if (!label || addingNote || isLoading) return;
+    if (values.notes.length >= MAX_PRODUCT_NOTES) {
+      setError(`You can select up to ${MAX_PRODUCT_NOTES} notes.`);
+      return;
+    }
+
+    const slug = slugifyNoteLabel(label);
+    const existing = activePickerNotes.find((n) => n.id === slug);
+    if (existing) {
+      if (!values.notes.includes(existing.id)) toggleNote(existing.id);
+      setCustomNoteInput('');
+      return;
+    }
+
+    setAddingNote(true);
+    try {
+      await createNote({ label, status: 'active' });
+      await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      setValues((prev) => ({
+        ...prev,
+        notes: prev.notes.includes(slug)
+          ? prev.notes
+          : [...prev.notes, slug].slice(0, MAX_PRODUCT_NOTES),
+      }));
+      setCustomNoteInput('');
+      toast.success(`Added “${label}” to notes`);
+    } catch (err: any) {
+      toast.error(err?.message || 'Could not add note');
+    } finally {
+      setAddingNote(false);
+    }
+  };
+
+  const openEditNote = (slug: string) => {
+    const record = allNotes.find((n) => n.slug === slug);
+    if (!record) {
+      toast.error('Could not find that note to edit.');
+      return;
+    }
+    setEditingNote(record);
+    setEditNoteLabel(record.label);
+  };
+
+  const handleSaveEditedNote = async () => {
+    if (!editingNote || noteActionLoading) return;
+    const label = editNoteLabel.trim();
+    if (!label) {
+      toast.error('Note name is required.');
+      return;
+    }
+
+    const oldSlug = editingNote.slug;
+    const newSlug = slugifyNoteLabel(label);
+    setNoteActionLoading(true);
+    try {
+      await updateNote(editingNote.id, { label, status: editingNote.status });
+      await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      // Keep product selection in sync if slug changed
+      if (oldSlug !== newSlug) {
+        setValues((prev) => ({
+          ...prev,
+          notes: prev.notes.map((id) => (id === oldSlug ? newSlug : id)),
+        }));
+      }
+      setEditingNote(null);
+      setEditNoteLabel('');
+      toast.success('Note updated');
+    } catch (err: any) {
+      toast.error(err?.message || 'Could not update note');
+    } finally {
+      setNoteActionLoading(false);
+    }
+  };
+
+  const handleDeleteNote = async (slug: string) => {
+    const record = allNotes.find((n) => n.slug === slug);
+    if (!record) {
+      toast.error('Could not find that note to remove.');
+      return;
+    }
+
+    setNoteActionLoading(true);
+    try {
+      await deleteNote(record.id);
+      await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      setValues((prev) => ({
+        ...prev,
+        notes: prev.notes.filter((id) => id !== slug),
+      }));
+      if (editingNote?.id === record.id) {
+        setEditingNote(null);
+        setEditNoteLabel('');
+      }
+      toast.success('Note removed');
+    } catch (err: any) {
+      toast.error(err?.message || 'Could not remove note');
+    } finally {
+      setNoteActionLoading(false);
+    }
   };
 
   const toggleGalleryImage = (key: string) => {
@@ -390,6 +536,167 @@ export default function ProductFormModal({
               rows={3}
               className="w-full px-4 py-3 rounded-2xl bg-[#F4F4F4] text-sm font-medium text-gray-900 outline-none placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-[#2C0E11]/20 transition-all border border-transparent focus:border-[#2C0E11]/15 disabled:opacity-60 resize-none"
             />
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                Scent Notes
+              </span>
+              <span className="text-[11px] text-gray-400 font-medium">
+                {values.notes.length}/{MAX_PRODUCT_NOTES} selected
+              </span>
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={customNoteInput}
+                onChange={(e) => setCustomNoteInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    void handleAddCustomNote();
+                  }
+                }}
+                placeholder="Write a new note…"
+                disabled={isLoading || addingNote}
+                className="flex-1 h-11 px-4 rounded-2xl bg-[#F4F4F4] text-sm font-medium text-gray-900 outline-none placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-[#2C0E11]/20 border border-transparent"
+              />
+              <button
+                type="button"
+                onClick={() => void handleAddCustomNote()}
+                disabled={isLoading || addingNote || !customNoteInput.trim()}
+                className="h-11 px-4 rounded-2xl bg-[#2C0E11] text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-40"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add
+              </button>
+            </div>
+
+            <p className="text-[11px] text-gray-400">
+              Click a note to select it. Use the pencil to edit or trash to remove a wrong note.
+            </p>
+
+            <div className="flex flex-wrap gap-2 max-h-44 overflow-y-auto p-1">
+              {activePickerNotes.length === 0 ? (
+                <p className="text-xs text-gray-400 py-2">
+                  No notes yet — type one above or manage them under Admin → Scent Notes.
+                </p>
+              ) : (
+                activePickerNotes.map((note) => {
+                  const selected = values.notes.includes(note.id);
+                  return (
+                    <div
+                      key={note.id}
+                      className={cn(
+                        'inline-flex items-center gap-0.5 rounded-full border text-xs font-semibold transition-all',
+                        selected
+                          ? 'bg-[#2C0E11] text-white border-[#2C0E11]'
+                          : 'bg-[#F4F4F4] text-gray-700 border-transparent'
+                      )}
+                    >
+                      <button
+                        type="button"
+                        disabled={
+                          isLoading ||
+                          noteActionLoading ||
+                          (!selected && values.notes.length >= MAX_PRODUCT_NOTES)
+                        }
+                        onClick={() => toggleNote(note.id)}
+                        aria-pressed={selected}
+                        className="pl-3 pr-1.5 py-1.5 rounded-full cursor-pointer disabled:opacity-40"
+                      >
+                        {note.label}
+                      </button>
+                      <button
+                        type="button"
+                        title="Edit note"
+                        disabled={isLoading || noteActionLoading}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditNote(note.id);
+                        }}
+                        className={cn(
+                          'p-1.5 rounded-full cursor-pointer disabled:opacity-40',
+                          selected ? 'hover:bg-white/15' : 'hover:bg-black/5'
+                        )}
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        title="Remove note"
+                        disabled={isLoading || noteActionLoading}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void handleDeleteNote(note.id);
+                        }}
+                        className={cn(
+                          'p-1.5 mr-0.5 rounded-full cursor-pointer disabled:opacity-40',
+                          selected
+                            ? 'hover:bg-white/15 text-white/90'
+                            : 'hover:bg-red-50 text-gray-500 hover:text-red-600'
+                        )}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            {values.notes.length > 0 && (
+              <p className="text-[11px] text-gray-400">
+                Selected:{' '}
+                {values.notes.map((id) => resolveNoteLabel(id, noteCatalog)).join(', ')}
+              </p>
+            )}
+
+            {editingNote && (
+              <div className="mt-2 rounded-2xl border border-[#2C0E11]/10 bg-[#F4F4F4]/80 p-3 space-y-3">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                  Edit note
+                </p>
+                <input
+                  type="text"
+                  value={editNoteLabel}
+                  onChange={(e) => setEditNoteLabel(e.target.value)}
+                  disabled={noteActionLoading}
+                  autoFocus
+                  className="w-full h-11 px-4 rounded-2xl bg-white text-sm font-medium text-gray-900 outline-none focus:ring-2 focus:ring-[#2C0E11]/20"
+                />
+                <div className="flex flex-wrap gap-2 justify-end">
+                  <button
+                    type="button"
+                    disabled={noteActionLoading}
+                    onClick={() => {
+                      setEditingNote(null);
+                      setEditNoteLabel('');
+                    }}
+                    className="h-9 px-4 rounded-full text-xs font-semibold text-gray-600 hover:bg-white cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={noteActionLoading}
+                    onClick={() => void handleDeleteNote(editingNote.slug)}
+                    className="h-9 px-4 rounded-full text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer"
+                  >
+                    Remove
+                  </button>
+                  <button
+                    type="button"
+                    disabled={noteActionLoading || !editNoteLabel.trim()}
+                    onClick={() => void handleSaveEditedNote()}
+                    className="h-9 px-4 rounded-full bg-[#2C0E11] text-white text-xs font-bold cursor-pointer disabled:opacity-40"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5">

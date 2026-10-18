@@ -17,6 +17,7 @@ import {
   resolveProductGallery,
   resolveProductImage,
 } from '../data/productImages';
+import { MAX_PRODUCT_NOTES, normalizePerfumeNoteIds } from '../data/perfumeNotes';
 
 /** Bottle size is fixed for all Cardinal Arthur perfume products. */
 export const PRODUCT_BOTTLE_SIZE = '50ml' as const;
@@ -36,6 +37,8 @@ export interface ProductInput {
    * First image is the primary / list thumbnail.
    */
   imageKeys: string[];
+  /** Catalog scent note ids (from perfumeNotes). */
+  notes: string[];
   status?: ProductStatus;
   /** Optional override; auto-generated from name when omitted. */
   slug?: string;
@@ -61,6 +64,8 @@ export interface ProductRecord {
    * Length can be 1, 4, etc. First key = primary image.
    */
   imageKeys: string[];
+  /** Catalog scent note ids. */
+  notes: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -156,6 +161,7 @@ function mapToRecord(id: string, raw: any): ProductRecord {
     categoryId: String(raw?.categoryId || '').trim(),
     categoryName: String(raw?.categoryName || '').trim(),
     imageKeys: normalizeImageKeys(raw),
+    notes: normalizePerfumeNoteIds(raw?.notes, MAX_PRODUCT_NOTES),
     createdAt: raw?.createdAt || new Date().toISOString(),
     updatedAt: raw?.updatedAt || raw?.createdAt || new Date().toISOString(),
   };
@@ -204,6 +210,7 @@ function validateInput(data: ProductInput): {
   categoryId: string;
   categoryName: string;
   imageKeys: string[];
+  notes: string[];
   status: ProductStatus;
   slugBase: string;
 } {
@@ -232,6 +239,11 @@ function validateInput(data: ProductInput): {
     throw new Error('Add at least one gallery image.');
   }
 
+  const notes = normalizePerfumeNoteIds(data.notes, MAX_PRODUCT_NOTES);
+  if (notes.length === 0) {
+    throw new Error('Select at least one scent note.');
+  }
+
   const status = normalizeStatus(data.status);
   const slugBase = slugifyProductName(data.slug?.trim() || name);
 
@@ -243,6 +255,7 @@ function validateInput(data: ProductInput): {
     categoryId,
     categoryName,
     imageKeys,
+    notes,
     status,
     slugBase,
   };
@@ -268,6 +281,7 @@ export const createProduct = async (data: ProductInput): Promise<string> => {
     categoryId: v.categoryId,
     categoryName: v.categoryName,
     imageKeys: v.imageKeys,
+    notes: v.notes,
     createdAt: now,
     updatedAt: now,
   };
@@ -287,6 +301,7 @@ export const createProduct = async (data: ProductInput): Promise<string> => {
       categoryId: localRecord.categoryId,
       categoryName: localRecord.categoryName,
       imageKeys: localRecord.imageKeys,
+      notes: localRecord.notes,
       createdAt: localRecord.createdAt,
       updatedAt: localRecord.updatedAt,
       type: 'marketplace_product',
@@ -367,6 +382,7 @@ export const updateProduct = async (id: string, data: ProductInput): Promise<voi
     categoryId: v.categoryId,
     categoryName: v.categoryName,
     imageKeys: v.imageKeys,
+    notes: v.notes,
     updatedAt,
   };
 

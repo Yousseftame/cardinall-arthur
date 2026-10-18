@@ -1,10 +1,27 @@
-import { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion, animate, type Variants, useScroll, useTransform, useMotionValue, useAnimationFrame } from 'framer-motion';
 import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
 import marketplace2 from '../../assets/marketplace2.webp';
 import banner2 from '../../assets/banner2.webp';
 import marketplaceImg from '../../assets/marketplace1.webp';
 import PageTransition from '../../components/layout/PageTransition';
+import NotePicker from '../../components/perfume/NotePicker';
+import PerfumeMatchResults from '../../components/perfume/PerfumeMatchResults';
+import SpecularButton from '../../components/SpecularButton';
+import { useProducts } from '../../hooks/useProducts';
+import { matchProductsByNotes } from '../../lib/matchProductsByNotes';
+import {
+  MAX_USER_SELECTED_NOTES,
+  normalizePerfumeNoteIds,
+  resolveNoteLabel,
+} from '../../data/perfumeNotes';
+import { usePerfumeNotes } from '../../hooks/usePerfumeNotes';
+
+type NotesPhase = 'select' | 'composing' | 'results';
+const NOTES_COMPOSE_MS = 1400;
+const NOTES_EASE = [0.22, 1, 0.36, 1] as const;
+const glassBtnClass =
+  '!px-7 !py-3 md:!px-8 md:!py-3.5 text-xs tracking-[0.18em] font-bold uppercase !rounded-full !bg-gradient-to-br !from-white/15 !via-white/5 !to-white/[0.08] shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),inset_0_-1px_1px_rgba(255,255,255,0.08),0_8px_28px_-10px_rgba(0,0,0,0.55)] hover:!from-white/22 hover:!via-white/8 hover:!to-white/12 transition-all duration-300 cursor-pointer';
 
 const textContainerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -51,7 +68,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useFavoriteStore } from '../../store/favoriteStore';
 import { PRODUCTS } from '../../data/products';
 import FAQSection from '../../components/sections/FAQSection';
-import { Eye, ShoppingCart, X, Share2, Copy } from 'lucide-react';
+import { Eye, ShoppingCart, X, Share2, Copy, ArrowRight } from 'lucide-react';
 import PulseHeart from '../../components/PulseHeart';
 import { useCartStore } from '../../store/cartStore';
 import toast from 'react-hot-toast';
@@ -98,6 +115,7 @@ export default function MarketplacePage() {
   
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: catalogProducts = [], isLoading: catalogLoading } = useProducts();
 
   // Categories load only on marketplace visit (shared cache with admin)
   const { data: categoryRecords = [] } = useQuery({
@@ -116,6 +134,85 @@ export default function MarketplacePage() {
       .filter(Boolean),
   ];
 
+  const { notes: noteCatalog } = usePerfumeNotes();
+  const noteLabelCatalog = noteCatalog.map((n) => ({ id: n.slug, label: n.label }));
+
+  const notesFromUrl = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const raw = params.get('notes') || '';
+    return normalizePerfumeNoteIds(raw.split(',').filter(Boolean), MAX_USER_SELECTED_NOTES);
+  }, [location.search]);
+
+  const notesUrlKey = notesFromUrl.join(',');
+
+  const [draftNotes, setDraftNotes] = useState<string[]>(notesFromUrl);
+  const [committedNotes, setCommittedNotes] = useState<string[]>(notesFromUrl);
+  const [notesPanelOpen, setNotesPanelOpen] = useState(false);
+  const [notesPhase, setNotesPhase] = useState<NotesPhase>(
+    notesFromUrl.length > 0 ? 'results' : 'select'
+  );
+
+  const writeNotesToUrl = useCallback(
+    (next: string[]) => {
+      const params = new URLSearchParams(location.search);
+      if (next.length > 0) params.set('notes', next.join(','));
+      else params.delete('notes');
+      const qs = params.toString();
+      navigate({ pathname: '/marketplace', search: qs ? `?${qs}` : '' }, { replace: true });
+    },
+    [location.search, navigate]
+  );
+
+  // Deep-link / home “Marketplace” CTA — sync committed notes from URL
+  useEffect(() => {
+    if (notesFromUrl.length > 0) {
+      setDraftNotes(notesFromUrl);
+      setCommittedNotes(notesFromUrl);
+      setNotesPhase((p) => (p === 'composing' ? p : 'results'));
+      setNotesPanelOpen(false);
+      return;
+    }
+    setDraftNotes([]);
+    setCommittedNotes([]);
+    setNotesPhase('select');
+  }, [notesUrlKey, notesFromUrl]);
+
+  useEffect(() => {
+    if (notesPhase !== 'composing') return;
+    const t = setTimeout(() => setNotesPhase('results'), NOTES_COMPOSE_MS);
+    return () => clearTimeout(t);
+  }, [notesPhase]);
+
+  const noteMatches = useMemo(() => {
+    let list = matchProductsByNotes(catalogProducts, committedNotes);
+    if (activeCategory !== 'ALL') {
+      list = list.filter(
+        (m) => m.product.categoryName.trim().toUpperCase() === activeCategory
+      );
+    }
+    return list;
+  }, [catalogProducts, committedNotes, activeCategory]);
+
+  const handleRevealMatches = () => {
+    if (draftNotes.length < 1 || notesPhase === 'composing') return;
+    setNotesPanelOpen(false);
+    setCommittedNotes(draftNotes);
+    setNotesPhase('composing');
+    writeNotesToUrl(draftNotes);
+  };
+
+  const handleClearDraftNotes = () => {
+    setDraftNotes([]);
+  };
+
+  const handleStartOverNotes = () => {
+    setDraftNotes([]);
+    setCommittedNotes([]);
+    writeNotesToUrl([]);
+    setNotesPhase('select');
+    setNotesPanelOpen(true);
+  };
+
   useEffect(() => {
     if (activeCategory !== 'ALL' && !categories.includes(activeCategory)) {
       setActiveCategory('ALL');
@@ -133,6 +230,17 @@ export default function MarketplacePage() {
       window.history.replaceState({}, document.title);
     }
   }, [location]);
+
+  useEffect(() => {
+    if (notesFromUrl.length > 0) {
+      setTimeout(() => {
+        document.getElementById('make-your-perfume')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 400);
+    }
+  }, []);
 
   const { addItem, openCart } = useCartStore();
   const { toggleItem: toggleFavorite, isFavorite } = useFavoriteStore();
@@ -459,7 +567,7 @@ export default function MarketplacePage() {
 
       {/* 2. Products Section */}
       <section id="products-section" className="px-4 md:px-12 w-full max-w-[1920px] mx-auto scroll-mt-24">
-        <div className="flex flex-col mb-6 mt-12 md:mt-16">
+        <div className="flex flex-col mb-6 mt-16 md:mt-24">
           <h2 className="font-heading text-4xl md:text-5xl lg:text-[56px] uppercase mb-8 font-light tracking-tighter">
             <DiaTextReveal 
               text="THE COLLECTION" 
@@ -576,6 +684,295 @@ export default function MarketplacePage() {
             ))}
           </motion.div>
         </div>
+      </section>
+
+      {/* Find Your Perfume — same flow as home (pick → reveal, no auto-match) */}
+      <section
+        id="make-your-perfume"
+        className="px-4 md:px-12 w-full max-w-[1400px] mx-auto scroll-mt-28 mt-20 md:mt-28 pb-16 md:pb-24"
+      >
+        <div
+          className={`flex flex-col items-center text-center transition-[margin] duration-300 ${
+            notesPhase === 'select' ? 'mb-10 md:mb-12' : 'mb-7 md:mb-8'
+          }`}
+        >
+          <p className="text-[11px] uppercase tracking-[0.32em] text-primary font-semibold mb-4">
+            Not sure where to start
+          </p>
+          <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl uppercase font-light tracking-tighter text-white leading-[0.9]">
+            Find Your Perfume
+          </h2>
+          <AnimatePresence initial={false}>
+            {notesPhase === 'select' && (
+              <motion.p
+                key="mkt-intro"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.35, ease: NOTES_EASE }}
+                className="overflow-hidden mt-4 text-sm md:text-base text-white/45 font-light max-w-lg"
+              >
+                Unsure which scent fits you? Pick a few notes you like — we’ll show the closest matches.
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {notesPhase === 'select' && (
+            <motion.div
+              key="mkt-select"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4, ease: NOTES_EASE }}
+              className="w-full max-w-4xl mx-auto"
+            >
+              <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4">
+                {draftNotes.length > 0 && (
+                  <SpecularButton
+                    type="button"
+                    size="md"
+                    radius={999}
+                    tintOpacity={0}
+                    blur={16}
+                    baseColor="#52525b"
+                    onClick={handleClearDraftNotes}
+                    className={glassBtnClass}
+                  >
+                    <span className="text-white">Clear notes</span>
+                  </SpecularButton>
+                )}
+                <SpecularButton
+                  type="button"
+                  size="md"
+                  radius={999}
+                  tintOpacity={0}
+                  blur={16}
+                  baseColor="#52525b"
+                  onClick={() => setNotesPanelOpen((v) => !v)}
+                  className={glassBtnClass}
+                >
+                  <span className="text-white">
+                    {notesPanelOpen ? 'Hide notes' : 'Choose notes'}
+                  </span>
+                </SpecularButton>
+              </div>
+
+              <AnimatePresence initial={false}>
+                {notesPanelOpen && (
+                  <motion.div
+                    key="mkt-notes-panel"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.45, ease: NOTES_EASE }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pt-8 md:pt-10">
+                      <NotePicker
+                        selected={draftNotes}
+                        onChange={setDraftNotes}
+                        max={MAX_USER_SELECTED_NOTES}
+                      />
+                      <AnimatePresence>
+                        {draftNotes.length > 0 && (
+                          <motion.p
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 4 }}
+                            transition={{ duration: 0.3, ease: NOTES_EASE }}
+                            className="mt-6 text-center text-xs md:text-sm text-white/40 font-light tracking-wide"
+                          >
+                            <span className="text-white/25">You’re drawn to · </span>
+                            {draftNotes
+                              .map((id) => resolveNoteLabel(id, noteLabelCatalog))
+                              .join(' · ')}
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence initial={false}>
+                {draftNotes.length > 0 && (
+                  <motion.div
+                    key="mkt-reveal"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.4, ease: NOTES_EASE }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mt-8 md:mt-10 flex flex-col items-center gap-4">
+                      <SpecularButton
+                        type="button"
+                        size="md"
+                        radius={999}
+                        tintOpacity={0}
+                        blur={16}
+                        baseColor="#52525b"
+                        disabled={catalogLoading}
+                        onClick={handleRevealMatches}
+                        className={`${glassBtnClass} !px-8 !py-3.5 md:!px-10 md:!py-4 disabled:opacity-35 disabled:cursor-not-allowed`}
+                      >
+                        <span className="flex items-center justify-center gap-3 text-white">
+                          Show my matches
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </span>
+                      </SpecularButton>
+                      {!notesPanelOpen && (
+                        <p className="text-[11px] text-white/30 font-light tracking-wide text-center">
+                          {draftNotes
+                            .map((id) => resolveNoteLabel(id, noteLabelCatalog))
+                            .join(' · ')}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
+
+          {notesPhase === 'composing' && (
+            <motion.div
+              key="mkt-composing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35 }}
+              className="min-h-[220px] md:min-h-[260px] flex flex-col items-center justify-center gap-8 px-4"
+            >
+              <div className="text-center space-y-3">
+                <p className="font-heading text-2xl md:text-4xl uppercase tracking-tighter font-light text-white">
+                  Finding your perfume
+                </p>
+                <p className="text-sm text-white/40 font-light max-w-xs">
+                  Comparing your notes with the Cardinal Arthur collection
+                </p>
+              </div>
+              <div className="relative w-56 md:w-72 h-5 flex items-center" aria-hidden>
+                <div className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-white/14 to-transparent" />
+                <motion.div
+                  className="relative h-[1.5px] rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: '100%' }}
+                  transition={{
+                    duration: NOTES_COMPOSE_MS / 1000,
+                    ease: NOTES_EASE,
+                  }}
+                  style={{
+                    background:
+                      'linear-gradient(90deg, transparent 0%, rgba(178,133,88,0.45) 18%, #B28558 72%, #D4B08A 100%)',
+                  }}
+                >
+                  <span
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 block rounded-full"
+                    style={{
+                      width: 5,
+                      height: 5,
+                      background:
+                        'radial-gradient(circle at 35% 35%, #F4E4CC 0%, #B28558 55%, rgba(178,133,88,0.2) 100%)',
+                      boxShadow:
+                        '0 0 6px 1px rgba(178,133,88,0.45), 0 0 14px 2px rgba(178,133,88,0.2)',
+                    }}
+                  />
+                </motion.div>
+              </div>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-white/35 font-light text-center">
+                {committedNotes
+                  .map((id) => resolveNoteLabel(id, noteLabelCatalog))
+                  .join(' · ')}
+              </p>
+            </motion.div>
+          )}
+
+          {notesPhase === 'results' && (
+            <motion.div
+              key="mkt-results"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, ease: NOTES_EASE }}
+              className="space-y-8 md:space-y-10"
+            >
+              {noteMatches.length === 0 ? (
+                <div className="max-w-sm mx-auto flex flex-col items-center text-center">
+                  <h3 className="font-heading text-2xl md:text-3xl uppercase font-light tracking-tighter text-[#C97B7B]">
+                    No match
+                  </h3>
+                  {committedNotes.length > 0 && (
+                    <p className="mt-3 text-sm text-white/40 font-light tracking-wide">
+                      {committedNotes
+                        .map((id) => resolveNoteLabel(id, noteLabelCatalog))
+                        .join(' · ')}
+                    </p>
+                  )}
+                  <div className="mt-7 flex flex-wrap items-center justify-center gap-3 md:gap-4">
+                    <SpecularButton
+                      type="button"
+                      size="md"
+                      radius={999}
+                      tintOpacity={0}
+                      blur={16}
+                      baseColor="#52525b"
+                      onClick={handleStartOverNotes}
+                      className={glassBtnClass}
+                    >
+                      <span className="text-white">Try again</span>
+                    </SpecularButton>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-col items-center text-center">
+                    <p className="text-[11px] uppercase tracking-[0.28em] text-primary font-semibold mb-3">
+                      Your matches
+                    </p>
+                    <h3 className="text-xl md:text-2xl font-light tracking-wide text-white">
+                      {noteMatches.length} perfume{noteMatches.length === 1 ? '' : 's'} for you
+                    </h3>
+                    {committedNotes.length > 0 && (
+                      <p className="mt-3 text-sm text-white/40 font-light tracking-wide">
+                        {committedNotes
+                          .map((id) => resolveNoteLabel(id, noteLabelCatalog))
+                          .join(' · ')}
+                      </p>
+                    )}
+                    <div className="mt-6">
+                      <SpecularButton
+                        type="button"
+                        size="md"
+                        radius={999}
+                        tintOpacity={0}
+                        blur={16}
+                        baseColor="#52525b"
+                        onClick={handleStartOverNotes}
+                        className={glassBtnClass}
+                      >
+                        <span className="text-white">Start over</span>
+                      </SpecularButton>
+                    </div>
+                  </div>
+
+                  {catalogLoading ? (
+                    <p className="text-sm text-white/40 font-light py-10 text-center">
+                      Loading matches…
+                    </p>
+                  ) : (
+                    <PerfumeMatchResults
+                      matches={noteMatches}
+                      emptyMessage="No catalog scents match these notes in this category."
+                    />
+                  )}
+                </>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
       {/* Quick View Modal */}

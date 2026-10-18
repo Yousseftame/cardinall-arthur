@@ -8,7 +8,7 @@ import {
   CreditCard, MessageSquare, HelpCircle, Phone, 
   Home, Clock, Eye, Users, Heart, FileText,
   Search, ShieldCheck, ChevronsLeft, Menu, PanelLeft, Globe, UserCheck, Mail,
-  LayoutGrid,
+  LayoutGrid, Flower2,
 } from 'lucide-react';
 
 const SIDEBAR_EASE = "duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
@@ -28,6 +28,7 @@ const navEntries: NavEntry[] = [
   { type: 'divider' },
   { type: 'heading', label: 'Store Management' },
   { type: 'link', href: '/admin/categories', icon: Tags, label: 'Categories' },
+  { type: 'link', href: '/admin/notes', icon: Flower2, label: 'Scent Notes' },
   { type: 'link', href: '/admin/products', icon: ShoppingBag, label: 'Products' },
   { type: 'link', href: '/admin/orders', icon: CreditCard, label: 'Orders' },
   { type: 'link', href: '/admin/checkout', icon: ShieldCheck, label: 'Checkout Settings' },
