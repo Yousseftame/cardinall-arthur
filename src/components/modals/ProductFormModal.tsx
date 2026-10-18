@@ -20,7 +20,11 @@ import {
   resolveNoteLabel,
   slugifyNoteLabel,
 } from '../../data/perfumeNotes';
-import { NOTES_QUERY_KEY, usePerfumeNotes } from '../../hooks/usePerfumeNotes';
+import {
+  ADMIN_NOTES_QUERY_KEY,
+  NOTES_QUERY_KEY,
+  usePerfumeNotes,
+} from '../../hooks/usePerfumeNotes';
 import { cn } from '../../lib/utils';
 import toast from 'react-hot-toast';
 
@@ -267,6 +271,7 @@ export default function ProductFormModal({
     try {
       await createNote({ label, status: 'active' });
       await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: ADMIN_NOTES_QUERY_KEY });
       setValues((prev) => ({
         ...prev,
         notes: prev.notes.includes(slug)
@@ -306,6 +311,7 @@ export default function ProductFormModal({
     try {
       await updateNote(editingNote.id, { label, status: editingNote.status });
       await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: ADMIN_NOTES_QUERY_KEY });
       // Keep product selection in sync if slug changed
       if (oldSlug !== newSlug) {
         setValues((prev) => ({
@@ -334,6 +340,7 @@ export default function ProductFormModal({
     try {
       await deleteNote(record.id);
       await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: ADMIN_NOTES_QUERY_KEY });
       setValues((prev) => ({
         ...prev,
         notes: prev.notes.filter((id) => id !== slug),

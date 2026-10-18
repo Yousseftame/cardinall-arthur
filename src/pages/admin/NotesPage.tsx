@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { cn } from '../../lib/utils';
 import { StatCard, StatGrid } from '../../components/ui/StatCard';
@@ -15,7 +16,7 @@ import {
   type NoteRecord,
   type NoteStatus,
 } from '../../services/notes.service';
-import { NOTES_QUERY_KEY } from '../../hooks/usePerfumeNotes';
+import { ADMIN_NOTES_QUERY_KEY, NOTES_QUERY_KEY } from '../../hooks/usePerfumeNotes';
 import { adminListQueryOptions } from '../../lib/adminQuery';
 import { SUGGESTED_PERFUME_NOTES } from '../../data/perfumeNotes';
 import {
@@ -66,16 +67,23 @@ export default function NotesPage() {
   const [editLabel, setEditLabel] = useState('');
   const [toDelete, setToDelete] = useState<NoteRecord | null>(null);
 
+  // Fetch only when this admin page mounts — not from the dashboard layout
   const { data: notes = [], isLoading, isFetching, refetch } = useQuery({
-    queryKey: NOTES_QUERY_KEY,
+    queryKey: ADMIN_NOTES_QUERY_KEY,
     queryFn: getNotes,
     ...adminListQueryOptions,
+    staleTime: 1000 * 60 * 5,
   });
+
+  const invalidateNotesCaches = async () => {
+    await queryClient.invalidateQueries({ queryKey: ADMIN_NOTES_QUERY_KEY });
+    await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+  };
 
   const createMutation = useMutation({
     mutationFn: (label: string) => createNote({ label, status: 'active' }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      await invalidateNotesCaches();
       setNewLabel('');
       toast.success('Note added');
     },
@@ -86,7 +94,7 @@ export default function NotesPage() {
     mutationFn: ({ id, label }: { id: string; label: string }) =>
       updateNote(id, { label, status: editing?.status }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      await invalidateNotesCaches();
       setEditing(null);
       setEditLabel('');
       toast.success('Note updated');
@@ -98,23 +106,26 @@ export default function NotesPage() {
     mutationFn: ({ id, status }: { id: string; status: NoteStatus }) =>
       updateNoteStatus(id, status),
     onMutate: async ({ id, status }) => {
-      await queryClient.cancelQueries({ queryKey: NOTES_QUERY_KEY });
-      const previous = queryClient.getQueryData<NoteRecord[]>(NOTES_QUERY_KEY);
-      queryClient.setQueryData<NoteRecord[]>(NOTES_QUERY_KEY, (old = []) =>
+      await queryClient.cancelQueries({ queryKey: ADMIN_NOTES_QUERY_KEY });
+      const previous = queryClient.getQueryData<NoteRecord[]>(ADMIN_NOTES_QUERY_KEY);
+      queryClient.setQueryData<NoteRecord[]>(ADMIN_NOTES_QUERY_KEY, (old = []) =>
         old.map((n) => (n.id === id ? { ...n, status, updatedAt: new Date().toISOString() } : n))
       );
       return { previous };
     },
     onError: (err: any, _v, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(NOTES_QUERY_KEY, ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(ADMIN_NOTES_QUERY_KEY, ctx.previous);
       toast.error(err?.message || 'Failed to update status');
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteNote(id),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      await invalidateNotesCaches();
       setToDelete(null);
       toast.success('Note deleted');
     },
@@ -124,7 +135,7 @@ export default function NotesPage() {
   const seedMutation = useMutation({
     mutationFn: ensureSuggestedNotes,
     onSuccess: async (added) => {
-      await queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      await invalidateNotesCaches();
       toast.success(added > 0 ? `Added ${added} suggested notes` : 'All suggested notes already exist');
     },
     onError: (err: any) => toast.error(err?.message || 'Failed to seed notes'),
@@ -326,7 +337,7 @@ export default function NotesPage() {
             <button
               type="button"
               onClick={() => setToDelete(row)}
-              className="p-2 rounded-full hover:bg-red-50 text-gray-400 hover:text-red-600 cursor-pointer"
+              className="p-2 rounded-full hover:bg-red-50 text-red-500 hover:text-red-600 cursor-pointer"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -334,37 +345,21 @@ export default function NotesPage() {
         )}
       />
 
-      {/* Edit modal (inline simple) */}
-      {editing && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50">
-          <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl space-y-4">
-            <h3 className="text-lg font-bold text-[#2C0E11]">Edit note</h3>
-            <input
-              value={editLabel}
-              onChange={(e) => setEditLabel(e.target.value)}
-              className="w-full h-12 px-4 rounded-2xl bg-[#F4F4F4] text-sm font-medium outline-none focus:ring-2 focus:ring-[#2C0E11]/20"
-              autoFocus
-            />
-            <div className="flex gap-2 justify-end">
-              <button
-                type="button"
-                onClick={() => setEditing(null)}
-                className="h-11 px-5 rounded-full text-sm font-semibold text-gray-600 hover:bg-gray-100 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={updateMutation.isPending}
-                onClick={() => updateMutation.mutate({ id: editing.id, label: editLabel.trim() })}
-                className="h-11 px-5 rounded-full bg-[#2C0E11] text-white text-sm font-bold cursor-pointer disabled:opacity-50"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <NoteEditModal
+        isOpen={!!editing}
+        label={editLabel}
+        isLoading={updateMutation.isPending}
+        onLabelChange={setEditLabel}
+        onClose={() => {
+          if (updateMutation.isPending) return;
+          setEditing(null);
+          setEditLabel('');
+        }}
+        onSave={() => {
+          if (!editing) return;
+          updateMutation.mutate({ id: editing.id, label: editLabel.trim() });
+        }}
+      />
 
       <ConfirmationModal
         isOpen={!!toDelete}
@@ -385,5 +380,90 @@ export default function NotesPage() {
         isLoading={deleteMutation.isPending}
       />
     </div>
+  );
+}
+
+function NoteEditModal({
+  isOpen,
+  label,
+  isLoading,
+  onLabelChange,
+  onClose,
+  onSave,
+}: {
+  isOpen: boolean;
+  label: string;
+  isLoading: boolean;
+  onLabelChange: (value: string) => void;
+  onClose: () => void;
+  onSave: () => void;
+}) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isLoading) onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, isLoading, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={() => {
+        if (!isLoading) onClose();
+      }}
+    >
+      <div
+        className="w-full max-w-md bg-white rounded-3xl p-6 shadow-[0_25px_70px_-15px_rgba(44,14,17,0.3)] border border-gray-100 space-y-4 animate-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-lg font-bold text-[#2C0E11]">Edit note</h3>
+        <input
+          value={label}
+          onChange={(e) => onLabelChange(e.target.value)}
+          className="w-full h-12 px-4 rounded-2xl bg-[#F4F4F4] text-sm font-medium outline-none focus:ring-2 focus:ring-[#2C0E11]/20"
+          autoFocus
+          disabled={isLoading}
+        />
+        <div className="flex gap-2 justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isLoading}
+            className="h-11 px-5 rounded-full text-sm font-semibold text-gray-600 hover:bg-gray-100 cursor-pointer disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            disabled={isLoading || !label.trim()}
+            onClick={onSave}
+            className="h-11 px-5 rounded-full bg-[#2C0E11] text-white text-sm font-bold cursor-pointer disabled:opacity-50"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 }

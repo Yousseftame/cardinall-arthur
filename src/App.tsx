@@ -34,6 +34,9 @@ const PaidCustomersPage = lazy(() => import("./pages/admin/PaidCustomersPage"));
 const NewsletterPage = lazy(() => import("./pages/admin/NewsletterPage"));
 const FaqPage = lazy(() => import("./pages/admin/FaqPage"));
 const TermsAdminPage = lazy(() => import("./pages/admin/TermsPage"));
+const AboutIntroPage = lazy(() => import("./pages/admin/AboutIntroPage"));
+const TimelinePage = lazy(() => import("./pages/admin/TimelinePage"));
+const VisionPage = lazy(() => import("./pages/admin/VisionPage"));
 const DashboardHomePage = lazy(() => import("./pages/admin/DashboardHomePage"));
 
 const queryClient = new QueryClient({
@@ -122,9 +125,9 @@ function App() {
                 <Route path="partners" element={<div className="text-white text-xl font-light tracking-widest uppercase">Trusted Partners Editor</div>} />
                 <Route path="banners" element={<div className="text-white text-xl font-light tracking-widest uppercase">Banners Management</div>} />
                 
-                <Route path="about-intro" element={<div className="text-white text-xl font-light tracking-widest uppercase">About Us Section Editor</div>} />
-                <Route path="timeline" element={<div className="text-white text-xl font-light tracking-widest uppercase">Timeline Section Editor</div>} />
-                <Route path="vision" element={<div className="text-white text-xl font-light tracking-widest uppercase">Vision Section Editor</div>} />
+                <Route path="about-intro" element={<Suspense fallback={<AdminPageFallback />}><AboutIntroPage /></Suspense>} />
+                <Route path="timeline" element={<Suspense fallback={<AdminPageFallback />}><TimelinePage /></Suspense>} />
+                <Route path="vision" element={<Suspense fallback={<AdminPageFallback />}><VisionPage /></Suspense>} />
                 <Route path="socials" element={<div className="text-white text-xl font-light tracking-widest uppercase">On Socials Editor</div>} />
                 
                 <Route path="feedback" element={<Suspense fallback={<AdminPageFallback />}><FeedbackPage /></Suspense>} />

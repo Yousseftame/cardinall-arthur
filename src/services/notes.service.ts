@@ -99,17 +99,18 @@ export const getNotes = async (): Promise<NoteRecord[]> => {
   }
 
   try {
-    const q = query(collection(db, NOTES_COLLECTION), orderBy('createdAt', 'asc'));
+    const q = query(collection(db, NOTES_COLLECTION), orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
 
     const remoteList: NoteRecord[] = querySnapshot.docs.map((docSnap) =>
       mapToRecord(docSnap.id, docSnap.data())
     );
 
+    const byNewest = (a: NoteRecord, b: NoteRecord) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+
     if (remoteList.length === 0) {
-      return localList.sort(
-        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      );
+      return localList.sort(byNewest);
     }
 
     const idMap = new Map<string, NoteRecord>();
@@ -127,14 +128,14 @@ export const getNotes = async (): Promise<NoteRecord[]> => {
       }
     });
 
-    const merged = Array.from(idMap.values()).sort(
-      (a, b) => a.label.localeCompare(b.label)
-    );
+    const merged = Array.from(idMap.values()).sort(byNewest);
     saveLocalNotes(merged);
     return merged;
   } catch (error) {
     console.warn('Firestore notes read error, serving cached/local list:', error);
-    return localList.sort((a, b) => a.label.localeCompare(b.label));
+    return localList.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   }
 };
 

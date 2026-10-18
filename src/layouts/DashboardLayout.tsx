@@ -52,7 +52,7 @@ const navEntries: NavEntry[] = [
   { type: 'link', href: '/admin/about-intro', icon: FileText, label: 'About Us Intro' },
   { type: 'link', href: '/admin/timeline', icon: Clock, label: 'Timeline' },
   { type: 'link', href: '/admin/vision', icon: Eye, label: 'Vision' },
-  { type: 'link', href: '/admin/socials', icon: Heart, label: 'On Socials' },
+  { type: 'link', href: '/admin/socials', icon: Heart, label: 'On Socials', disabled: true },
   { type: 'divider' },
   { type: 'heading', label: 'Site Content' },
   { type: 'link', href: '/admin/faq', icon: HelpCircle, label: 'FAQ' },
