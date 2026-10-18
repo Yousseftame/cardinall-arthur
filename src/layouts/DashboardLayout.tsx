@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, NavLink as RouterNavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useAdminBadgeCount } from '../hooks/useAdminBadgeCount';
-import { ADMIN_BADGE_STORES } from '../lib/adminBadges';
+import { ADMIN_BADGE_COLLECTIONS, ADMIN_BADGE_STORES } from '../lib/adminBadges';
 import { 
   LogOut, LayoutDashboard, ShoppingBag, Tags, Image as ImageIcon, 
   CreditCard, MessageSquare, HelpCircle, Phone, 
@@ -68,10 +68,19 @@ export default function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Badges: localStorage + React Query cache only — never fetch Firebase from the layout
-  const newFeedbackCount = useAdminBadgeCount('admin-feedbacks', ADMIN_BADGE_STORES.feedbacks);
-  const newContactCount = useAdminBadgeCount('admin-contact-messages', ADMIN_BADGE_STORES.contact);
-  const newCantFindCount = useAdminBadgeCount('admin-cant-find', ADMIN_BADGE_STORES.cantFind);
+  // Badges: live Firestore listeners — +1 as soon as a new message lands
+  const newFeedbackCount = useAdminBadgeCount(
+    ADMIN_BADGE_STORES.feedbacks,
+    ADMIN_BADGE_COLLECTIONS.feedbacks
+  );
+  const newContactCount = useAdminBadgeCount(
+    ADMIN_BADGE_STORES.contact,
+    ADMIN_BADGE_COLLECTIONS.contact
+  );
+  const newCantFindCount = useAdminBadgeCount(
+    ADMIN_BADGE_STORES.cantFind,
+    ADMIN_BADGE_COLLECTIONS.cantFind
+  );
 
   const handleSignOut = async () => {
     await logout();

@@ -1,9 +1,4 @@
-/**
- * Zero-Firebase badge helpers.
- * Counts come from React Query cache (after a page visit) or localStorage peek only.
- * Never triggers Firestore reads from the sidebar/layout.
- */
-
+/** Instant local hint before the Firestore badge listener connects. */
 export function countNewFromLocalStore(storageKey: string): number {
   try {
     const raw = localStorage.getItem(storageKey);
@@ -20,4 +15,10 @@ export const ADMIN_BADGE_STORES = {
   feedbacks: 'cardinall_feedbacks_store',
   contact: 'cardinall_contact_store',
   cantFind: 'cardinall_cant_find_store',
+} as const;
+
+export const ADMIN_BADGE_COLLECTIONS = {
+  feedbacks: 'feedbacks',
+  contact: 'contact_messages',
+  cantFind: 'cant_find_requests',
 } as const;
