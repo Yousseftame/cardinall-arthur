@@ -7,7 +7,7 @@ import MakeYourPerfumeSection from "../../components/sections/MakeYourPerfumeSec
 import LatestProjectsSection from "../../components/sections/LatestProjectsSection";
 import ClientFeedbackSection from "../../components/sections/ClientFeedbackSection";
 // import BreakSection from "../../components/sections/BreakSection";
-import TrustedPartnersSection from "../../components/sections/TrustedPartnersSection";
+// import TrustedPartnersSection from "../../components/sections/TrustedPartnersSection";
 import LetsTalkSection from "../../components/sections/LetsTalkSection";
 import CheckoutFeedbackModal from "../../components/modals/CheckoutFeedbackModal";
 
@@ -102,7 +102,7 @@ export default function HomePage() {
         {/* <ServicesSection /> */}
         <ClientFeedbackSection />
         {/* <BreakSection /> */}
-        <TrustedPartnersSection />
+        {/* <TrustedPartnersSection /> */}
         <LetsTalkSection />
       </div>
 
