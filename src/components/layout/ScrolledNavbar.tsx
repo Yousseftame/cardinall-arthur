@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { ShoppingCart, Menu, Search, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCartStore } from '../../store/cartStore';
+import { useCartStore, useCartTotalQuantity } from '../../store/cartStore';
 import { useMenuStore } from '../../store/menuStore';
 import { useSearchStore } from '../../store/searchStore';
 import { useFavoriteStore } from '../../store/favoriteStore';
 
 export default function ScrolledNavbar() {
   const [isVisible, setIsVisible] = useState(false);
-  const { openCart, items } = useCartStore();
+  const { openCart } = useCartStore();
+  const cartCount = useCartTotalQuantity();
   const { openMenu } = useMenuStore();
   const { openSearch } = useSearchStore();
   const { items: favoriteItems } = useFavoriteStore();
@@ -73,8 +74,8 @@ export default function ScrolledNavbar() {
             <div className="relative cursor-pointer group flex items-center justify-center p-2 -mr-2" onClick={openCart}>
               <div className="relative">
                 <ShoppingCart className="w-6 h-6 text-[#1a1a1a] stroke-[2] group-hover:text-primary transition-colors" />
-                <span className="absolute -top-1.5 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#2C0E11] text-[10px] font-sans font-semibold leading-none pt-[1px] text-[#f8f7f3] shadow-md group-hover:bg-primary transition-colors">
-                  {items.length}
+                <span className="absolute -top-1.5 -right-2 flex h-5 min-w-5 px-1 items-center justify-center rounded-full bg-[#2C0E11] text-[10px] font-sans font-semibold leading-none pt-[1px] text-[#f8f7f3] shadow-md group-hover:bg-primary transition-colors">
+                  {cartCount}
                 </span>
               </div>
             </div>

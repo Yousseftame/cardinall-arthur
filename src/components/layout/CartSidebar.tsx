@@ -1,11 +1,17 @@
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { X } from 'lucide-react';
-import { useCartStore } from '../../store/cartStore';
+import {
+  getCartTotalQuantity,
+  MAX_QUANTITY_PER_PRODUCT,
+  useCartStore,
+} from '../../store/cartStore';
+import { QuantityLimitNote } from '../cart/QuantityLimitNote';
 import SpecularButton from '../SpecularButton';
 import { useNavigate } from 'react-router-dom';
 
 export default function CartSidebar() {
   const { isOpen, closeCart, items, getCartTotal, updateQuantity, clearCart } = useCartStore();
+  const cartCount = getCartTotalQuantity(items);
   const navigate = useNavigate();
 
   const handleCheckout = () => {
@@ -59,7 +65,7 @@ export default function CartSidebar() {
               <h2 className="font-heading text-2xl uppercase text-[#1a1a1a] flex items-center gap-4 font-light tracking-tighter">
                 Cart
                 <span className="text-sm font-light tracking-normal text-[#1a1a1a]/50">
-                  {items.length > 0 ? `(${items.length})` : ''}
+                  {cartCount > 0 ? `(${cartCount})` : ''}
                 </span>
               </h2>
               <div className="flex items-center gap-6">
@@ -142,27 +148,33 @@ export default function CartSidebar() {
                         
                         <div className="flex items-center justify-between w-full pr-1 gap-2">
                           <div className="flex items-center gap-3 sm:gap-5 shrink-0">
-                            <button 
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)} 
+                            <button
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] rounded-full border border-gray-300 text-[#1a1a1a] flex items-center justify-center hover:bg-[#0E1011]/5 transition-colors shrink-0"
+                              aria-label={`Decrease quantity of ${item.name}`}
                             >
                               <span className="text-base sm:text-lg font-light leading-none mb-[2px]">-</span>
                             </button>
                             <span className="text-[#1a1a1a] text-[15px] font-medium w-3 text-center select-none">
                               {item.quantity}
                             </span>
-                            <button 
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)} 
-                              className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] rounded-full border border-gray-300 text-[#1a1a1a] flex items-center justify-center hover:bg-[#0E1011]/5 transition-colors shrink-0"
+                            <button
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              disabled={item.quantity >= MAX_QUANTITY_PER_PRODUCT}
+                              className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] rounded-full border border-gray-300 text-[#1a1a1a] flex items-center justify-center hover:bg-[#0E1011]/5 transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                              aria-label={`Increase quantity of ${item.name}`}
                             >
                               <span className="text-base sm:text-lg font-light leading-none mb-[2px]">+</span>
                             </button>
                           </div>
-                          
+
                           <p className="font-medium text-[15px] sm:text-[16px] text-[#1a1a1a] whitespace-nowrap text-right" >
                             {item.price} EGP
                           </p>
                         </div>
+                        {item.quantity >= MAX_QUANTITY_PER_PRODUCT && (
+                          <QuantityLimitNote className="mt-3 text-red-600" />
+                        )}
                       </div>
                     </div>
                   ))}

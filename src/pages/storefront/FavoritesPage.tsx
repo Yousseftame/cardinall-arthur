@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
 import { useFavoriteStore } from '../../store/favoriteStore';
 import { useCartStore } from '../../store/cartStore';
+import { notifyQuantityLimit } from '../../components/cart/QuantityLimitNote';
 import { Eye, ShoppingCart } from 'lucide-react';
 import PulseHeart from '../../components/PulseHeart';
 import SpecularButton from '../../components/SpecularButton';
@@ -13,7 +14,7 @@ export default function FavoritesPage() {
   const { addItem, openCart } = useCartStore();
 
   const handleAddToCart = (product: any) => {
-    addItem({
+    const result = addItem({
       id: product.id.toString(),
       name: product.name,
       price: product.price,
@@ -21,6 +22,13 @@ export default function FavoritesPage() {
       description: product.description,
       stock: 99,
     });
+    if (result.status === 'maxed') {
+      notifyQuantityLimit(product.name);
+      return;
+    }
+    if (result.status === 'partial') {
+      notifyQuantityLimit(product.name);
+    }
     openCart();
   };
 

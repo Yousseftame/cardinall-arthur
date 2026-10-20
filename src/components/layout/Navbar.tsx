@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { ShoppingCart, Heart, Search } from 'lucide-react';
-import { useCartStore } from '../../store/cartStore';
+import { useCartStore, useCartTotalQuantity } from '../../store/cartStore';
 import { useMenuStore } from '../../store/menuStore';
 import { useSearchStore } from '../../store/searchStore';
 import { useSplashStore } from '../../store/splashStore';
@@ -11,7 +11,8 @@ export default function Navbar() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   
-  const { openCart, items } = useCartStore();
+  const { openCart } = useCartStore();
+  const cartCount = useCartTotalQuantity();
   const { openMenu } = useMenuStore();
   const { openSearch } = useSearchStore();
   const isSplashVisible = useSplashStore(state => state.isSplashVisible);
@@ -115,8 +116,8 @@ export default function Navbar() {
           
           <div className="relative p-1.5 md:p-2 text-[#1a1a1a]/70 hover:text-[#1a1a1a] transition-colors cursor-pointer group" onClick={openCart}>
             <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" />
-            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] w-[14px] md:h-[16px] md:w-[16px] items-center justify-center rounded-full bg-[#2C0E11] text-white text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
-              {items.length}
+            <span className="absolute top-0 md:top-1 right-0 flex h-[14px] min-w-[14px] px-[3px] md:h-[16px] md:min-w-[16px] items-center justify-center rounded-full bg-[#2C0E11] text-white text-[9px] font-sans font-semibold leading-none pt-[1px] shadow-md pointer-events-none transition-transform group-hover:scale-110">
+              {cartCount}
             </span>
           </div>
         </div>

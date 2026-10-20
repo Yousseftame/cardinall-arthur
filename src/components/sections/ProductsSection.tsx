@@ -8,6 +8,11 @@ import { DiaTextReveal } from '../ui/dia-text-reveal';
 import { PRODUCTS } from '../../data/products';
 import { useCartStore } from '../../store/cartStore';
 import { useFavoriteStore } from '../../store/favoriteStore';
+import { capPickerQuantity, useCartLimit } from '../../hooks/useCartLimit';
+import {
+  notifyQuantityLimit,
+  QuantityLimitNote,
+} from '../cart/QuantityLimitNote';
 
 const swipeConfidenceThreshold = 10000;
 const swipePower = (offset: number, velocity: number) => {
@@ -115,16 +120,36 @@ export default function ProductsSection() {
     velocity.current = info.velocity.x / 1000;
   };
 
+  const selectedLimit = useCartLimit(selectedProduct?.id);
+  const showLimitNote =
+    selectedLimit.isAtMax ||
+    (selectedLimit.remainingQuantity > 0 &&
+      quantity >= selectedLimit.remainingQuantity);
+
+  useEffect(() => {
+    setQuantity((prev) =>
+      capPickerQuantity(prev, selectedLimit.remainingQuantity)
+    );
+  }, [selectedLimit.remainingQuantity]);
+
   const handleAddToCart = (product: typeof PRODUCTS[0], qty = 1) => {
-    for (let i = 0; i < qty; i++) {
-      addItem({
+    const result = addItem(
+      {
         id: product.id.toString(),
         name: product.name,
         price: parseFloat(product.price.replace(/[^0-9.-]+/g, "")),
         imageUrl: product.image,
         description: product.desc,
         stock: 99,
-      });
+      },
+      qty
+    );
+    if (result.status === 'maxed') {
+      notifyQuantityLimit(product.name);
+      return;
+    }
+    if (result.status === 'partial') {
+      notifyQuantityLimit(product.name);
     }
     openCart();
     setSelectedProduct(null);
@@ -492,32 +517,54 @@ export default function ProductsSection() {
                       </AnimatePresence>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-4 mt-auto pb-4 md:pb-0">
-                      <div className="flex items-center gap-4 w-full sm:w-auto self-start sm:self-auto">
-                        <button 
-                          onClick={() => setQuantity(Math.max(1, quantity - 1))} 
-                          className="w-12 h-12 rounded-full border-[1.5px] border-white/20 text-white flex items-center justify-center hover:bg-white/10 transition-colors shrink-0"
+                    <div className="flex flex-col mt-auto pb-4 md:pb-0">
+                      <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <div className="flex items-center gap-4 w-full sm:w-auto self-start sm:self-auto">
+                          <button
+                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                            className="w-12 h-12 rounded-full border-[1.5px] border-white/20 text-white flex items-center justify-center hover:bg-white/10 transition-colors shrink-0"
+                            aria-label="Decrease quantity"
+                          >
+                            <span className="text-xl font-light leading-none mb-1">-</span>
+                          </button>
+                          <span className="text-white text-xl font-medium w-4 text-center select-none">
+                            {quantity}
+                          </span>
+                          <button
+                            onClick={() =>
+                              setQuantity((prev) =>
+                                Math.min(
+                                  prev + 1,
+                                  selectedLimit.remainingQuantity || 1
+                                )
+                              )
+                            }
+                            disabled={
+                              selectedLimit.isAtMax ||
+                              quantity >= selectedLimit.remainingQuantity
+                            }
+                            className="w-12 h-12 rounded-full border-[1.5px] border-white/20 text-white flex items-center justify-center hover:bg-white/10 transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                            aria-label="Increase quantity"
+                          >
+                            <span className="text-xl font-light leading-none mb-1">+</span>
+                          </button>
+                        </div>
+
+                        <motion.button
+                          onClick={() => handleAddToCart(selectedProduct, quantity)}
+                          disabled={selectedLimit.isAtMax}
+                          className="w-full sm:flex-1 bg-white text-black py-4 px-6 rounded-xl font-bold uppercase tracking-wider text-sm sm:text-base hover:bg-gray-200 transition-colors shrink-0 text-center disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+                          whileTap={{ scale: 0.98 }}
                         >
-                          <span className="text-xl font-light leading-none mb-1">-</span>
-                        </button>
-                        <span className="text-white text-xl font-medium w-4 text-center select-none">
-                          {quantity}
-                        </span>
-                        <button 
-                          onClick={() => setQuantity(quantity + 1)} 
-                          className="w-12 h-12 rounded-full border-[1.5px] border-white/20 text-white flex items-center justify-center hover:bg-white/10 transition-colors shrink-0"
-                        >
-                          <span className="text-xl font-light leading-none mb-1">+</span>
-                        </button>
+                          ADD TO CART
+                        </motion.button>
                       </div>
-                      
-                      <motion.button 
-                        onClick={() => handleAddToCart(selectedProduct, quantity)} 
-                        className="w-full sm:flex-1 bg-white text-black py-4 px-6 rounded-xl font-bold uppercase tracking-wider text-sm sm:text-base hover:bg-gray-200 transition-colors shrink-0 text-center"
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        ADD TO CART
-                      </motion.button>
+                      {showLimitNote && (
+                        <QuantityLimitNote
+                          inCartQuantity={selectedLimit.inCartQuantity}
+                          className="mt-3 self-start text-left"
+                        />
+                      )}
                     </div>
                   </div>
                 </motion.div>

@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useCartStore } from '../../store/cartStore';
+import {
+  getCartTotalQuantity,
+  MAX_QUANTITY_MESSAGE,
+  MAX_QUANTITY_PER_PRODUCT,
+  useCartStore,
+} from '../../store/cartStore';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useQuery } from '@tanstack/react-query';
@@ -113,6 +118,7 @@ export default function CheckoutPage() {
   const { items, getCartTotal, clearCart } = useCartStore();
   const navigate = useNavigate();
   const subtotal = getCartTotal();
+  const cartCount = getCartTotalQuantity(items);
 
   // Load checkout settings from Firestore
   const { data: checkoutSettings } = useQuery({
@@ -240,8 +246,34 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Defense in depth: cart store already caps at 3, never submit over-limit.
+    const overLimitItem = items.find(
+      (item) =>
+        !Number.isFinite(item.quantity) ||
+        item.quantity > MAX_QUANTITY_PER_PRODUCT
+    );
+    if (overLimitItem) {
+      const message = `${MAX_QUANTITY_MESSAGE} — ${overLimitItem.name}`;
+      setFormError(message);
+      toast.error(message, {
+        style: {
+          background: '#1a1a1a',
+          color: '#ffffff',
+          borderRadius: '8px',
+          padding: '14px 18px',
+          fontSize: '14px',
+          fontWeight: '500',
+        },
+        iconTheme: {
+          primary: '#EF4444',
+          secondary: '#ffffff',
+        },
+      });
+      return;
+    }
+
     setIsSubmitting(true);
-    
+
     try {
       const firstNameInput = form.querySelector('#firstName') as HTMLInputElement;
       const lastNameInput = form.querySelector('#lastName') as HTMLInputElement;
@@ -402,7 +434,7 @@ export default function CheckoutPage() {
 
       <div className="space-y-3 py-5 border-y border-gray-200/80">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Subtotal · {items.length} items</span>
+          <span className="text-gray-600">Subtotal · {cartCount} items</span>
           <span className="font-medium text-gray-900">{subtotal.toFixed(2)} EGP</span>
         </div>
         <div className="flex items-center justify-between text-sm">
@@ -547,9 +579,9 @@ export default function CheckoutPage() {
               <FloatingInput 
                 id="email" 
                 label="Email" 
-                type="email" 
-                defaultValue="tamerosama73@gmail.com" 
-                required 
+                type="email"
+                autoComplete="email"
+                required
                 icon={
                   <div className="relative flex items-center group/tooltip cursor-help pointer-events-auto">
                     <svg className="w-5 h-5 text-gray-500 hover:text-gray-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -588,11 +620,11 @@ export default function CheckoutPage() {
                 </FloatingSelect>
 
                 <div className="grid grid-cols-2 gap-3.5">
-                  <FloatingInput id="firstName" label="First name" defaultValue="Youssef" required minLength={2} />
-                  <FloatingInput id="lastName" label="Last name" defaultValue="Tamer" required minLength={2} />
+                  <FloatingInput id="firstName" label="First name" autoComplete="given-name" required minLength={2} />
+                  <FloatingInput id="lastName" label="Last name" autoComplete="family-name" required minLength={2} />
                 </div>
 
-                <FloatingInput id="address" label="Full Address" defaultValue="El Sheikh Zayed, 3rd District, Neighborhood 3, Building 57, Apt 2" required minLength={10} />
+                <FloatingInput id="address" label="Full Address" autoComplete="street-address" required minLength={10} />
 
                 <div className="grid grid-cols-3 gap-3.5">
                   <FloatingInput id="street" label="Street Name" required minLength={2} />
@@ -601,19 +633,19 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3.5">
-                  <FloatingInput id="area" label="Area (e.g. New Cairo)" defaultValue="El Sheikh Zayed" required minLength={2} />
-                  <FloatingInput id="postalCode" label="Postal code (optional)" defaultValue="12511" pattern="^[0-9A-Za-z\s\-]{3,10}$" title="Please enter a valid postal code" />
+                  <FloatingInput id="area" label="Area (e.g. New Cairo)" required minLength={2} />
+                  <FloatingInput id="postalCode" label="Postal code (optional)" autoComplete="postal-code" pattern="^[0-9A-Za-z\s\-]{3,10}$" title="Please enter a valid postal code" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                   <FloatingInput 
                     id="phone" 
                     label="Phone" 
-                    type="tel" 
-                    defaultValue="+20 10 11151366" 
-                    required 
+                    type="tel"
+                    autoComplete="tel"
+                    required
                     pattern="^[\+0-9\s\-]{10,20}$"
-                    title="Please enter a valid phone number (e.g. +20 10 11151366)"
+                    title="Please enter a valid phone number"
                     icon={
                       <div className="flex items-center gap-1.5 relative pointer-events-auto cursor-pointer group pr-2">
                         <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -769,13 +801,13 @@ export default function CheckoutPage() {
                     )}
                     {items.length > 0 && (
                       <div className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-[#2C0E11] text-white rounded-[7px] ring-2 ring-white flex items-center justify-center text-[10px] font-bold shadow-sm z-20">
-                        {items.reduce((acc, item) => acc + item.quantity, 0)}
+                        {cartCount}
                       </div>
                     )}
                   </div>
                   <div className="flex flex-col items-start">
                     <span className="font-semibold text-[17px] text-gray-900 leading-tight">Total</span>
-                    <span className="text-[13px] text-gray-500">{items.reduce((acc, item) => acc + item.quantity, 0)} items</span>
+                    <span className="text-[13px] text-gray-500">{cartCount} items</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-gray-900">
