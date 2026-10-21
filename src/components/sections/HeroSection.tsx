@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
 import heroBg from '../../assets/hero-bg.avif';
+import titleBg from '../../assets/breaksection.webp';
 import { useSplashStore } from '../../store/splashStore';
 
 const TEXT = 'CARDINAL ARTHUR';
@@ -18,11 +19,20 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 /** Soft settle into the mid frame */
 const EASE_ARRIVE = [0.22, 1, 0.36, 1] as const;
-/** Longer cinematic expand to full */
+/** Cinematic expand to full */
 const EASE_EXPAND = [0.19, 1, 0.22, 1] as const;
+
+interface LetterBackground {
+  backgroundSize: string;
+  backgroundPosition: string;
+}
 
 export default function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const charWrapRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const [titleImageSize, setTitleImageSize] = useState<{ w: number; h: number } | null>(null);
+  const [letterBackgrounds, setLetterBackgrounds] = useState<LetterBackground[] | null>(null);
   const imageControls = useAnimationControls();
   const [isMobile, setIsMobile] = useState(false);
   const [mobileHeight, setMobileHeight] = useState<number | null>(null);
@@ -51,6 +61,66 @@ export default function HeroSection() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Load title image so its real aspect ratio can be preserved in the letters
+  useEffect(() => {
+    const img = new Image();
+    img.src = titleBg;
+    img.onload = () => {
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        setTitleImageSize({ w: img.naturalWidth, h: img.naturalHeight });
+      }
+    };
+  }, []);
+
+  // Fit the image across the whole title (cover, no stretching), then slice
+  // that exact fit per letter by the letter's measured position in the title.
+  const measureLetterBackgrounds = useCallback(() => {
+    const title = titleRef.current;
+    if (!title || !titleImageSize) return;
+
+    const titleRect = title.getBoundingClientRect();
+    if (titleRect.width <= 0 || titleRect.height <= 0) return;
+
+    const scale = Math.max(
+      titleRect.width / titleImageSize.w,
+      titleRect.height / titleImageSize.h
+    );
+    const imgW = titleImageSize.w * scale;
+    const imgH = titleImageSize.h * scale;
+    const originX = (titleRect.width - imgW) / 2;
+    const originY = (titleRect.height - imgH) / 2;
+
+    const next: LetterBackground[] = TEXT.split('').map((_, i) => {
+      const el = charWrapRefs.current[i];
+      if (!el) {
+        return {
+          backgroundSize: `${imgW}px ${imgH}px`,
+          backgroundPosition: `${originX}px ${originY}px`,
+        };
+      }
+      const rect = el.getBoundingClientRect();
+      return {
+        backgroundSize: `${imgW}px ${imgH}px`,
+        backgroundPosition: `${originX - (rect.left - titleRect.left)}px ${originY - (rect.top - titleRect.top)}px`,
+      };
+    });
+
+    setLetterBackgrounds((prev) =>
+      JSON.stringify(prev) === JSON.stringify(next) ? prev : next
+    );
+  }, [titleImageSize]);
+
+  useLayoutEffect(() => {
+    measureLetterBackgrounds();
+  }, [measureLetterBackgrounds]);
+
+  useEffect(() => {
+    measureLetterBackgrounds();
+    window.addEventListener('resize', measureLetterBackgrounds);
+    document.fonts?.ready.then(() => measureLetterBackgrounds()).catch(() => {});
+    return () => window.removeEventListener('resize', measureLetterBackgrounds);
+  }, [measureLetterBackgrounds]);
+
   useEffect(() => {
     if (isSplashVisible) {
       setReveal(false);
@@ -78,9 +148,9 @@ export default function HeroSection() {
         scale: 0.32,
         transition: {
           delay: 0.95,
-          duration: 1.25,
-          opacity: { delay: 0.95, duration: 0.85, ease: 'easeOut' },
-          scale: { delay: 0.95, duration: 1.25, ease: EASE_ARRIVE },
+          duration: 0.65,
+          opacity: { delay: 0.95, duration: 0.45, ease: 'easeOut' },
+          scale: { delay: 0.95, duration: 0.65, ease: EASE_ARRIVE },
         },
       });
       if (cancelled) return;
@@ -91,8 +161,8 @@ export default function HeroSection() {
       await imageControls.start({
         scale: 1,
         transition: {
-          delay: 0.18,
-          duration: 1.45,
+          delay: 0.06,
+          duration: 0.8,
           ease: EASE_EXPAND,
         },
       });
@@ -132,19 +202,41 @@ export default function HeroSection() {
 
       {/* Brand title — Jenna: masked chars slide from left */}
       <h1
-        style={{ fontFamily: "'Inter Tight', sans-serif" }}
-        className="relative z-10 text-white text-[8.2vw] sm:text-[10vw] md:text-[10vw] lg:text-[9vw] font-medium tracking-[0.04em] md:tracking-[0.06em] text-center uppercase px-3 md:px-4 leading-none flex items-center justify-center max-w-full"
+        ref={titleRef}
+        style={{
+          fontFamily: "'Bodoni Moda', 'Playfair Display', serif",
+          fontOpticalSizing: 'auto',
+          filter: 'drop-shadow(0 4px 18px rgba(0,0,0,0.45))',
+        }}
+        className="relative z-10 text-[8.2vw] sm:text-[10vw] md:text-[10vw] lg:text-[9vw] font-bold tracking-[0.04em] md:tracking-[0.06em] text-center uppercase px-3 md:px-4 leading-none flex items-center justify-center max-w-full"
         aria-label={TEXT}
       >
         {chars.map((char, i) => (
           <span
             key={`${char}-${i}`}
+            ref={(el) => {
+              charWrapRefs.current[i] = el;
+            }}
             className="inline-block overflow-hidden"
             style={{ width: char === ' ' ? '0.35em' : undefined }}
             aria-hidden="true"
           >
             <motion.span
               className="inline-block will-change-transform"
+              style={{
+                // Image fills each letter (hero background is untouched),
+                // fitted across the whole title — aspect preserved, never stretched.
+                backgroundImage: `url(${titleBg})`,
+                ...(letterBackgrounds?.[i] ?? {
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }),
+                backgroundRepeat: 'no-repeat',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent',
+                WebkitTextFillColor: 'transparent',
+              }}
               initial={false}
               animate={reveal ? { x: 0 } : { x: LETTER_FROM_X }}
               transition={{

@@ -73,49 +73,44 @@ function formatWhatsAppPhone(phone: string): string {
   return cleaned;
 }
 
-function buildWhatsAppMessage(order: Order, storePhone: string = STORE_ADMIN_PHONE): string {
-  const formattedDate = new Date(order.createdAt).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+function buildWhatsAppMessage(order: Order): string {
+  const firstName = order.customer.firstName?.trim() || 'there';
 
   const itemsList = order.items
-    .map((item, idx) => `  ${idx + 1}. *${item.name}* (x${item.quantity}) — ${item.subtotal.toFixed(2)} EGP`)
+    .map((item) => `• ${item.name} ×${item.quantity} — ${item.subtotal.toFixed(2)} EGP`)
     .join('\n');
 
-  return `👑 *CARDINAL ARTHUR | LUXURY LEATHER* 👑
-──────────────────────────────
-📦 *ORDER NOTIFICATION*
+  const address = [
+    order.shippingAddress.fullAddress,
+    order.shippingAddress.area,
+    order.shippingAddress.governorate,
+  ]
+    .filter((part) => part?.trim())
+    .join(', ');
 
-Dear *${order.customer.firstName} ${order.customer.lastName}*,
-Thank you for shopping with *Cardinal Arthur*. Your order has been registered in our system.
+  const phones = [order.customer.phone, order.customer.additionalPhone]
+    .filter((part) => part?.trim())
+    .join(' / ');
 
-📋 *Order #:* *${order.orderNumber}*
-📅 *Date:* ${formattedDate}
-⚡ *Status:* *${STATUS_CONFIG[order.status]?.label.toUpperCase() || order.status.toUpperCase()}*
-💳 *Payment:* ${order.paymentMethod.toUpperCase()} (${order.paymentStatus.toUpperCase()})
+  return `Hello ${firstName},
 
-──────────────────────────────
-👜 *ORDER ITEMS:*
+Thank you for your order. We've received order *#${order.orderNumber}*.
+
+*Items*
 ${itemsList}
 
-💰 *FINANCIAL SUMMARY:*
-• Subtotal: ${order.pricing.subtotal.toFixed(2)} EGP
-• Shipping: ${order.pricing.shippingFee === 0 ? 'FREE' : `${order.pricing.shippingFee.toFixed(2)} EGP`}
-• *Total Order Value:* *${order.pricing.total.toFixed(2)} EGP*
+Subtotal: ${order.pricing.subtotal.toFixed(2)} EGP
+Shipping: ${order.pricing.shippingFee === 0 ? 'FREE' : `${order.pricing.shippingFee.toFixed(2)} EGP`}
+*Total: ${order.pricing.total.toFixed(2)} EGP*
 
-──────────────────────────────
-📍 *DELIVERY DESTINATION:*
-• Address: ${order.shippingAddress.fullAddress}
-• Region: ${order.shippingAddress.area ? `${order.shippingAddress.area}, ` : ''}${order.shippingAddress.governorate}
-• Phone: ${order.customer.phone}${order.customer.additionalPhone ? ` / ${order.customer.additionalPhone}` : ''}
-${order.notes ? `• Customer Notes: "${order.notes}"\n` : ''}
-──────────────────────────────
-📞 *Store Hotline:* *${storePhone}*
-✨ _Cardinal Arthur — Handcrafted Egyptian Heritage_`;
+*Delivery*
+${address}
+${phones}${order.notes ? `\nNotes: ${order.notes}` : ''}
+
+We'll be in touch shortly to confirm your delivery time.
+
+Thank you,
+*Cardinal Arthur*`;
 }
 
 /**

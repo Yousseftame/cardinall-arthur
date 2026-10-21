@@ -58,19 +58,17 @@ function formatWhatsAppPhone(phone: string): string {
 }
 
 function buildContactWhatsAppMessage(record: ContactMessageRecord): string {
-  const cleanName = record.name?.trim() || 'Valued Client';
-  const cleanMsg = record.message?.trim() || 'Inquiry';
+  const cleanName = record.name?.trim() || 'there';
+  const cleanMsg = record.message?.trim();
 
-  return `👑 *CARDINAL ARTHUR | CLIENT CONCIERGE* 👑
-──────────────────────────────
-Hello *${cleanName}*,
+  return `Hello ${cleanName},
 
-Thank you for reaching out to *Cardinal Arthur*. We have received your inquiry:
-"${cleanMsg}"
+Thank you for reaching out. We received your message.${cleanMsg ? `\n"${cleanMsg}"` : ''}
 
-Our team is delighted to connect with you. How may we assist you today?
-──────────────────────────────
-✨ _Cardinal Arthur — Handcrafted Egyptian Heritage_`;
+How can we help you today?
+
+Thank you,
+*Cardinal Arthur*`;
 }
 
 /**

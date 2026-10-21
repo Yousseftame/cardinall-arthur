@@ -36,6 +36,7 @@ const FaqPage = lazy(() => import("./pages/admin/FaqPage"));
 const TermsAdminPage = lazy(() => import("./pages/admin/TermsPage"));
 const AboutIntroPage = lazy(() => import("./pages/admin/AboutIntroPage"));
 const TimelinePage = lazy(() => import("./pages/admin/TimelinePage"));
+const LatestProjectsPage = lazy(() => import("./pages/admin/LatestProjectsPage"));
 const VisionPage = lazy(() => import("./pages/admin/VisionPage"));
 const DashboardHomePage = lazy(() => import("./pages/admin/DashboardHomePage"));
 
@@ -121,7 +122,7 @@ function App() {
                 <Route path="checkout" element={<Suspense fallback={<AdminPageFallback />}><CheckoutSettingsPage /></Suspense>} />
                 
                 <Route path="hero" element={<div className="text-white text-xl font-light tracking-widest uppercase">Hero Section Editor</div>} />
-                <Route path="projects" element={<div className="text-white text-xl font-light tracking-widest uppercase">Latest Projects Editor</div>} />
+                <Route path="projects" element={<Suspense fallback={<AdminPageFallback />}><LatestProjectsPage /></Suspense>} />
                 <Route path="partners" element={<div className="text-white text-xl font-light tracking-widest uppercase">Trusted Partners Editor</div>} />
                 <Route path="banners" element={<div className="text-white text-xl font-light tracking-widest uppercase">Banners Management</div>} />
                 

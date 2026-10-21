@@ -44,7 +44,7 @@ const navEntries: NavEntry[] = [
   { type: 'divider' },
   { type: 'heading', label: 'Home Page' },
   { type: 'link', href: '/admin/hero', icon: Home, label: 'Hero Section', disabled: true },
-  { type: 'link', href: '/admin/projects', icon: LayoutGrid, label: 'Latest Projects', disabled: true },
+  { type: 'link', href: '/admin/projects', icon: LayoutGrid, label: 'Latest Projects' },
   { type: 'link', href: '/admin/partners', icon: Users, label: 'Trusted Partners', disabled: true },
   { type: 'link', href: '/admin/banners', icon: ImageIcon, label: 'Banners', disabled: true },
   { type: 'divider' },

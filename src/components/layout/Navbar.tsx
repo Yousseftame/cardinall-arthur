@@ -88,7 +88,7 @@ export default function Navbar() {
           }} 
           className="flex items-center gap-1 md:gap-1.5 group absolute left-1/2 -translate-x-1/2 w-max z-10 cursor-pointer"
         >
-          <span style={{ fontFamily: "'Pinyon Script', cursive" }} className="text-[18px] sm:text-[20px] md:text-[28px] text-black whitespace-nowrap mt-0.5 md:mt-1 drop-shadow-sm">
+          <span style={{ fontFamily: "'Bodoni Moda', 'Playfair Display', serif", fontOpticalSizing: 'auto', fontWeight: 500, letterSpacing: '0.02em' }} className="text-[17px] sm:text-[19px] md:text-[27px] text-black whitespace-nowrap mt-0.5 md:mt-1 drop-shadow-sm">
             Cardinal
           </span>
           <img 
@@ -96,7 +96,7 @@ export default function Navbar() {
             alt="Logo" 
             className="h-[30px] sm:h-[34px] md:h-[42px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
           />
-          <span style={{ fontFamily: "'Pinyon Script', cursive" }} className="text-[18px] sm:text-[20px] md:text-[28px] text-black whitespace-nowrap mt-0.5 md:mt-1 drop-shadow-sm">
+          <span style={{ fontFamily: "'Bodoni Moda', 'Playfair Display', serif", fontOpticalSizing: 'auto', fontWeight: 500, letterSpacing: '0.02em' }} className="text-[17px] sm:text-[19px] md:text-[27px] text-black whitespace-nowrap mt-0.5 md:mt-1 drop-shadow-sm">
             Arthur
           </span>
         </Link>

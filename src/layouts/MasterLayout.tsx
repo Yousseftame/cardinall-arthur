@@ -1,12 +1,13 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { useState, useEffect, useLayoutEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { useEffect, useLayoutEffect } from 'react';
+// import { AnimatePresence } from 'framer-motion';
 
 import Navbar from '../components/layout/Navbar';
 import CartSidebar from '../components/layout/CartSidebar';
 import MenuSidebar from '../components/layout/MenuSidebar';
 import SearchOverlay from '../components/layout/SearchOverlay';
-import SplashScreen from '../components/layout/SplashScreen';
+// import SplashScreen from '../components/layout/SplashScreen';
+import { useSplashStore } from '../store/splashStore';
 import WelcomeModal from '../components/layout/WelcomeModal';
 import FooterSection from '../components/sections/FooterSection';
 import { preloadHeroImages } from '../utils/preloadAssets';
@@ -17,8 +18,14 @@ if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
 }
 
 export default function MasterLayout() {
-  const [isSplashComplete, setIsSplashComplete] = useState(false);
+  // const [isSplashComplete, setIsSplashComplete] = useState(false);
   const location = useLocation();
+
+  // Splash screen is commented out for now — don't let the hero / navbar
+  // wait for a splash that never completes. Remove this when re-enabling it.
+  useEffect(() => {
+    useSplashStore.getState().setSplashVisible(false);
+  }, []);
 
   useEffect(() => {
     // Preload hero images in background for instant reveals
@@ -50,11 +57,13 @@ export default function MasterLayout() {
 
   return (
     <>
+      {/* Splash screen — commented out for now, do not delete
       <AnimatePresence mode="wait">
         {!isSplashComplete && (
           <SplashScreen key="splash" onComplete={() => setIsSplashComplete(true)} />
         )}
       </AnimatePresence>
+      */}
 
       <div className="site-atmosphere site-atmosphere--deep min-h-screen flex flex-col relative font-sans text-foreground">
         <div className="luxury-stage" aria-hidden="true" />

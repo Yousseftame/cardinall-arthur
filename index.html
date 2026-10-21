@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0E1011" />
+    <meta name="theme-color" content="#000000" />
     <meta name="description" content="Discover Cardinal Arthur's exquisite collection of bespoke fragrances and premium leather bags." />
     <meta property="og:title" content="Cardinal Arthur" />
     <meta property="og:description" content="Discover Cardinal Arthur's exquisite collection of bespoke fragrances and premium leather bags." />
@@ -17,60 +17,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&display=swap" rel="stylesheet">
     <title>Cardinal Arthur</title>
-    <!-- Exact match of splash site-atmosphere--fade so boot → splash has no visual jump -->
+    <!-- Black boot screen matching the start of the hero section (splash is disabled) -->
     <style>
-      html, body { margin: 0; background-color: #0e1011; }
+      html, body { margin: 0; background-color: #000; }
       .boot-atmosphere {
         position: absolute;
         inset: 0;
         width: 100vw;
         height: 100vh;
         z-index: 99999;
-        isolation: isolate;
-        background: linear-gradient(
-          180deg,
-          #fafafa 0%,
-          #eef0f0 3%,
-          #d9dcdd 8%,
-          #b8bcbe 14%,
-          #8e9497 20%,
-          #6a7073 26%,
-          #505658 32%,
-          #3f4548 38%,
-          #353b3e 44%,
-          #2f3538 50%,
-          #2b3133 56%,
-          #24292b 64%,
-          #1c2022 72%,
-          #16191b 80%,
-          #121516 88%,
-          #0e1011 100%
-        );
-      }
-      .boot-atmosphere::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        opacity: 0.45;
-        mix-blend-mode: soft-light;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-        background-repeat: repeat;
-        background-size: 180px 180px;
-      }
-      .boot-atmosphere::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        opacity: 0.22;
-        mix-blend-mode: overlay;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E");
-        background-repeat: repeat;
-        background-size: 120px 120px;
+        background-color: #000;
       }
     </style>
   </head>
