@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check } from 'lucide-react';
@@ -17,18 +17,30 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function ClubPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // Touch / coarse pointer: skip blur + enter opacity (they flicker while scrolling on mobile GPUs)
+  const [isTouch, setIsTouch] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(hover: none), (pointer: coarse)');
+    const sync = () => setIsTouch(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   return (
     <>
       <PageTransition />
 
       <div className="relative w-full pt-28 md:pt-36 pb-28 md:pb-40 px-4 sm:px-6 md:px-12 overflow-hidden">
-        {/* Ambient Top Spotlight */}
+        {/* Ambient Top Spotlight — no CSS blur filter on touch (scroll thrash) */}
         <div
-          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none rounded-full blur-[140px] opacity-40"
+          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none rounded-full opacity-40"
           style={{
             background:
               'radial-gradient(ellipse at center, rgba(178,133,88,0.4) 0%, rgba(44,14,17,0.5) 50%, transparent 80%)',
+            filter: isTouch ? undefined : 'blur(140px)',
           }}
           aria-hidden="true"
         />
@@ -98,10 +110,10 @@ export default function ClubPage() {
 
           {/* ===================== CARD SPECS BAR ===================== */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.6, ease: EASE }}
+            initial={isTouch ? false : { opacity: 0, y: 20 }}
+            whileInView={isTouch ? undefined : { opacity: 1, y: 0 }}
+            viewport={isTouch ? undefined : { once: true, margin: '-40px' }}
+            transition={isTouch ? undefined : { duration: 0.6, ease: EASE }}
             className="mt-16 md:mt-24 grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 border-y border-white/[0.08] py-8"
           >
             {[
@@ -136,14 +148,28 @@ export default function ClubPage() {
               {CLUB_PRIVILEGES.map((privilege, index) => (
                 <motion.article
                   key={privilege.number}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-24px' }}
-                  transition={{ duration: 0.4, delay: index * 0.04, ease: EASE }}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#B28558]/25 bg-gradient-to-br from-[#3a1a1e]/70 via-[#1c1614]/80 to-[#12100e]/90 backdrop-blur-md p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,235,200,0.14),0_12px_40px_-20px_rgba(0,0,0,0.65)] transition-all duration-300 hover:border-[#C9A86A]/45 hover:shadow-[inset_0_1px_0_rgba(255,235,200,0.22),0_16px_48px_-18px_rgba(44,14,17,0.7)]"
+                  initial={isTouch ? false : { opacity: 0, y: 12 }}
+                  whileInView={isTouch ? undefined : { opacity: 1, y: 0 }}
+                  viewport={isTouch ? undefined : { once: true, margin: '-24px' }}
+                  transition={
+                    isTouch
+                      ? undefined
+                      : { duration: 0.4, delay: index * 0.04, ease: EASE }
+                  }
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#B28558]/25 bg-[#1a1210] p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,235,200,0.14),0_12px_40px_-20px_rgba(0,0,0,0.65)] transform-gpu [backface-visibility:hidden] md:bg-gradient-to-br md:from-[#3a1a1e] md:via-[#1c1614] md:to-[#12100e] md:hover:border-[#C9A86A]/45 md:transition-[border-color,box-shadow] md:duration-300"
+                  style={{
+                    backgroundImage: isTouch
+                      ? 'linear-gradient(145deg, #2a1618 0%, #1a1210 48%, #12100e 100%)'
+                      : undefined,
+                  }}
                 >
+                  {/* Soft glow without CSS filter blur on touch */}
                   <div
-                    className="pointer-events-none absolute -right-10 top-0 h-28 w-28 rounded-full bg-[#B28558]/15 blur-2xl transition-opacity duration-300 group-hover:bg-[#C9A86A]/25"
+                    className="pointer-events-none absolute -right-10 top-0 h-28 w-28 rounded-full"
+                    style={{
+                      background:
+                        'radial-gradient(circle, rgba(178,133,88,0.22) 0%, transparent 70%)',
+                    }}
                     aria-hidden="true"
                   />
 
@@ -151,7 +177,7 @@ export default function ClubPage() {
                     {privilege.number}
                   </span>
 
-                  <h3 className="relative font-heading text-xl uppercase font-light tracking-tight text-white mb-3 leading-snug group-hover:text-[#F4E4CC] transition-colors duration-300">
+                  <h3 className="relative font-heading text-xl uppercase font-light tracking-tight text-white mb-3 leading-snug md:group-hover:text-[#F4E4CC] md:transition-colors md:duration-300">
                     {privilege.title}
                   </h3>
 
@@ -197,22 +223,28 @@ export default function ClubPage() {
                 return (
                   <motion.div
                     key={path.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ duration: 0.45, ease: EASE }}
-                    className={`group relative overflow-hidden rounded-3xl p-8 md:p-10 flex flex-col justify-between backdrop-blur-md ${
+                    initial={isTouch ? false : { opacity: 0, y: 20 }}
+                    whileInView={isTouch ? undefined : { opacity: 1, y: 0 }}
+                    viewport={isTouch ? undefined : { once: true, margin: '-40px' }}
+                    transition={isTouch ? undefined : { duration: 0.45, ease: EASE }}
+                    className={`group relative overflow-hidden rounded-3xl p-8 md:p-10 flex flex-col justify-between transform-gpu [backface-visibility:hidden] ${
                       isAdvance
-                        ? 'border border-[#B28558]/45 bg-gradient-to-br from-[#3a1a1e]/75 via-[#1c1614]/85 to-[#12100e]/95 shadow-[inset_0_1px_0_rgba(255,235,200,0.16),0_18px_50px_-20px_rgba(44,14,17,0.85)] hover:border-[#C9A86A]/65'
-                        : 'border border-white/15 bg-gradient-to-br from-white/[0.08] via-white/[0.04] to-white/[0.02] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_40px_-20px_rgba(0,0,0,0.55)] hover:border-white/30 hover:bg-white/[0.07]'
-                    } transition-[border-color,background-color] duration-300`}
+                        ? 'border border-[#B28558]/45 shadow-[inset_0_1px_0_rgba(255,235,200,0.16),0_18px_50px_-20px_rgba(44,14,17,0.85)] md:hover:border-[#C9A86A]/65'
+                        : 'border border-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_40px_-20px_rgba(0,0,0,0.55)] md:hover:border-white/30'
+                    } md:transition-[border-color] md:duration-300`}
+                    style={{
+                      background: isAdvance
+                        ? 'linear-gradient(145deg, #2e171a 0%, #1a1210 50%, #12100e 100%)'
+                        : 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.02) 100%)',
+                    }}
                   >
                     <div
-                      className={`pointer-events-none absolute -right-12 -top-10 h-36 w-36 rounded-full blur-2xl transition-opacity duration-300 ${
-                        isAdvance
-                          ? 'bg-[#B28558]/25 group-hover:bg-[#C9A86A]/35'
-                          : 'bg-white/10 group-hover:bg-white/16'
-                      }`}
+                      className="pointer-events-none absolute -right-12 -top-10 h-36 w-36 rounded-full"
+                      style={{
+                        background: isAdvance
+                          ? 'radial-gradient(circle, rgba(178,133,88,0.28) 0%, transparent 70%)'
+                          : 'radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)',
+                      }}
                       aria-hidden="true"
                     />
 
@@ -232,7 +264,7 @@ export default function ClubPage() {
                         </span>
                       </div>
 
-                      <h3 className="font-heading text-2xl sm:text-3xl uppercase font-light text-white tracking-tight mb-2 transition-colors duration-300 group-hover:text-[#F4E4CC]">
+                      <h3 className="font-heading text-2xl sm:text-3xl uppercase font-light text-white tracking-tight mb-2 md:transition-colors md:duration-300 md:group-hover:text-[#F4E4CC]">
                         {path.title}
                       </h3>
 
@@ -262,7 +294,7 @@ export default function ClubPage() {
                       <button
                         type="button"
                         onClick={() => setIsModalOpen(true)}
-                        className="relative w-full py-4 rounded-full font-medium text-xs uppercase tracking-[0.2em] bg-gradient-to-r from-[#D4AF6A] to-[#B28558] text-[#1A1612] shadow-[0_8px_24px_-8px_rgba(178,133,88,0.65)] hover:brightness-110 hover:shadow-[0_12px_28px_-8px_rgba(201,168,106,0.75)] active:scale-[0.97] active:brightness-95 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 group/btn"
+                        className="relative w-full py-4 rounded-full font-medium text-xs uppercase tracking-[0.2em] bg-gradient-to-r from-[#D4AF6A] to-[#B28558] text-[#1A1612] shadow-[0_8px_24px_-8px_rgba(178,133,88,0.65)] hover:brightness-110 active:scale-[0.97] active:brightness-95 transition-[filter,transform] duration-200 cursor-pointer flex items-center justify-center gap-2 group/btn touch-manipulation [-webkit-tap-highlight-color:transparent]"
                       >
                         <span>Request Advance Card</span>
                         <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
@@ -270,7 +302,7 @@ export default function ClubPage() {
                     ) : (
                       <Link
                         to="/marketplace"
-                        className="relative w-full py-4 rounded-full font-medium text-xs uppercase tracking-[0.2em] bg-white/[0.08] hover:bg-white/[0.16] text-white border border-white/20 hover:border-white/35 active:scale-[0.97] active:bg-white/[0.12] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer group/btn"
+                        className="relative w-full py-4 rounded-full font-medium text-xs uppercase tracking-[0.2em] bg-white/[0.08] hover:bg-white/[0.16] text-white border border-white/20 hover:border-white/35 active:scale-[0.97] active:bg-white/[0.12] transition-[background-color,border-color,transform] duration-200 flex items-center justify-center gap-2 cursor-pointer group/btn touch-manipulation [-webkit-tap-highlight-color:transparent]"
                       >
                         <span>Explore Fragrances</span>
                         <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
