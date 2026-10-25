@@ -109,13 +109,7 @@ export default function ClubPage() {
           </motion.div>
 
           {/* ===================== CARD SPECS BAR ===================== */}
-          <motion.div
-            initial={isTouch ? false : { opacity: 0, y: 20 }}
-            whileInView={isTouch ? undefined : { opacity: 1, y: 0 }}
-            viewport={isTouch ? undefined : { once: true, margin: '-40px' }}
-            transition={isTouch ? undefined : { duration: 0.6, ease: EASE }}
-            className="mt-16 md:mt-24 grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 border-y border-white/[0.08] py-8"
-          >
+          <div className="mt-16 md:mt-24 grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 border-y border-white/[0.08] py-8">
             {[
               { label: 'Total Allocation', value: `${CLUB_TOTAL_CARDS} Cards Only` },
               { label: 'Availability', value: 'Once Issued, Closed' },
@@ -131,7 +125,7 @@ export default function ClubPage() {
                 </span>
               </div>
             ))}
-          </motion.div>
+          </div>
 
           {/* ===================== MEMBERSHIP PRIVILEGES ===================== */}
           <div className="mt-24 md:mt-36">
@@ -145,25 +139,15 @@ export default function ClubPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-              {CLUB_PRIVILEGES.map((privilege, index) => (
-                <motion.article
+              {CLUB_PRIVILEGES.map((privilege) => (
+                <article
                   key={privilege.number}
-                  initial={isTouch ? false : { opacity: 0, y: 12 }}
-                  whileInView={isTouch ? undefined : { opacity: 1, y: 0 }}
-                  viewport={isTouch ? undefined : { once: true, margin: '-24px' }}
-                  transition={
-                    isTouch
-                      ? undefined
-                      : { duration: 0.4, delay: index * 0.04, ease: EASE }
-                  }
-                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#B28558]/25 bg-[#1a1210] p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,235,200,0.14),0_12px_40px_-20px_rgba(0,0,0,0.65)] transform-gpu [backface-visibility:hidden] md:bg-gradient-to-br md:from-[#3a1a1e] md:via-[#1c1614] md:to-[#12100e] md:hover:border-[#C9A86A]/45 md:transition-[border-color,box-shadow] md:duration-300"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#B28558]/25 p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,235,200,0.14),0_12px_40px_-20px_rgba(0,0,0,0.65)] md:hover:border-[#C9A86A]/45 md:transition-[border-color] md:duration-300"
                   style={{
-                    backgroundImage: isTouch
-                      ? 'linear-gradient(145deg, #2a1618 0%, #1a1210 48%, #12100e 100%)'
-                      : undefined,
+                    background:
+                      'linear-gradient(145deg, #2a1618 0%, #1a1210 48%, #12100e 100%)',
                   }}
                 >
-                  {/* Soft glow without CSS filter blur on touch */}
                   <div
                     className="pointer-events-none absolute -right-10 top-0 h-28 w-28 rounded-full"
                     style={{
@@ -197,7 +181,7 @@ export default function ClubPage() {
                       ))}
                     </ul>
                   )}
-                </motion.article>
+                </article>
               ))}
             </div>
           </div>
@@ -221,13 +205,9 @@ export default function ClubPage() {
                 const isAdvance = path.id === 'advance';
 
                 return (
-                  <motion.div
+                  <div
                     key={path.id}
-                    initial={isTouch ? false : { opacity: 0, y: 20 }}
-                    whileInView={isTouch ? undefined : { opacity: 1, y: 0 }}
-                    viewport={isTouch ? undefined : { once: true, margin: '-40px' }}
-                    transition={isTouch ? undefined : { duration: 0.45, ease: EASE }}
-                    className={`group relative overflow-hidden rounded-3xl p-8 md:p-10 flex flex-col justify-between transform-gpu [backface-visibility:hidden] ${
+                    className={`group relative overflow-hidden rounded-3xl p-8 md:p-10 flex flex-col justify-between ${
                       isAdvance
                         ? 'border border-[#B28558]/45 shadow-[inset_0_1px_0_rgba(255,235,200,0.16),0_18px_50px_-20px_rgba(44,14,17,0.85)] md:hover:border-[#C9A86A]/65'
                         : 'border border-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_40px_-20px_rgba(0,0,0,0.55)] md:hover:border-white/30'
@@ -308,7 +288,7 @@ export default function ClubPage() {
                         <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
                       </Link>
                     )}
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
