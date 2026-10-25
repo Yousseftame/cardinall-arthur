@@ -203,7 +203,7 @@ export default function FooterSection() {
         {/* Bottom Section */}
         <div className="pt-8 border-t border-white/10 flex flex-col lg:flex-row justify-between items-center gap-6 lg:gap-0 text-xs md:text-sm font-mono text-white">
           <div className="flex items-center">
-            <span className="text-primary mr-1 font-sans text-base">©</span> 2025 Cardinal®.
+            <span className="text-primary mr-1 font-sans text-base">©</span> 2026 Cardinal®.
           </div>
           
           <div className="flex items-center gap-6 md:gap-8">
