@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: 'Clash Display', Arial, sans-serif;
-    --font-sans: 'Outfit', sans-serif;
+    --font-heading: 'Clash Display', 'Outfit', system-ui, sans-serif;
+    --font-sans: 'Outfit', system-ui, sans-serif;
     --font-serif: 'Helvetica Neue', Helvetica, system-ui, -apple-system, sans-serif;
     
     /* Brand Colors */

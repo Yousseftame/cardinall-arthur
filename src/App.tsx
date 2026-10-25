@@ -14,6 +14,7 @@ import CheckoutPage from "./pages/storefront/CheckoutPage";
 import FavoritesPage from "./pages/storefront/FavoritesPage";
 import FAQPage from "./pages/storefront/FAQPage";
 import TermsPage from "./pages/storefront/TermsPage";
+import ClubPage from "./pages/storefront/ClubPage";
 
 import LoginPage from "./pages/auth/LoginPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
@@ -30,6 +31,7 @@ const CheckoutSettingsPage = lazy(() => import("./pages/admin/CheckoutSettingsPa
 const FeedbackPage = lazy(() => import("./pages/admin/FeedbackPage"));
 const ContactMessagesPage = lazy(() => import("./pages/admin/ContactMessagesPage"));
 const CantFindRequestsPage = lazy(() => import("./pages/admin/CantFindRequestsPage"));
+const ClubAdvanceRequestsPage = lazy(() => import("./pages/admin/ClubAdvanceRequestsPage"));
 const PaidCustomersPage = lazy(() => import("./pages/admin/PaidCustomersPage"));
 const NewsletterPage = lazy(() => import("./pages/admin/NewsletterPage"));
 const FaqPage = lazy(() => import("./pages/admin/FaqPage"));
@@ -37,6 +39,7 @@ const TermsAdminPage = lazy(() => import("./pages/admin/TermsPage"));
 const AboutIntroPage = lazy(() => import("./pages/admin/AboutIntroPage"));
 const TimelinePage = lazy(() => import("./pages/admin/TimelinePage"));
 const LatestProjectsPage = lazy(() => import("./pages/admin/LatestProjectsPage"));
+const BannersPage = lazy(() => import("./pages/admin/BannersPage"));
 const VisionPage = lazy(() => import("./pages/admin/VisionPage"));
 const DashboardHomePage = lazy(() => import("./pages/admin/DashboardHomePage"));
 
@@ -106,6 +109,8 @@ function App() {
               <Route path="favorites" element={<FavoritesPage />} />
               <Route path="faq" element={<FAQPage />} />
               <Route path="terms" element={<TermsPage />} />
+              <Route path="club" element={<ClubPage />} />
+              <Route path="cardinal-arthur-club" element={<ClubPage />} />
             </Route>
 
             {/* 2. Admin Dashboard Layout (Protected) */}
@@ -124,7 +129,7 @@ function App() {
                 <Route path="hero" element={<div className="text-white text-xl font-light tracking-widest uppercase">Hero Section Editor</div>} />
                 <Route path="projects" element={<Suspense fallback={<AdminPageFallback />}><LatestProjectsPage /></Suspense>} />
                 <Route path="partners" element={<div className="text-white text-xl font-light tracking-widest uppercase">Trusted Partners Editor</div>} />
-                <Route path="banners" element={<div className="text-white text-xl font-light tracking-widest uppercase">Banners Management</div>} />
+                <Route path="banners" element={<Suspense fallback={<AdminPageFallback />}><BannersPage /></Suspense>} />
                 
                 <Route path="about-intro" element={<Suspense fallback={<AdminPageFallback />}><AboutIntroPage /></Suspense>} />
                 <Route path="timeline" element={<Suspense fallback={<AdminPageFallback />}><TimelinePage /></Suspense>} />
@@ -133,6 +138,7 @@ function App() {
                 
                 <Route path="feedback" element={<Suspense fallback={<AdminPageFallback />}><FeedbackPage /></Suspense>} />
                 <Route path="cant-find" element={<Suspense fallback={<AdminPageFallback />}><CantFindRequestsPage /></Suspense>} />
+                <Route path="club-requests" element={<Suspense fallback={<AdminPageFallback />}><ClubAdvanceRequestsPage /></Suspense>} />
                 <Route path="contact" element={<Suspense fallback={<AdminPageFallback />}><ContactMessagesPage /></Suspense>} />
                 <Route path="faq" element={<Suspense fallback={<AdminPageFallback />}><FaqPage /></Suspense>} />
                 <Route path="terms" element={<Suspense fallback={<AdminPageFallback />}><TermsAdminPage /></Suspense>} />

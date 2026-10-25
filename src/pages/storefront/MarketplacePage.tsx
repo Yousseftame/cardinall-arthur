@@ -1,8 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion, animate, type Variants, useScroll, useTransform, useMotionValue, useAnimationFrame } from 'framer-motion';
 import { DiaTextReveal } from '../../components/ui/dia-text-reveal';
-import marketplace2 from '../../assets/marketplace2.webp';
-import banner2 from '../../assets/banner2.webp';
 import marketplaceImg from '../../assets/marketplace1.webp';
 import PageTransition from '../../components/layout/PageTransition';
 import NotePicker from '../../components/perfume/NotePicker';
@@ -46,28 +44,17 @@ const letterVariants: Variants = {
   },
 };
 
-const BANNERS = [
-  {
-    id: 1,
-    image: marketplace2,
-    pill: 'Cardinal Arthur',
-    title: ['CARDINAL', 'ARTHUR', 'COLLECTION'],
-    subtitle: 'Crafted with exquisite intention. The absolute finest selection of our heritage legacy. Welcome to the Marketplace.',
-  },
-  {
-    id: 2,
-    image: banner2,
-    pill: 'New Arrivals',
-    title: ['AUTUMN', 'WINTER', 'ESSENTIALS'],
-    subtitle: 'Discover the dark elegance of the new season. Perfectly tailored for those who dare to lead.',
-  }
-];
-
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useFavoriteStore } from '../../store/favoriteStore';
 import { PRODUCTS } from '../../data/products';
 import FAQSection from '../../components/sections/FAQSection';
+import CardinalArthurClubSection from '../../components/sections/CardinalArthurClubSection';
+import { useMarketplaceBanners } from '../../hooks/useMarketplaceBanners';
+import {
+  resolveMarketplaceBannerImage,
+  splitBannerHeading,
+} from '../../data/marketplaceBannerImages';
 import { Eye, ShoppingCart, X, Share2, Copy, ArrowRight } from 'lucide-react';
 import PulseHeart from '../../components/PulseHeart';
 import { useCartStore } from '../../store/cartStore';
@@ -111,6 +98,20 @@ const BANNER_GAP = 16;
 const BANNER_SPRING = { type: 'spring' as const, stiffness: 280, damping: 32, mass: 0.85 };
 
 export default function MarketplacePage() {
+  const { data: bannerRecords = [] } = useMarketplaceBanners();
+  const banners = useMemo(
+    () =>
+      bannerRecords.map((b) => ({
+        id: b.id,
+        image: resolveMarketplaceBannerImage(b.imageKey),
+        pill: b.name,
+        title: splitBannerHeading(b.heading),
+        subtitle: b.description,
+      })),
+    [bannerRecords]
+  );
+  const bannerCount = banners.length;
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const isBannerDragging = useRef(false);
   const bannerViewportRef = useRef<HTMLDivElement>(null);
@@ -355,8 +356,18 @@ export default function MarketplacePage() {
     return () => controls.stop();
   }, [bannerOffset, bannerX]);
 
+  // Keep carousel index valid when banner list changes
+  useEffect(() => {
+    if (bannerCount === 0) {
+      setCurrentIndex(0);
+      return;
+    }
+    setCurrentIndex((prev) => (prev >= bannerCount ? 0 : prev));
+  }, [bannerCount]);
+
   const paginateBanner = (dir: number) => {
-    setCurrentIndex((prev) => (prev + dir + BANNERS.length) % BANNERS.length);
+    if (bannerCount === 0) return;
+    setCurrentIndex((prev) => (prev + dir + bannerCount) % bannerCount);
   };
 
   const goToBanner = (index: number) => {
@@ -366,12 +377,13 @@ export default function MarketplacePage() {
 
   // Auto-advance; pause while dragging
   useEffect(() => {
+    if (bannerCount <= 1) return;
     const timer = setInterval(() => {
       if (isBannerDragging.current) return;
-      setCurrentIndex((prev) => (prev + 1) % BANNERS.length);
+      setCurrentIndex((prev) => (prev + 1) % bannerCount);
     }, 6000);
     return () => clearInterval(timer);
-  }, [currentIndex]);
+  }, [currentIndex, bannerCount]);
 
   const selectedLimit = useCartLimit(selectedProduct?.id);
   const showLimitNote =
@@ -506,7 +518,7 @@ export default function MarketplacePage() {
             style={{ x: bannerX, gap: BANNER_GAP, touchAction: 'pan-y' }}
             drag={bannerWidth > 0 ? 'x' : false}
             dragConstraints={{
-              left: -(BANNERS.length - 1) * (bannerWidth + BANNER_GAP),
+              left: -Math.max(0, bannerCount - 1) * (bannerWidth + BANNER_GAP),
               right: 0,
             }}
             dragElastic={0.14}
@@ -526,7 +538,7 @@ export default function MarketplacePage() {
               }
             }}
           >
-            {BANNERS.map((banner) => (
+            {banners.map((banner) => (
               <div
                 key={banner.id}
                 className="relative h-[50vh] min-h-[400px] md:h-[500px] lg:h-[550px] rounded-[24px] md:rounded-[32px] overflow-hidden border border-white/10 shadow-2xl transform-gpu"
@@ -558,8 +570,8 @@ export default function MarketplacePage() {
                     className="font-heading text-white uppercase text-5xl md:text-7xl lg:text-[84px] xl:text-[96px] leading-[0.85] flex flex-col items-center scale-x-105 font-light tracking-tighter"
                     style={{ textShadow: '0 10px 20px rgba(0,0,0,0.6)' }}
                   >
-                    {banner.title.map((line) => (
-                      <span key={line}>{line}</span>
+                    {banner.title.map((line, lineIdx) => (
+                      <span key={`${banner.id}-${lineIdx}-${line}`}>{line}</span>
                     ))}
                   </h2>
                 </div>
@@ -574,19 +586,21 @@ export default function MarketplacePage() {
           </motion.div>
 
           {/* Dots stay fixed over the viewport while cards slide underneath */}
-          <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20 pointer-events-auto">
-            {BANNERS.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => goToBanner(i)}
-                className={`transition-[width,background-color] duration-300 ease-out rounded-full cursor-pointer ${
-                  i === currentIndex ? 'w-8 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/60'
-                }`}
-                aria-label={`Go to slide ${i + 1}`}
-              />
-            ))}
-          </div>
+          {bannerCount > 0 && (
+            <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20 pointer-events-auto">
+              {banners.map((banner, i) => (
+                <button
+                  key={banner.id}
+                  type="button"
+                  onClick={() => goToBanner(i)}
+                  className={`transition-[width,background-color] duration-300 ease-out rounded-full cursor-pointer ${
+                    i === currentIndex ? 'w-8 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/60'
+                  }`}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -710,6 +724,8 @@ export default function MarketplacePage() {
           </motion.div>
         </div>
       </section>
+
+      <CardinalArthurClubSection />
 
       {/* Find Your Perfume — same flow as home (pick → reveal, no auto-match) */}
       <section

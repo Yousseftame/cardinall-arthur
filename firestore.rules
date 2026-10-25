@@ -77,6 +77,11 @@ service cloud.firestore {
       allow read, update, delete: if isAuthenticated();
     }
 
+    match /club_advance_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+
     match /newsletter_subscribers/{subscriberId} {
       allow create: if true;
       allow read, update, delete: if isAuthenticated();

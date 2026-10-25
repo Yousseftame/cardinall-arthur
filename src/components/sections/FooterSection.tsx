@@ -137,7 +137,7 @@ export default function FooterSection() {
           <div className="lg:col-span-2 lg:col-start-4 xl:col-start-5 flex flex-col gap-3">
             {[
               { label: 'HOME', to: '/' },
-              { label: 'ABOUT', to: '/about' },
+              { label: 'THE CLUB', to: '/club' },
               { label: 'FAQ', to: '/faq' },
               { label: 'TERMS', to: '/terms' },
             ].map((link) => (

@@ -56,6 +56,7 @@ function getLocalContactMessages(): ContactMessageRecord[] {
 function saveLocalContactMessages(records: ContactMessageRecord[]) {
   try {
     localStorage.setItem(CONTACT_STORAGE_KEY, JSON.stringify(records));
+    window.dispatchEvent(new Event('cardinall_contact_updated'));
   } catch (e) {
     console.warn("Could not save to local contact store:", e);
   }

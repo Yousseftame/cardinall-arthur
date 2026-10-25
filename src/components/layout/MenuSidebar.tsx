@@ -7,6 +7,7 @@ import { useMenuStore } from "../../store/menuStore";
 const NAV_LINKS = [
   { id: "home", label: "Home", href: "/" },
   { id: "marketplace", label: "Marketplace", href: "/marketplace" },
+  { id: "club", label: "The Club", href: "/club" },
   { id: "about", label: "Our Story", href: "/about" },
   { id: "cant-find-it", label: "Community", href: "/cant-find-it" },
 ];

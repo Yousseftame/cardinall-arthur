@@ -8,7 +8,7 @@ import {
   CreditCard, MessageSquare, HelpCircle, Phone, 
   Home, Clock, Eye, Users, Heart, FileText,
   Search, ShieldCheck, ChevronsLeft, Menu, PanelLeft, Globe, UserCheck, Mail,
-  LayoutGrid, Flower2,
+  LayoutGrid, Flower2, Crown,
 } from 'lucide-react';
 
 const SIDEBAR_EASE = "duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
@@ -31,6 +31,7 @@ const navEntries: NavEntry[] = [
   { type: 'link', href: '/admin/notes', icon: Flower2, label: 'Scent Notes' },
   { type: 'link', href: '/admin/products', icon: ShoppingBag, label: 'Products' },
   { type: 'link', href: '/admin/orders', icon: CreditCard, label: 'Orders' },
+  { type: 'link', href: '/admin/club-requests', icon: Crown, label: 'Club Requests' },
   { type: 'link', href: '/admin/checkout', icon: ShieldCheck, label: 'Checkout Settings' },
   { type: 'divider' },
   { type: 'heading', label: 'Customer Service' },
@@ -46,7 +47,7 @@ const navEntries: NavEntry[] = [
   { type: 'link', href: '/admin/hero', icon: Home, label: 'Hero Section', disabled: true },
   { type: 'link', href: '/admin/projects', icon: LayoutGrid, label: 'Latest Projects' },
   { type: 'link', href: '/admin/partners', icon: Users, label: 'Trusted Partners', disabled: true },
-  { type: 'link', href: '/admin/banners', icon: ImageIcon, label: 'Banners', disabled: true },
+  { type: 'link', href: '/admin/banners', icon: ImageIcon, label: 'Banners' },
   { type: 'divider' },
   { type: 'heading', label: 'About Page' },
   { type: 'link', href: '/admin/about-intro', icon: FileText, label: 'About Us Intro' },
@@ -80,6 +81,10 @@ export default function DashboardLayout() {
   const newCantFindCount = useAdminBadgeCount(
     ADMIN_BADGE_STORES.cantFind,
     ADMIN_BADGE_COLLECTIONS.cantFind
+  );
+  const newClubAdvanceCount = useAdminBadgeCount(
+    ADMIN_BADGE_STORES.clubAdvance,
+    ADMIN_BADGE_COLLECTIONS.clubAdvance
   );
 
   const handleSignOut = async () => {
@@ -200,12 +205,16 @@ export default function DashboardLayout() {
             }
 
             let badgeCount: number | undefined;
+            let badgeTone: 'default' | 'danger' = 'default';
             if (entry.href === '/admin/feedback') {
               badgeCount = newFeedbackCount;
             } else if (entry.href === '/admin/contact') {
               badgeCount = newContactCount;
             } else if (entry.href === '/admin/cant-find') {
               badgeCount = newCantFindCount;
+            } else if (entry.href === '/admin/club-requests') {
+              badgeCount = newClubAdvanceCount;
+              badgeTone = 'danger';
             }
 
             return (
@@ -215,6 +224,7 @@ export default function DashboardLayout() {
                 collapsed={collapsed}
                 active={location.pathname === entry.href}
                 badgeCount={badgeCount}
+                badgeTone={badgeTone}
                 onClick={onMobileClose}
               />
             );
@@ -357,16 +367,19 @@ function NavLink({
   collapsed,
   active,
   badgeCount,
+  badgeTone = 'default',
   onClick,
 }: {
   item: Extract<NavEntry, { type: 'link' }>;
   collapsed: boolean;
   active: boolean;
   badgeCount?: number;
+  badgeTone?: 'default' | 'danger';
   onClick: () => void;
 }) {
   const Icon = item.icon;
   const disabled = Boolean(item.disabled);
+  const badgeBg = badgeTone === 'danger' ? 'bg-red-500' : 'bg-[#2C0E11]';
 
   const content = (
     <>
@@ -375,7 +388,8 @@ function NavLink({
         {badgeCount !== undefined && badgeCount > 0 && !disabled && (
           <span 
             className={cn(
-              "absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#2C0E11] text-[10px] font-bold text-white shadow-xs transition-transform duration-200",
+              "absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-xs transition-transform duration-200",
+              badgeBg,
               collapsed ? "scale-100" : "scale-0 lg:hidden"
             )}
           >
@@ -397,7 +411,12 @@ function NavLink({
               Hold
             </span>
           ) : badgeCount !== undefined && badgeCount > 0 ? (
-            <span className="ml-2 shrink-0 inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#2C0E11] text-white shadow-xs">
+            <span
+              className={cn(
+                'ml-2 shrink-0 inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold rounded-full text-white shadow-xs',
+                badgeBg
+              )}
+            >
               {badgeCount}
             </span>
           ) : null}

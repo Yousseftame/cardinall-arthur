@@ -19,6 +19,7 @@ import {
 import {
   ArrowUpRight,
   CreditCard,
+  Crown,
   HelpCircle,
   Mail,
   MessageSquare,
@@ -29,7 +30,6 @@ import {
   Tags,
   TrendingUp,
   UserCheck,
-  Users,
 } from 'lucide-react';
 import { StatCard, StatGrid } from '../../components/ui/StatCard';
 import { adminListQueryOptions } from '../../lib/adminQuery';
@@ -39,6 +39,7 @@ import { getCategories } from '../../services/categories.service';
 import { getFeedbacks } from '../../services/feedback.service';
 import { getContactMessages } from '../../services/contact.service';
 import { getCantFindRequests } from '../../services/cantFind.service';
+import { getClubAdvanceRequests } from '../../services/clubAdvance.service';
 import { getPaidCustomers } from '../../services/paidCustomers.service';
 import { getNewsletterSubscribers } from '../../services/newsletter.service';
 import type { Order } from '../../types/order';
@@ -111,6 +112,39 @@ function ChartTooltip({
   );
 }
 
+function RevenueSplitTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: Array<{ value?: number; name?: string; dataKey?: string }>;
+  label?: string;
+}) {
+  if (!active || !payload?.length) return null;
+  const orders = payload.find((p) => p.dataKey === 'ordersRevenue')?.value ?? 0;
+  const club = payload.find((p) => p.dataKey === 'clubRevenue')?.value ?? 0;
+  const total = (typeof orders === 'number' ? orders : 0) + (typeof club === 'number' ? club : 0);
+
+  return (
+    <div className="rounded-2xl bg-white px-3.5 py-2.5 shadow-[0_8px_30px_rgba(44,14,17,0.12)] border border-gray-100 min-w-[160px]">
+      {label ? <p className="text-[11px] font-semibold text-gray-400 mb-1.5">{label}</p> : null}
+      <p className="text-sm font-bold text-[#2C0E11]">
+        <span className="font-medium text-gray-500 mr-1.5">Orders</span>
+        {typeof orders === 'number' ? orders.toLocaleString('en-US') : orders} EGP
+      </p>
+      <p className="text-sm font-bold text-[#2C0E11]">
+        <span className="font-medium text-[#C9A86A] mr-1.5">Club</span>
+        {typeof club === 'number' ? club.toLocaleString('en-US') : club} EGP
+      </p>
+      <p className="mt-1.5 pt-1.5 border-t border-gray-100 text-sm font-bold text-[#2C0E11]">
+        <span className="font-medium text-gray-500 mr-1.5">Total</span>
+        {total.toLocaleString('en-US')} EGP
+      </p>
+    </div>
+  );
+}
+
 export default function DashboardHomePage() {
   const { user } = useAuth();
   const accountLabel = user?.displayName?.trim() || user?.email || null;
@@ -145,6 +179,11 @@ export default function DashboardHomePage() {
     queryFn: getCantFindRequests,
     ...adminListQueryOptions,
   });
+  const clubAdvanceQ = useQuery({
+    queryKey: ['admin-club-advance'],
+    queryFn: getClubAdvanceRequests,
+    ...adminListQueryOptions,
+  });
   const customersQ = useQuery({
     queryKey: ['admin-paid-customers'],
     queryFn: getPaidCustomers,
@@ -163,6 +202,7 @@ export default function DashboardHomePage() {
     feedbackQ.isLoading ||
     contactQ.isLoading ||
     cantFindQ.isLoading ||
+    clubAdvanceQ.isLoading ||
     customersQ.isLoading ||
     newsletterQ.isLoading;
 
@@ -173,6 +213,7 @@ export default function DashboardHomePage() {
     feedbackQ.isFetching ||
     contactQ.isFetching ||
     cantFindQ.isFetching ||
+    clubAdvanceQ.isFetching ||
     customersQ.isFetching ||
     newsletterQ.isFetching;
 
@@ -182,12 +223,15 @@ export default function DashboardHomePage() {
   const feedbacks = feedbackQ.data ?? [];
   const contacts = contactQ.data ?? [];
   const cantFind = cantFindQ.data ?? [];
+  const clubAdvance = clubAdvanceQ.data ?? [];
   const customers = customersQ.data ?? [];
   const subscribers = newsletterQ.data ?? [];
 
   const stats = useMemo(() => {
     const paidOrders = orders.filter((o) => o.paymentStatus === 'paid');
-    const revenue = paidOrders.reduce((sum, o) => sum + (o.pricing?.total || 0), 0);
+    const ordersRevenue = paidOrders.reduce((sum, o) => sum + (o.pricing?.total || 0), 0);
+    const paidClub = clubAdvance.filter((r) => r.paymentStatus === 'paid');
+    const clubRevenue = paidClub.reduce((sum, r) => sum + (r.priceEgp || 0), 0);
     const pendingOrders = orders.filter((o) => o.status === 'pending' || o.status === 'processing').length;
     const lowStock = products.filter((p) => p.stock > 0 && p.stock <= 5).length;
     const outOfStock = products.filter((p) => p.stock <= 0).length;
@@ -195,12 +239,16 @@ export default function DashboardHomePage() {
     const inboxNew =
       feedbacks.filter((f) => f.status === 'new').length +
       contacts.filter((c) => c.status === 'new').length +
-      cantFind.filter((c) => c.status === 'new').length;
+      cantFind.filter((c) => c.status === 'new').length +
+      clubAdvance.filter((c) => c.status === 'new').length;
 
     return {
-      revenue,
+      ordersRevenue,
+      clubRevenue,
+      totalRevenue: ordersRevenue + clubRevenue,
       totalOrders: orders.length,
       paidCount: paidOrders.length,
+      paidClubCount: paidClub.length,
       pendingOrders,
       activeProducts,
       lowStock,
@@ -210,11 +258,22 @@ export default function DashboardHomePage() {
       subscribers: subscribers.length,
       inboxNew,
     };
-  }, [orders, products, categories, feedbacks, contacts, cantFind, customers, subscribers]);
+  }, [orders, products, categories, feedbacks, contacts, cantFind, clubAdvance, customers, subscribers]);
 
   const revenueSeries = useMemo(() => {
     const days = 14;
-    const map = new Map<string, { label: string; revenue: number; orders: number; key: string }>();
+    const map = new Map<
+      string,
+      {
+        label: string;
+        ordersRevenue: number;
+        clubRevenue: number;
+        revenue: number;
+        orders: number;
+        club: number;
+        key: string;
+      }
+    >();
 
     for (let i = days - 1; i >= 0; i--) {
       const d = startOfDay(new Date());
@@ -223,8 +282,11 @@ export default function DashboardHomePage() {
       map.set(key, {
         key,
         label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        ordersRevenue: 0,
+        clubRevenue: 0,
         revenue: 0,
         orders: 0,
+        club: 0,
       });
     }
 
@@ -233,12 +295,25 @@ export default function DashboardHomePage() {
       const key = startOfDay(new Date(order.createdAt)).toISOString().slice(0, 10);
       const bucket = map.get(key);
       if (!bucket) return;
-      bucket.revenue += order.pricing?.total || 0;
+      const amount = order.pricing?.total || 0;
+      bucket.ordersRevenue += amount;
+      bucket.revenue += amount;
       bucket.orders += 1;
     });
 
+    clubAdvance.forEach((req) => {
+      if (req.paymentStatus !== 'paid') return;
+      const key = startOfDay(new Date(req.createdAt)).toISOString().slice(0, 10);
+      const bucket = map.get(key);
+      if (!bucket) return;
+      const amount = req.priceEgp || 0;
+      bucket.clubRevenue += amount;
+      bucket.revenue += amount;
+      bucket.club += 1;
+    });
+
     return Array.from(map.values());
-  }, [orders]);
+  }, [orders, clubAdvance]);
 
   const statusChart = useMemo(() => {
     const counts: Record<string, number> = {
@@ -329,6 +404,7 @@ export default function DashboardHomePage() {
     void feedbackQ.refetch();
     void contactQ.refetch();
     void cantFindQ.refetch();
+    void clubAdvanceQ.refetch();
     void customersQ.refetch();
     void newsletterQ.refetch();
   };
@@ -390,19 +466,59 @@ export default function DashboardHomePage() {
         </div>
       </motion.header>
 
-      {/* KPI cards */}
+      {/* KPI cards — Total Revenue alone, then the four breakdown cards */}
+      <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show">
+        <article className="rounded-[24px] bg-white px-6 py-5 sm:px-8 sm:py-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-transform hover:-translate-y-1 duration-300">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
+            <div>
+              <div className="mb-4 flex items-center gap-2 text-[#2C0E11]">
+                <TrendingUp className="h-[18px] w-[18px]" strokeWidth={2} />
+                <span className="text-sm font-semibold">Total Revenue</span>
+              </div>
+              <p className="text-[2rem] sm:text-[2.4rem] leading-none font-bold tracking-tight text-[#2C0E11]">
+                {isLoading ? '—' : formatEGP(stats.totalRevenue)}
+              </p>
+              <p className="mt-3 text-xs text-gray-400 font-medium">
+                Orders + Club · paid only
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] font-semibold sm:pb-1">
+              <span className="text-gray-400">
+                Orders{' '}
+                <span className="text-[#2C0E11]">
+                  {isLoading ? '—' : formatEGP(stats.ordersRevenue)}
+                </span>
+              </span>
+              <span className="hidden sm:inline text-gray-300">·</span>
+              <span className="text-gray-400">
+                Club{' '}
+                <span className="text-[#2C0E11]">
+                  {isLoading ? '—' : formatEGP(stats.clubRevenue)}
+                </span>
+              </span>
+            </div>
+          </div>
+        </article>
+      </motion.div>
+
       <StatGrid className="!grid-cols-1 sm:!grid-cols-2 xl:!grid-cols-4">
         {[
           {
-            label: 'Paid Revenue',
-            value: isLoading ? '—' : formatEGP(stats.revenue),
-            icon: TrendingUp,
+            label: 'Orders Revenue',
+            value: isLoading ? '—' : formatEGP(stats.ordersRevenue),
+            icon: ShoppingBag,
             hint: `${stats.paidCount} paid orders`,
+          },
+          {
+            label: 'Club Revenue',
+            value: isLoading ? '—' : formatEGP(stats.clubRevenue),
+            icon: Crown,
+            hint: `${stats.paidClubCount} paid club cards`,
           },
           {
             label: 'Total Orders',
             value: isLoading ? '—' : stats.totalOrders.toString(),
-            icon: ShoppingBag,
+            icon: CreditCard,
             hint: `${stats.pendingOrders} in progress`,
           },
           {
@@ -416,14 +532,8 @@ export default function DashboardHomePage() {
                   ? `${stats.lowStock} low stock`
                   : `${stats.categories} categories`,
           },
-          {
-            label: 'Audience',
-            value: isLoading ? '—' : (stats.customers + stats.subscribers).toString(),
-            icon: Users,
-            hint: `${stats.customers} customers · ${stats.subscribers} newsletter`,
-          },
         ].map((card, i) => (
-          <motion.div key={card.label} custom={i + 1} variants={fadeUp} initial="hidden" animate="show">
+          <motion.div key={card.label} custom={i + 2} variants={fadeUp} initial="hidden" animate="show">
             <article className="rounded-[24px] bg-white p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-transform hover:-translate-y-1 duration-300 h-full">
               <div className="mb-5 flex items-center gap-2 text-[#2C0E11]">
                 <card.icon className="h-[18px] w-[18px]" strokeWidth={2} />
@@ -450,12 +560,20 @@ export default function DashboardHomePage() {
           <div className="flex items-start justify-between gap-3 mb-6">
             <div>
               <h3 className="text-base sm:text-lg font-bold text-[#2C0E11]">Revenue (14 days)</h3>
-              <p className="text-xs text-gray-400 mt-0.5">Paid order totals by day</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Combined paid orders + club cards by day
+              </p>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2C0E11]/6 px-3 py-1 text-[11px] font-bold text-[#2C0E11]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#C9A86A]" />
-              Paid only
-            </span>
+            <div className="flex items-center gap-2 flex-wrap justify-end">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2C0E11]/6 px-3 py-1 text-[11px] font-bold text-[#2C0E11]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#2C0E11]" />
+                Orders
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#C9A86A]/15 px-3 py-1 text-[11px] font-bold text-[#2C0E11]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#C9A86A]" />
+                Club
+              </span>
+            </div>
           </div>
 
           <div className="h-[240px] sm:h-[280px] w-full">
@@ -465,9 +583,13 @@ export default function DashboardHomePage() {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={revenueSeries} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={BRAND} stopOpacity={0.28} />
-                      <stop offset="100%" stopColor={BRAND} stopOpacity={0.02} />
+                    <linearGradient id="revOrdersFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={BRAND} stopOpacity={0.3} />
+                      <stop offset="100%" stopColor={BRAND} stopOpacity={0.04} />
+                    </linearGradient>
+                    <linearGradient id="revClubFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={GOLD} stopOpacity={0.35} />
+                      <stop offset="100%" stopColor={GOLD} stopOpacity={0.04} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 6" stroke="#EFEAE4" vertical={false} />
@@ -487,16 +609,27 @@ export default function DashboardHomePage() {
                     tickFormatter={(v) => (v >= 1000 ? `${Math.round(v / 1000)}k` : `${v}`)}
                   />
                   <Tooltip
-                    content={<ChartTooltip valueSuffix=" EGP" />}
+                    content={<RevenueSplitTooltip />}
                     cursor={{ stroke: SOFT, strokeWidth: 1 }}
                   />
                   <Area
                     type="monotone"
-                    dataKey="revenue"
-                    name="Revenue"
+                    dataKey="ordersRevenue"
+                    name="Orders"
+                    stackId="rev"
                     stroke={BRAND}
-                    strokeWidth={2.5}
-                    fill="url(#revFill)"
+                    strokeWidth={2}
+                    fill="url(#revOrdersFill)"
+                    animationDuration={900}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="clubRevenue"
+                    name="Club"
+                    stackId="rev"
+                    stroke={GOLD}
+                    strokeWidth={2}
+                    fill="url(#revClubFill)"
                     animationDuration={900}
                     activeDot={{ r: 5, fill: GOLD, stroke: BRAND, strokeWidth: 2 }}
                   />
@@ -673,6 +806,13 @@ export default function DashboardHomePage() {
               total={cantFind.length}
             />
             <InboxLink
+              to="/admin/club-requests"
+              icon={Crown}
+              label="Club Requests"
+              count={clubAdvance.filter((c) => c.status === 'new').length}
+              total={clubAdvance.length}
+            />
+            <InboxLink
               to="/admin/newsletter"
               icon={Mail}
               label="Newsletter"
@@ -739,8 +879,8 @@ export default function DashboardHomePage() {
               { to: '/admin/products', icon: Package, label: 'Products' },
               { to: '/admin/categories', icon: Tags, label: 'Categories' },
               { to: '/admin/customers', icon: UserCheck, label: 'Customers' },
+              { to: '/admin/club-requests', icon: Crown, label: 'Club' },
               { to: '/admin/faq', icon: HelpCircle, label: 'FAQ' },
-              { to: '/admin/feedback', icon: MessageSquare, label: 'Feedback' },
             ].map((item) => (
               <Link
                 key={item.to}
